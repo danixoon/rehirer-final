@@ -1,0 +1,216 @@
+// @import "~bootstrap/scss/bootstrap";
+
+@import "~bootstrap/scss/bootstrap";
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,900");
+
+$secondary: #8292a0;
+$primary: #7cb2e6;
+$dark: #576470;
+$success: #43e597;
+
+// $theme-colors: (
+//   primary: $primary !important,
+//   danger: #ff4136
+// );
+
+p {
+  color: $dark;
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+h5 {
+  color: $dark;
+  font-size: 1.2rem;
+}
+
+a {
+  text-decoration: none !important;
+  transition: box-shadow 0.1s ease;
+  // color: $ !important;
+  box-shadow: 0px 0px 0px adjust-color($success, $alpha: -0.5);
+}
+
+a:hover {
+  color: $primary !important;
+  // color: $dark !important;
+  box-shadow: 0px 2px 0px adjust-color($success, $alpha: -0.5);
+}
+
+a:active   {
+  color: $primary !important;
+  // color: $dark !important;
+  box-shadow: 0px 2px 0px adjust-color($success, $alpha: -0.5);
+}
+
+a + * {
+  transition: box-shadow 0.1s ease;
+  // color: $dark !important;
+  box-shadow: 0px 0px 0px adjust-color($success, $alpha: -0.5);
+}
+
+a:hover + * {
+  color: $primary !important;
+  // color: $dark !important;
+  box-shadow: 0px 2px 0px adjust-color($success, $alpha: -0.5);
+}
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .border#{$infix}-top {
+      border-top: $border-width solid $border-color !important;
+    }
+    .border#{$infix}-right {
+      border-right: $border-width solid $border-color !important;
+    }
+    .border#{$infix}-bottom {
+      border-bottom: $border-width solid $border-color !important;
+    }
+    .border#{$infix}-left {
+      border-left: $border-width solid $border-color !important;
+    }
+
+    .border#{$infix}-top-0 {
+      border-top: 0 !important;
+    }
+    .border#{$infix}-right-0 {
+      border-right: 0 !important;
+    }
+    .border#{$infix}-bottom-0 {
+      border-bottom: 0 !important;
+    }
+    .border#{$infix}-left-0 {
+      border-left: 0 !important;
+    }
+
+    .border#{$infix}-x {
+      border-left: $border-width solid $border-color !important;
+      border-right: $border-width solid $border-color !important;
+    }
+
+    .border#{$infix}-y {
+      border-top: $border-width solid $border-color !important;
+      border-bottom: $border-width solid $border-color !important;
+    }
+  }
+}
+
+span {
+  color: $gray-500;
+  // font-size: 1.2rem;
+}
+
+.active {
+  color: $primary !important;
+  box-shadow: 0px 2px 0px adjust-color($success, $alpha: -0.5);
+}
+
+.text-secondary {
+  color: $secondary !important;
+}
+
+.text-primary {
+  color: $primary !important;
+}
+.text-dark {
+  color: $dark !important;
+}
+
+.bg-dark {
+  background-color: $dark !important;
+}
+
+.btn-primary {
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.footer {
+  color: $light;
+}
+
+input {
+  outline: transparent;
+  border: none;
+  border-bottom: 1px solid $gray-400;
+  color: $secondary;
+  padding-bottom: 0.5rem;
+
+  margin-bottom: 1rem;
+
+  transition: box-shadow 0.2s ease;
+  box-shadow: 0 3px 0px transparent;
+
+  // margin: 1rem;
+}
+
+input:focus {
+  box-shadow: 0 3px 0px adjust-color($primary, $alpha: -0.5);
+
+  // border-color: $primary;
+  // border-bottom: 2px solid $primary;
+  // outline: $primary;
+}
+
+// .text-muted {
+//   color:
+// }
+
+input::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: $gray-500;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: $gray-500;
+}
+
+::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: $gray-500;
+}
+
+// $muted: #8292a0
+// .text-muted {
+//   color: $gray-200;
+// }
+// $theme-colors: (
+//   primary: ,
+//   secondary: red
+// );
+// $theme-colors: map-remove($theme-colors, "secondary", "light", "dark");
+body {
+  margin: 0;
+  font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: #212529;
+  text-align: left;
+  background-color: #f7f8f8;
+
+  font-style: normal;
+  font-weight: normal;
+  // font-size: 24px;
+  // line-height: 28px;
+}
+
+h3 {
+  color: $dark;
+}
+
+.nav-item {
+  // font-size: 1.2rem;
+  color: $secondary;
+}
+
+// .active {
+//   color: $primary;
+// }
+
+// @import "~bootstrap/scss/bootstrap";
