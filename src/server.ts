@@ -22,14 +22,19 @@ app.use("/api/job", job);
 app.use("/api/account", account);
 app.use("/api/user", user);
 
+
+
 //Static file declaration
 app.use(express.static(path.join(__dirname, "client/build")));
 
 //production mode
 if (process.env.NODE_ENV === "production") {
+
+  console.log("yeah");
   if (!process.env.MONGO_URI || !process.env.JWT_SECRET) throw "ENV VARIABLES INCORRECT";
   // fs.mkdirSync("../config");
-  fs.writeFileSync("../config/default.json", { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET });
+  const configData = { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET };
+  fs.writeFileSync(path.join(__dirname, "../config/default.json"), JSON.stringify(configData));
 
   app.use(express.static(path.join(__dirname, "client/build")));
   //
