@@ -25,12 +25,15 @@
     "typescript": "^3.4.3"
   },
   "scripts": {
-    "dev": "concurrently \"yarn run client\" \"yarn run server:watch\"",
-    "server": "node --inspect=5858 -r ts-node/register ./src/server.ts",
-    "client": "cd client && yarn start",
-    "client-install": "cd client && yarn",
+    "start": "node ./dist/server.js",
+    "dev": "concurrently --kill-others \"yarn run client:dev\" \"yarn run server:watch\"",
+    "server:dev": "node --inspect=5858 -r ts-node/register ./src/server.ts",
+    "client:dev": "cd client && yarn start",
+    "client:build": "cd client && yarn build",
+    "client:install": "cd client && yarn",
     "server:watch": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false yarn && yarn run build && yarn run client:install && yarn run client:build"
   },
   "nodemonConfig": {
     "ignore": [
