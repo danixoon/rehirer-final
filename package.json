@@ -33,7 +33,7 @@
     "client:install": "cd client && yarn",
     "server:watch": "nodemon",
     "build": "tsc",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false yarn && yarn run build && yarn run client:install && yarn run client:build"
+    "heroku-postbuild": "mkdir config && yarn && yarn run build && yarn run client:install && yarn run client:build"
   },
   "nodemonConfig": {
     "ignore": [

@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, "client/build")));
 //production mode
 if (process.env.NODE_ENV === "production") {
   if (!process.env.MONGO_URI || !process.env.JWT_SECRET) throw "ENV VARIABLES INCORRECT";
-  fs.mkdirSync("../config");
+  // fs.mkdirSync("../config");
   fs.writeFileSync("../config/default.json", { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET });
 
   app.use(express.static(path.join(__dirname, "client/build")));
