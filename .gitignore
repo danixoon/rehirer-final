@@ -2,9 +2,9 @@
 
 
 
-./config/*
+config
 
-./dist
+dist
 
 # dependencies
 node_modules
