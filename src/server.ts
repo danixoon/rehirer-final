@@ -21,14 +21,11 @@ app.use("/api/job", job);
 app.use("/api/account", account);
 app.use("/api/user", user);
 
-
-
 // Static file declaration
 app.use(express.static(path.join(__dirname, "../client/build")));
 
 //production mode
 if (process.env.NODE_ENV === "production") {
-
   console.log("yeah");
   if (!process.env.MONGO_URI || !process.env.JWT_SECRET) throw "ENV VARIABLES INCORRECT";
   // fs.mkdirSync("../config");
@@ -37,24 +34,24 @@ if (process.env.NODE_ENV === "production") {
 
   app.use(express.static(path.join(__dirname, "../client/build")));
   //
-  app.get("*", (req, res) => {
-    res.sendfile(path.join((__dirname = "../client/build/index.html")));
-  });
+  // app.get("*", (req, res) => {
+  //   res.sendfile(path.join((__dirname = "../client/build/index.html")));
+  // });
 }
 //build mod
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "../client/public/index.html"));
 });
 
-// const db = process.env.MONGO_URI as string;
+const db = process.env.MONGO_URI as string;
 
-// mongoose
-//   .connect(db, {
-//     useCreateIndex: true,
-//     useNewUrlParser: true
-//   })
-//   .then(() => console.log("MongoDB connected"))
-//   .catch(console.log);
+mongoose
+  .connect(db, {
+    useCreateIndex: true,
+    useNewUrlParser: true
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch(console.log);
 
 const port = process.env.PORT || 5000;
 
