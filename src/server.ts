@@ -1,5 +1,4 @@
 import * as express from "express";
-import * as config from "config";
 import * as mongoose from "mongoose";
 import * as path from "path";
 
@@ -33,8 +32,8 @@ if (process.env.NODE_ENV === "production") {
   console.log("yeah");
   if (!process.env.MONGO_URI || !process.env.JWT_SECRET) throw "ENV VARIABLES INCORRECT";
   // fs.mkdirSync("../config");
-  const configData = { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET };
-  fs.writeFileSync(path.join(__dirname, "../config/default.json"), JSON.stringify(configData));
+  // const configData = { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET };
+  // fs.writeFileSync(path.join(__dirname, "../config/default.json"), JSON.stringify(configData));
 
   app.use(express.static(path.join(__dirname, "client/build")));
   //
@@ -47,7 +46,7 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/client/public/index.html"));
 });
 
-const db = config.get("MongoURI") as string;
+const db = process.env.MONGO_URI as string;
 
 mongoose
   .connect(db, {

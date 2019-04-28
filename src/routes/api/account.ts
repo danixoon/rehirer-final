@@ -1,5 +1,4 @@
 import * as bcrypt from "bcrypt";
-import * as config from "config";
 import { Router, RequestHandler, Response } from "express";
 import AccountData from "../../models/AccountData";
 import * as jwt from "jsonwebtoken";
@@ -33,7 +32,7 @@ const API: IAPI = {
               {
                 id: user.id
               },
-              config.get("jwtSecret"),
+              process.env.JWT_SECRET,
               { expiresIn: 3600 },
               (err, token) => {
                 if (err) rej(err);

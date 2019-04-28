@@ -1,5 +1,4 @@
 import * as bcrypt from "bcrypt";
-import * as config from "config";
 import { Router } from "express";
 import User from "../../models/User";
 import * as jwt from "jsonwebtoken";
@@ -25,7 +24,7 @@ router.post("/", (req, res) => {
         {
           id: user.id
         },
-        config.get("jwtSecret"),
+        process.env.JWT_SECRET,
         { expiresIn: 3600 },
         (err, token) => {
           if (err) throw err;

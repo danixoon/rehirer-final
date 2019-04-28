@@ -1,5 +1,4 @@
 import * as bcrypt from "bcrypt";
-import * as config from "config";
 import { Router, RequestHandler, Response } from "express";
 import AccountData from "../../models/AccountData";
 import UserData from "../../models/UserData";
