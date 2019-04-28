@@ -23,8 +23,8 @@ app.use("/api/user", user);
 
 
 
-//Static file declaration
-app.use(express.static(path.join(__dirname, "client/build")));
+// Static file declaration
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 //production mode
 if (process.env.NODE_ENV === "production") {
@@ -35,26 +35,26 @@ if (process.env.NODE_ENV === "production") {
   // const configData = { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET };
   // fs.writeFileSync(path.join(__dirname, "../config/default.json"), JSON.stringify(configData));
 
-  app.use(express.static(path.join(__dirname, "client/build")));
+  app.use(express.static(path.join(__dirname, "../client/build")));
   //
   app.get("*", (req, res) => {
-    res.sendfile(path.join((__dirname = "client/build/index.html")));
+    res.sendfile(path.join((__dirname = "../client/build/index.html")));
   });
 }
 //build mod
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/public/index.html"));
+  res.sendFile(path.join(__dirname + "../client/public/index.html"));
 });
 
-const db = process.env.MONGO_URI as string;
+// const db = process.env.MONGO_URI as string;
 
-mongoose
-  .connect(db, {
-    useCreateIndex: true,
-    useNewUrlParser: true
-  })
-  .then(() => console.log("MongoDB connected"))
-  .catch(console.log);
+// mongoose
+//   .connect(db, {
+//     useCreateIndex: true,
+//     useNewUrlParser: true
+//   })
+//   .then(() => console.log("MongoDB connected"))
+//   .catch(console.log);
 
 const port = process.env.PORT || 5000;
 
