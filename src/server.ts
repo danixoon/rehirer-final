@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === "production") {
     res.sendfile(path.join((__dirname = "client/build/index.html")));
   });
 }
-//build mo
+//build mod
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/client/public/index.html"));
 });
