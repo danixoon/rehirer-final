@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import store, { history } from "./store";
 
 import "./_custom.scss";
+// import "bootstrap/js/dist"
 import { ConnectedRouter } from "connected-react-router";
 
 ReactDOM.render(

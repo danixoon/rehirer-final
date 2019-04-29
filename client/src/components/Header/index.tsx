@@ -7,17 +7,14 @@ import UserProfileIcon from "../UserProfileIcon";
 import { connect } from "react-redux";
 
 import { Link } from "react-router-dom";
-import { MessageSquare, User } from "react-feather";
+import { MessageSquare, User, Settings, LogOut } from "react-feather";
 
 import { Manager, Popper, Reference } from "react-popper";
 
+import { UncontrolledPopover, PopoverHeader, PopoverBody } from "reactstrap";
 
 class Header extends React.Component<any> {
   render() {
-
-
-
-
     const { location } = this.props.router;
     // console.log(location);
     return (
@@ -42,15 +39,32 @@ class Header extends React.Component<any> {
             <Search />
           </div>
           <div className="mr-sm-2 col-sm w-100 d-flex order-4 align-items-center justify-items-end justify-content-end  p-2">
-            {/* <button className="btn btn-primary rounded-pill p-2 d-flex"><MessageSquare /></button> */}
-            <span className="text-dark mx-auto mr-md-2">Иван Иванович</span>
-            <button className="btn btn-primary rounded-pill p-2 position-relative">
-              <User />
-              {/* <div> */}
-              <span className="notification-badge rounded-pill bg-danger" />
-              {/* </div> */}
-            </button>
-            
+            <div id="userContextMenu">
+              {/* <button className="btn btn-primary rounded-pill p-2 d-flex"><MessageSquare /></button> */}
+              <span className="text-dark mx-auto">Иван Иванович</span>
+              <button className="btn ml-2 btn-primary rounded-pill p-2 position-relative">
+                <User />
+                {/* <div> */}
+                <span className="notification-badge " />
+                {/* </div> */}
+              </button>
+            </div>
+            <UncontrolledPopover trigger="legacy" placement="bottom" target="userContextMenu">
+              {/* <PopoverHeader>Действия</PopoverHeader> */}
+              <PopoverBody>
+                <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
+                  <MessageSquare className="mr-2 text-primary " /> Сообщения
+                  <span className="notification-badge " />
+                </button>
+                {/* <hr className="my-2" /> */}
+                <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
+                  <Settings className="mr-2 text-primary" /> Аккаунт
+                </button>
+                <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
+                  <LogOut className="mr-2 text-primary" /> Выйти
+                </button>
+              </PopoverBody>
+            </UncontrolledPopover>
           </div>
         </div>
       </div>
