@@ -1,6 +1,6 @@
 import React from "react";
 
-import icon from "./icon.png";
+import icon from "../../images/icon.png";
 import Search from "../Search";
 import UserProfileIcon from "../UserProfileIcon";
 
@@ -12,6 +12,7 @@ import { MessageSquare, User, Settings, LogOut } from "react-feather";
 import { Manager, Popper, Reference } from "react-popper";
 
 import { UncontrolledPopover, PopoverHeader, PopoverBody } from "reactstrap";
+import { history } from "../../store";
 
 class Header extends React.Component<any> {
   render() {
@@ -23,7 +24,7 @@ class Header extends React.Component<any> {
           <div className="col-auto order-1 d-none d-md-flex align-items-center">
             <img className="" style={{ objectFit: "contain", maxWidth: "2em" }} src={icon} />
           </div>
-          <div className="col col-md-5 col-xl-4 order-2 col-12 py-3 p-md-0 d-flex align-items-center justify-content-around justify-content-lg-start">
+          <div className="col col-md-auto order-2 col-12 py-3 p-md-0 d-flex align-items-center justify-content-around justify-content-lg-start">
             <NavItem to="/main" active={location.pathname.startsWith("/main")}>
               Главная
             </NavItem>
@@ -35,12 +36,13 @@ class Header extends React.Component<any> {
             {/* </Link> */}
             <NavItem to="/main"> Анкеты </NavItem>
           </div>
-          <div className="col-md-3 align-items-center order-sm-3 p-2 order-4" style={{ display: location.pathname === "/jobs" ? "none" : "flex" }}>
+          <div className="col-md-2 align-items-center order-sm-3 p-2 order-4" style={{ display: location.pathname === "/jobs" ? "none" : "flex" }}>
             <Search />
           </div>
           <div className="mr-sm-2 col-sm w-100 d-flex order-4 align-items-center justify-items-end justify-content-end  p-2">
             <div id="userContextMenu">
               {/* <button className="btn btn-primary rounded-pill p-2 d-flex"><MessageSquare /></button> */}
+              {location.pathname.startsWith("/account/settings") ? <small className="mr-2">Аккаунт</small> : ""}
               <span className="text-dark mx-auto">Иван Иванович</span>
               <button className="btn ml-2 btn-primary rounded-pill p-2 position-relative">
                 <User />
@@ -57,7 +59,7 @@ class Header extends React.Component<any> {
                   <span className="notification-badge " />
                 </button>
                 {/* <hr className="my-2" /> */}
-                <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
+                <button onClick={() => history.push("/account/settings")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
                   <Settings className="mr-2 text-primary" /> Аккаунт
                 </button>
                 <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
@@ -71,26 +73,6 @@ class Header extends React.Component<any> {
     );
   }
 }
-
-const Example = () => (
-  <Manager>
-    <Reference>
-      {({ ref }) => (
-        <button type="button" ref={ref}>
-          Reference element
-        </button>
-      )}
-    </Reference>
-    <Popper placement="right">
-      {({ ref, style, placement, arrowProps }) => (
-        <div ref={ref} style={style} data-placement={placement}>
-          Popper element
-          <div ref={arrowProps.ref} style={arrowProps.style} />
-        </div>
-      )}
-    </Popper>
-  </Manager>
-);
 
 const NavItem = (props: { active?: boolean; to: string } & React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>) => {
   const { children, to, className, style, active } = props;

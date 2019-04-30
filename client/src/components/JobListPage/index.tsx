@@ -1,8 +1,8 @@
 import React from "react";
 
-import background from "./background.jpg";
+import background from "../images/background.jpg";
 
-import logoBig from "./logo-big.png";
+import logoBig from "../images/logo-big.png";
 
 import Search from "../Search";
 import UserProfileIcon from "../UserProfileIcon";

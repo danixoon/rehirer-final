@@ -4,6 +4,7 @@ import StartPage from "./components/StartPage";
 import Footer from "./components/Footer";
 import { Switch, Route, Redirect } from "react-router";
 import JobListPage from "./components/JobListPage";
+import UserProfilePage from "./components/UserProfilePage";
 
 // const baseUrl = process.env.PUBLIC_URL;
 
@@ -12,8 +13,10 @@ const App: React.FC = () => {
     <div className="app align-items-stretch d-flex flex-column" style={{ minHeight: "100vh" }}>
       <Header />
       <Switch>
+        <Route path="/account/settings" component={UserProfilePage} />
         <Route path="/main" component={StartPage} />
         <Route path="/jobs" component={JobListPage} />
+
         <Route path="*" component={InvalidPage} />
       </Switch>
       <Footer />

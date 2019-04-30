@@ -1,8 +1,8 @@
 import React from "react";
 
-import background from "./background.jpg";
+import background from "../../images/background.jpg";
 
-import logoBig from "./logo-big.png";
+import logoBig from "../../images/logo-big.png";
 
 import Search from "../Search";
 import UserProfileIcon from "../UserProfileIcon";
@@ -12,7 +12,7 @@ import { connect } from "react-redux";
 
 class StartPage extends React.Component<any> {
   render() {
-    // console.log(this.props.router);
+    // console.log(this.props);
     return (
       <div className="fluid-container bg-white">
         <div className="row no-gutters">

@@ -45,6 +45,15 @@ p {
   @extend span;
 }
 
+.border-primary {
+  border-color: $primary !important;
+}
+
+.btn-outline-primary {
+  @extend .text-primary;
+  @extend .border-primary;
+}
+
 .popover {
   @extend .border;
   @extend .rounded-0;
@@ -149,6 +158,18 @@ span {
   color: $secondary !important;
 }
 
+.text-secondary-transparent {
+  color: adjust-color($secondary, $alpha: -0.5) !important;
+}
+
+.fill-primary {
+  fill: $primary;
+}
+
+small {
+  color: $secondary !important;
+}
+
 .text-primary {
   color: $primary !important;
 }
@@ -165,15 +186,13 @@ span {
   border-color: $primary !important;
 }
 
-.btn {
-  font-size: 0.8rem;
-}
+// .btn {
+//   font-size: 0.8rem;
+// }
 
 .footer {
   color: $light;
 }
-
-
 
 input {
   outline: transparent;
