@@ -81,6 +81,7 @@ a {
 a:hover {
   color: $primary !important;
   // color: $dark !important;
+  cursor: pointer;
   box-shadow: 0px 2px 0px adjust-color($success, $alpha: -0.5);
 }
 
@@ -90,16 +91,30 @@ a:active {
   box-shadow: 0px 2px 0px adjust-color($success, $alpha: -0.5);
 }
 
-a + * {
+a:first-child {
   transition: box-shadow 0.1s ease;
-  // color: $dark !important;
+  color: $secondary !important;
   box-shadow: 0px 0px 0px adjust-color($success, $alpha: -0.5);
 }
 
-a:hover + * {
+a:hover:first-child {
   color: $primary !important;
   // color: $dark !important;
   box-shadow: 0px 2px 0px adjust-color($success, $alpha: -0.5);
+}
+
+.custom-control-label::before {
+  @extend .rounded-0;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  background-color: $primary !important ;
+  border-color: $primary !important;
+  @extend .rounded-0;
+}
+
+textarea {
+  @extend input;
 }
 
 @each $breakpoint in map-keys($grid-breakpoints) {
@@ -217,9 +232,22 @@ input:focus {
   // outline: $primary;
 }
 
-// .text-muted {
-//   color:
-// }
+.modal-content {
+  @extend .rounded-0;
+  @extend .border;
+}
+
+.modal-title {
+  @extend .text-secondary;
+}
+
+.text-muted {
+  color: $gray-500 !important;
+}
+
+.bg-primary {
+  background-color: $primary !important;
+}
 
 input::placeholder {
   /* Chrome, Firefox, Opera, Safari 10.1+ */

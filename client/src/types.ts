@@ -1,4 +1,4 @@
-export type ReduxActions = "JOB_GET";
+export type ReduxActions = "JOB_UPDATE" | "JOB_PUSH";
 
 export type ActionStatus = "IDLE" | "LOADING" | "ERROR" | "SUCCESS";
 

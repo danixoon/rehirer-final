@@ -43,7 +43,7 @@ class Header extends React.Component<any> {
             <div id="userContextMenu">
               {/* <button className="btn btn-primary rounded-pill p-2 d-flex"><MessageSquare /></button> */}
               {location.pathname.startsWith("/account/settings") ? <small className="mr-2">Аккаунт</small> : ""}
-              <span className="text-dark mx-auto">Иван Иванович</span>
+              <a className={"mx-auto nav-item text-secondary" + location.pathname.startsWith("/account") ? "active" : ""}>Иван Иванович</a>
               <button className="btn ml-2 btn-primary rounded-pill p-2 position-relative">
                 <User />
                 {/* <div> */}
