@@ -7,7 +7,7 @@ import UserProfileIcon from "../UserProfileIcon";
 import { connect } from "react-redux";
 
 import { Link } from "react-router-dom";
-import { MessageSquare, User, Settings, LogOut } from "react-feather";
+import { MessageSquare, User, Settings, LogOut, LogIn } from "react-feather";
 
 import { Manager, Popper, Reference } from "react-popper";
 
@@ -17,6 +17,7 @@ import { history } from "../../store";
 class Header extends React.Component<any> {
   render() {
     const { location } = this.props.router;
+    const { profile, accountStatus } = this.props;
     // console.log(location);
     return (
       <div className="shadow-sm w-100 container-fluid bg-white border-bottom" style={{ zIndex: 3 }}>
@@ -43,7 +44,9 @@ class Header extends React.Component<any> {
             <div id="userContextMenu">
               {/* <button className="btn btn-primary rounded-pill p-2 d-flex"><MessageSquare /></button> */}
               {location.pathname.startsWith("/account/settings") ? <small className="mr-2">Аккаунт</small> : ""}
-              <a className={"mx-auto nav-item text-secondary" + location.pathname.startsWith("/account") ? "active" : ""}>Иван Иванович</a>
+              <a className={"mx-auto nav-item text-secondary" + location.pathname.startsWith("/account") ? "active" : ""}>
+                {profile ? `${profile.firstName} ${profile.secondName}` : "Войдите в аккаунт"}
+              </a>
               <button className="btn ml-2 btn-primary rounded-pill p-2 position-relative">
                 <User />
                 {/* <div> */}
@@ -53,19 +56,7 @@ class Header extends React.Component<any> {
             </div>
             <UncontrolledPopover trigger="legacy" placement="bottom" target="userContextMenu">
               {/* <PopoverHeader>Действия</PopoverHeader> */}
-              <PopoverBody>
-                <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
-                  <MessageSquare className="mr-2 text-primary " /> Сообщения
-                  <span className="notification-badge " />
-                </button>
-                {/* <hr className="my-2" /> */}
-                <button onClick={() => history.push("/account/settings")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
-                  <Settings className="mr-2 text-primary" /> Аккаунт
-                </button>
-                <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
-                  <LogOut className="mr-2 text-primary" /> Выйти
-                </button>
-              </PopoverBody>
+              {accountStatus === "SUCCESS" ? <AuthPopover /> : <GuestPopover />}
             </UncontrolledPopover>
           </div>
         </div>
@@ -73,6 +64,34 @@ class Header extends React.Component<any> {
     );
   }
 }
+
+const AuthPopover = () => {
+  return (
+    <PopoverBody>
+      <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
+        <MessageSquare className="mr-2 text-primary " /> Сообщения
+        <span className="notification-badge " />
+      </button>
+      {/* <hr className="my-2" /> */}
+      <button onClick={() => history.push("/account/settings")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
+        <Settings className="mr-2 text-primary" /> Аккаунт
+      </button>
+      <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
+        <LogOut className="mr-2 text-primary" /> Выйти
+      </button>
+    </PopoverBody>
+  );
+};
+
+const GuestPopover = () => {
+  return (
+    <PopoverBody>
+      <button onClick={() => history.push("/account/auth")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
+        <LogIn className="mr-2 text-primary" /> Войти в аккаунт
+      </button>
+    </PopoverBody>
+  );
+};
 
 const NavItem = (props: { active?: boolean; to: string } & React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>) => {
   const { children, to, className, style, active } = props;
@@ -85,6 +104,10 @@ const NavItem = (props: { active?: boolean; to: string } & React.DetailedHTMLPro
   );
 };
 
-const mapStateToProps = (store: any) => ({ router: store.router });
+const mapStateToProps = (store: any) => ({
+  router: store.router,
+  accountStatus: store.account.status,
+  profile: store.user.profile.status === "SUCCESS" ? store.user.profile.data : null
+});
 
 export default connect(mapStateToProps)(Header);
