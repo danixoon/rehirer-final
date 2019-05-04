@@ -7,23 +7,38 @@ import JobListPage from "./components/JobListPage";
 import UserProfilePage from "./components/UserProfilePage";
 import AuthPage from "./components/AuthPage";
 import { connect } from "react-redux";
-import { fetchUserProfile } from "./actions/userReducer";
+import { fetchUserProfile, fetchUserData } from "./actions/userActions";
+import { accountCheckToken } from "./actions/accountActions";
 
 // const baseUrl = process.env.PUBLIC_URL;
 
 class App extends React.Component<any> {
+  constructor(props: any) {
+    super(props);
+
+    const token = sessionStorage.getItem("authToken");
+    if (token) this.props.accountCheckToken(token);
+    // console.log("check");
+  }
+
   componentDidUpdate() {
-    const { accountStatus } = this.props;
-    if (accountStatus === "SUCCESS") this.props.fetchProfile();
+    // console.log("what");
+    const { accountStatus, profile, userData } = this.props;
+    if (accountStatus === "SUCCESS") {
+      if (profile.status === "IDLE") this.props.fetchUserProfile();
+      if (userData.status === "IDLE") this.props.fetchUserData();
+    }
+
     // console.log("OH NO");
     // }
   }
   render() {
+    const { accountStatus } = this.props;
     return (
       <div className="app align-items-stretch d-flex flex-column" style={{ minHeight: "100vh" }}>
         <Header />
         <Switch>
-          <Route path="/account/settings" component={UserProfilePage} />
+          <Route path="/account/settings" component={accountStatus === "SUCCESS" ? UserProfilePage : AuthRequired} />
           <Route path="/account/auth" component={AuthPage} />
           <Route path="/main" component={StartPage} />
           <Route path="/jobs" component={JobListPage} />
@@ -36,12 +51,17 @@ class App extends React.Component<any> {
 }
 
 const InvalidPage = () => <Redirect to="/main" />;
+const AuthRequired = () => <Redirect to="/account/auth" />;
 
 const mapDispatchToProps = {
-  fetchProfile: fetchUserProfile
+  fetchUserProfile,
+  fetchUserData,
+  accountCheckToken
 };
 const mapStateToProps = (state: any) => ({
-  accountStatus: state.account.status
+  accountStatus: state.account.status,
+  profile: state.user.profile,
+  userData: state.user.data
 });
 
 export default connect(

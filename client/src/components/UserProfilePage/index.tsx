@@ -2,8 +2,9 @@ import React from "react";
 import avatar from "../../images/sticker.webp";
 import { Star, Eye, Edit2, Edit, Edit3 } from "react-feather";
 import _ from "lodash";
-import { CustomInput, FormGroup, Form } from "reactstrap";
+import { CustomInput, FormGroup, Form, Spinner } from "reactstrap";
 import Checkbox from "../Checkbox";
+import { connect } from "react-redux";
 
 const UserRating = ({ rating, className }: { rating: number; className?: string }) => {
   return (
@@ -38,7 +39,7 @@ const UserProflieField = ({ label, value, onAction, children }: { label: string;
   </div>
 );
 
-class UserProfilePage extends React.Component {
+class UserProfilePage extends React.Component<any> {
   state = {
     input: {
       cursachSuccess: true
@@ -57,7 +58,10 @@ class UserProfilePage extends React.Component {
 
   render() {
     const { cursachSuccess } = this.state.input;
-
+    console.log(this.props.account);
+    if (this.props.userData.status !== "SUCCESS" || this.props.profile.status !== "SUCCESS") return <Spinner className="m-auto" color="primary" />;
+    const { firstName, secondName, thirdName } = this.props.userData.data;
+    const { username, email } = this.props.account.data;
     return (
       <div className="container row no-gutters mx-auto border border-top-0 bg-white" style={{ minHeight: "80vh", zIndex: 5 }}>
         <div className="col-md-4 col-md-auto">
@@ -77,7 +81,7 @@ class UserProfilePage extends React.Component {
         </div>
 
         <div className="col-md-4 col-100">
-          <UserProflieField label="ФИО" value="Иванов Иван Иванович">
+          <UserProflieField label="ФИО" value={`${firstName} ${secondName}, ${thirdName}`}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
           <UserProflieField label="Навыки" value="Курьер | Уборщик | Пулемёт">
@@ -89,7 +93,10 @@ class UserProfilePage extends React.Component {
           <hr className="d-md-none" />
         </div>
         <div className="col-md-4 col-100">
-          <UserProflieField label="Почта" value="poopa@loopa.com">
+          <UserProflieField label="Логин" value={username}>
+            Изменить <Edit3 height="1em" width="1em" />
+          </UserProflieField>
+          <UserProflieField label="Почта" value={email}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
           <UserProflieField label="Пароль" value="*******">
@@ -108,4 +115,10 @@ class UserProfilePage extends React.Component {
   }
 }
 
-export default UserProfilePage;
+const mapStateToProps = (state: any) => ({
+  profile: state.user.profile,
+  userData: state.user.data,
+  account: state.account
+});
+
+export default connect(mapStateToProps)(UserProfilePage);

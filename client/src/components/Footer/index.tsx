@@ -7,7 +7,7 @@ import UserProfileIcon from "../UserProfileIcon";
 class Footer extends React.Component {
   render() {
     return (
-      <div className="footer bg-dark container-fluid mt-auto" style={{ height: "15vh" }}>
+      <div className="footer bg-dark container-fluid mt-auto" style={{ height: "7.5vh" }}>
         <div className="row">
           <div className="col-4">{""}</div>
         </div>

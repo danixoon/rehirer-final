@@ -10,7 +10,7 @@ class JobListPage extends React.Component<any> {
   render() {
     const { jobs } = this.props;
     return (
-      <div className="fluid-container bg-white">
+      <div className="fluid-container bg-white" style={{ minHeight: "85vh" }}>
         <div className="row no-gutters">
           <div className="col-sm-12 col-md-4 col-lg-3 col-xl-2 col">
             <SideBar />

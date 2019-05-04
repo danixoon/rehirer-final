@@ -9,24 +9,38 @@ import createApiMiddleware, { ApiAccess, IAPI, apiError } from "../../middleware
 
 import * as joi from "joi";
 import User from "../../models/User";
+import UserProfile from "../../models/UserProfile";
 
 const router = Router();
 
 const API: IAPI = {
   get: {
-    info: {
-      schema: {
-        username: joi.string().required()
-      },
-      access: ApiAccess.GUEST,
-      execute: async ({ username }): Promise<any> => {
-        const account = await AccountData.findOne({ username }).exec();
-        const user = await User.findOne({ accountDataId: account.id }).exec();
-        const result = await UserData.findById(user.userDataId)
+    profile: {
+      access: ApiAccess.TOKEN,
+      execute: async ({ id }): Promise<any> => {
+        // const account = await AccountData.findOne({ username }).exec();
+        // const user = await User.findOne({ accountDataId: account.id }).exec();
+        const user = await User.findById(id).exec();
+        const profile = await UserProfile.findById(user.userProfileId)
           .select("-_id -__v")
           .exec();
-        if (result) return result.toObject();
-        else throw apiError(404, "user not found");
+        if (profile) return profile.toObject();
+        else throw apiError("user not found", 404);
+        // result.toJSON();
+      }
+    },
+    data: {
+      access: ApiAccess.TOKEN,
+      execute: async ({ id }): Promise<any> => {
+        // await new Promise(res => setTimeout(res, 5000));
+        // const account = await AccountData.findOne({ username }).exec();
+        // const user = await User.findOne({ accountDataId: account.id }).exec();
+        const user = await User.findById(id).exec();
+        const data = await UserData.findById(user.userDataId)
+          .select("-_id -__v")
+          .exec();
+        if (data) return data.toObject();
+        else throw apiError("user not found", 404);
         // result.toJSON();
       }
     }

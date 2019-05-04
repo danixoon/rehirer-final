@@ -11,13 +11,14 @@ import { MessageSquare, User, Settings, LogOut, LogIn } from "react-feather";
 
 import { Manager, Popper, Reference } from "react-popper";
 
-import { UncontrolledPopover, PopoverHeader, PopoverBody } from "reactstrap";
+import { UncontrolledPopover, PopoverHeader, PopoverBody, Spinner } from "reactstrap";
 import { history } from "../../store";
+import { accountLogout } from "../../actions/accountActions";
 
 class Header extends React.Component<any> {
   render() {
     const { location } = this.props.router;
-    const { profile, accountStatus } = this.props;
+    const { userData, accountStatus, logout } = this.props;
     // console.log(location);
     return (
       <div className="shadow-sm w-100 container-fluid bg-white border-bottom" style={{ zIndex: 3 }}>
@@ -41,11 +42,11 @@ class Header extends React.Component<any> {
             <Search />
           </div>
           <div className="mr-sm-2 col-sm w-100 d-flex order-4 align-items-center justify-items-end justify-content-end  p-2">
-            <div id="userContextMenu">
+            <div id="userContextMenu" className="d-flex align-items-center">
               {/* <button className="btn btn-primary rounded-pill p-2 d-flex"><MessageSquare /></button> */}
               {location.pathname.startsWith("/account/settings") ? <small className="mr-2">Аккаунт</small> : ""}
-              <a className={"mx-auto nav-item text-secondary" + location.pathname.startsWith("/account") ? "active" : ""}>
-                {profile ? `${profile.firstName} ${profile.secondName}` : "Войдите в аккаунт"}
+              <a className={"mx-auto nav-item text-secondary"}>
+                <UserData userData={userData} />
               </a>
               <button className="btn ml-2 btn-primary rounded-pill p-2 position-relative">
                 <User />
@@ -56,7 +57,16 @@ class Header extends React.Component<any> {
             </div>
             <UncontrolledPopover trigger="legacy" placement="bottom" target="userContextMenu">
               {/* <PopoverHeader>Действия</PopoverHeader> */}
-              {accountStatus === "SUCCESS" ? <AuthPopover /> : <GuestPopover />}
+              {(() => {
+                switch (accountStatus) {
+                  case "SUCCESS":
+                    return <AuthPopover logout={logout} />;
+                  case "IDLE":
+                    return <GuestPopover />;
+                  default:
+                    return <LoadingPopover />;
+                }
+              })()}
             </UncontrolledPopover>
           </div>
         </div>
@@ -65,7 +75,12 @@ class Header extends React.Component<any> {
   }
 }
 
-const AuthPopover = () => {
+const UserData = ({ userData }: any) => {
+  if (userData.status === "LOADING") return <Spinner size="sm" color="primary" className="m-auto" />;
+  else return <span>{userData.status === "SUCCESS" ? `${userData.data.firstName} ${userData.data.secondName}` : "Войдите в аккаунт"}</span>;
+};
+
+const AuthPopover = ({ logout }: any) => {
   return (
     <PopoverBody>
       <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
@@ -76,7 +91,7 @@ const AuthPopover = () => {
       <button onClick={() => history.push("/account/settings")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
         <Settings className="mr-2 text-primary" /> Аккаунт
       </button>
-      <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
+      <button onClick={logout} className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
         <LogOut className="mr-2 text-primary" /> Выйти
       </button>
     </PopoverBody>
@@ -93,6 +108,12 @@ const GuestPopover = () => {
   );
 };
 
+const LoadingPopover = () => (
+  <PopoverBody>
+    <Spinner className="m-auto" color="primary" />
+  </PopoverBody>
+);
+
 const NavItem = (props: { active?: boolean; to: string } & React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>) => {
   const { children, to, className, style, active } = props;
   return (
@@ -107,7 +128,14 @@ const NavItem = (props: { active?: boolean; to: string } & React.DetailedHTMLPro
 const mapStateToProps = (store: any) => ({
   router: store.router,
   accountStatus: store.account.status,
-  profile: store.user.profile.status === "SUCCESS" ? store.user.profile.data : null
+  userData: store.user.data
 });
 
-export default connect(mapStateToProps)(Header);
+const mapDispatchToProps = {
+  logout: accountLogout
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Header);

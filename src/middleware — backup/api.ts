@@ -8,7 +8,7 @@ export interface IAPIMethod {
   execute: (query: any) => Promise<any>;
 }
 
-export function apiError(msg: string, code?: number) {
+export function apiError(code: number, msg: string) {
   return {
     code,
     msg
@@ -46,7 +46,7 @@ function executeMethod(method: IAPIMethod, query: any, res: Response): Promise<v
 
 export enum ApiAccess {
   GUEST,
-  TOKEN = 1 << 2
+  WITH_TOKEN = 1 << 2
 }
 
 const createApiMiddlware: (api: IAPI) => RequestHandler = api => (req: Request, res: Response, next: NextFunction) => {
@@ -55,10 +55,11 @@ const createApiMiddlware: (api: IAPI) => RequestHandler = api => (req: Request, 
   if (!apiHttpMethod) return res.status(400).send({ msg: `http method ${req.method} unsupported` });
   const method = apiHttpMethod[req.params.method];
   if (!method) return res.status(400).send({ msg: "invalid api method" });
-  if (method.access & ApiAccess.TOKEN) {
-    auth(req.header("x-auth-token"), async (err, id) => {
-      if (err) return res.status(err.code || 500).send({ msg: err.msg || "error" });
-      executeMethod(method, { ...req.query, id }, res).then(() => next());
+  if (method.access & ApiAccess.WITH_TOKEN) {
+    auth(req, res, async () => {
+      executeMethod(method, req.query, res)
+        .then(() => next())
+        .catch(console.log);
     });
   } else {
     executeMethod(method, req.query, res)
