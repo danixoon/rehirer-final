@@ -12,7 +12,7 @@ import * as customEnv from "custom-env";
 
 customEnv.env();
 
-import test from "./initDatabase";
+// import test from "./initDatabase";
 import * as fs from "fs";
 
 const app = express();
