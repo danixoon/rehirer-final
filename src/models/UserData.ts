@@ -1,11 +1,11 @@
 import * as mongoose from "mongoose";
 
 export interface IUserData {
-  firstName: String;
-  secondName: String;
-  thirdName: String;
-  socialURL: String;
-  city: String;
+  firstName: string;
+  secondName: string;
+  thirdName: string;
+  socialURL: string;
+  city: string;
   dob: Date;
   userId: mongoose.Schema.Types.ObjectId;
 }

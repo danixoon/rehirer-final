@@ -5,9 +5,14 @@ export type JobStatus = "PENDING" | "COMPLETED";
 export interface IJob {
   label: string;
   description: string;
-  tags: string[];
-  status: JobStatus;
+  timespan: number;
+  secretInfo?: string;
+  city: string;
+  tags?: string[];
+  status?: JobStatus;
+  authorId: mongoose.Schema.Types.ObjectId;
   workerUserId?: mongoose.Schema.Types.ObjectId;
+  price: number;
 }
 
 export interface IJobModel extends mongoose.Document, IJob {}
@@ -26,20 +31,34 @@ const JobSchema = new Schema({
     type: String,
     required: true
   },
+  timespan: {
+    type: Number,
+    required: true
+  },
   secretInfo: {
     type: String
   },
+  price: {
+    type: Number,
+    required: true
+  },
   tags: { type: [Schema.Types.String], default: [] },
   status: {
-    type: Number,
+    type: String,
     default: "PENDING"
   },
   rating: {
-    type: Number,
+    type: Number
+  },
+  authorId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true
   },
   workerUserId: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    default: null
   }
 });
 

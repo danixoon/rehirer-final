@@ -7,7 +7,7 @@ import userReducer from "./userReducer";
 export default (history: any) =>
   combineReducers({
     router: connectRouter(history) as any,
-    job: jobReducer,
+    job: jobReducer as any,
     account: accountReducer as any,
     user: userReducer
   });

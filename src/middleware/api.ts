@@ -24,7 +24,7 @@ export interface IAPI {
 function executeMethod(method: IAPIMethod, query: any, res: Response): Promise<void> {
   return new Promise((resolve, reject) => {
     if (method.schema) {
-      const result = joi.validate(query, method.schema, { allowUnknown: true });
+      const result = joi.validate(query, joi.object().keys(method.schema as any), { allowUnknown: true, convert: true });
       if (result.error) {
         res.status(400).send({ msg: result.error.details[0].message });
         return reject(result.error);

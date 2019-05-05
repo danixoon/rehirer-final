@@ -8,7 +8,7 @@ function auth(token: string, next: (err?: any, userId?: string) => void) {
   // const token = req.header("x-auth-token");
 
   // Check for token
-  if (!token) next(apiError("no token, authorization denied", 401));
+  if (!token) next(apiError("Token is required", 401));
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
@@ -17,7 +17,7 @@ function auth(token: string, next: (err?: any, userId?: string) => void) {
     next(null, decoded.id);
   } catch (e) {
     // res.status(400).json({ msg: "token is not valid" });
-    next(apiError("token is not valid", 400));
+    next(apiError("Token is not valid", 400));
   }
 }
 

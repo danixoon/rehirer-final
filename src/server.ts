@@ -34,19 +34,22 @@ if (!process.env.MONGO_URI || !process.env.JWT_SECRET) throw "ENV VARIABLES INCO
 if (process.env.NODE_ENV === "production") {
   console.log("yeah");
 
-  // fs.mkdirSync("../config");
-  // const configData = { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET };
-  // fs.writeFileSync(path.join(__dirname, "../config/default.json"), JSON.stringify(configData));
-
   app.use(express.static(path.join(__dirname, "../client/build")));
-  //
-  // app.get("*", (req, res) => {
-  //   res.sendfile(path.join((__dirname = "../client/build/index.html")));
-  // });
+
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname + "../client/public/index.html"));
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
   });
 }
+// fs.mkdirSync("../config");
+// const configData = { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET };
+// fs.writeFileSync(path.join(__dirname, "../config/default.json"), JSON.stringify(configData));
+
+//
+// app.get("*", (req, res) => {
+//   res.sendfile(path.join((__dirname = "../client/build/index.html")));
+// });
+
+// }
 //build mod
 
 const db = process.env.MONGO_URI as string;

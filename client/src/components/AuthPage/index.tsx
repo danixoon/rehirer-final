@@ -105,8 +105,9 @@ class AuthPage extends React.Component<any> {
   };
 
   componentDidUpdate() {
-    const { status } = this.props;
-    if (status === "SUCCESS") history.push("/account/settings");
+    const { status, location } = this.props;
+    // console.log(location);
+    if (status === "SUCCESS") history.push((location && location.state && location.state.redirect) || "/account/settings");
   }
 
   componentDidMount() {}
@@ -281,7 +282,8 @@ const mapDispatchToProps = {
 
 const mapStateToProps = (state: any) => ({
   status: state.account.status,
-  error: state.account.error
+  error: state.account.error,
+  router: state.router
 });
 
 export default connect(

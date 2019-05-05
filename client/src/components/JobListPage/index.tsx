@@ -1,11 +1,13 @@
 import React from "react";
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Spinner } from "reactstrap";
 import JobCard from "./JobCard";
 import SideBar from "./SideBar";
 import SortPanel from "./SortPanel";
 import { connect } from "react-redux";
 import AddRespondModal from "./AddRespondModal";
+
+import { fetchJobs } from "../../actions/jobActions";
 
 class JobListPage extends React.Component<any> {
   state = {
@@ -17,8 +19,12 @@ class JobListPage extends React.Component<any> {
     this.setState({ respondModal: !respondModal });
   };
 
+  componentDidMount() {
+    this.props.fetchJobs();
+  }
+
   render() {
-    const { jobs } = this.props;
+    const { job } = this.props;
     const { respondModal } = this.state;
     return (
       <div className="fluid-container bg-white" style={{ minHeight: "85vh" }}>
@@ -27,12 +33,10 @@ class JobListPage extends React.Component<any> {
             <SideBar />
           </div>
           <div className="col-sm-12 col-md col-lg p-3">
-            <div className="container p-0">
+            <div className="container d-flex flex-column p-0">
               <SortPanel />
               <AddRespondModal open={respondModal} toggle={this.toggleRespondModal} />
-              {jobs.map((j: any, i: number) => (
-                <JobCard key={i} {...j} toggleRespondModal={this.toggleRespondModal} />
-              ))}
+              {job.status === "SUCCESS" ? job.data.map((j: any, i: number) => <JobCard key={i} {...j} toggleRespondModal={this.toggleRespondModal} />) : <Spinner color="primary" className="m-auto" />}
             </div>
           </div>
         </div>
@@ -42,7 +46,14 @@ class JobListPage extends React.Component<any> {
 }
 
 const mapStateToProps = (state: any) => ({
-  jobs: state.job.jobs
+  job: state.job.job
 });
 
-export default connect(mapStateToProps)(JobListPage);
+const mapDispatchToProps = {
+  fetchJobs
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(JobListPage);
