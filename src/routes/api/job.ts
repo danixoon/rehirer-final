@@ -25,7 +25,7 @@ const API: IAPI = {
           .limit(count)
           .select("city tags description timespan price label authorId")
           .exec();
-        await new Promise(res => setTimeout(res, 5000));
+        // await new Promise(res => setTimeout(res, 5000));
         return jobs;
       }
     }
