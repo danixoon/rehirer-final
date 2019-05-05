@@ -39,7 +39,7 @@ class App extends React.Component<any> {
         <Header />
         <Switch>
           <Route path="/account/settings" component={accountStatus === "SUCCESS" ? UserProfilePage : AuthRequired} />
-          <Route path="/account/auth" component={AuthPage} />
+          <Route path="/account/auth" component={accountStatus === "SUCCESS" ? ToProfile : AuthPage} />
           <Route path="/main" component={StartPage} />
           <Route path="/jobs" component={JobListPage} />
           <Route path="*" component={InvalidPage} />
@@ -52,6 +52,7 @@ class App extends React.Component<any> {
 
 const InvalidPage = () => <Redirect to="/main" />;
 const AuthRequired = () => <Redirect to="/account/auth" />;
+const ToProfile = () => <Redirect to="/account/settings" />;
 
 const mapDispatchToProps = {
   fetchUserProfile,

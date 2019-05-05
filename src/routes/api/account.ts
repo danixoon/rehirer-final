@@ -89,22 +89,24 @@ const API: IAPI = {
     create: {
       schema: {
         email: joi.string().required(),
-        login: joi.string().required(),
+        username: joi.string().required(),
         password: joi.string().required(),
         firstName: joi.string().required(),
-        secondName: joi.string().required()
+        secondName: joi.string().required(),
+        thirdName: joi.string().required(),
+        dob: joi.date().required()
       },
       access: ApiAccess.GUEST,
-      execute: async ({ login, password, email, firstName, secondName }) => {
+      execute: async ({ username, password, email, firstName, secondName, thirdName, dob }) => {
         const existingUser = await AccountData.findOne()
-          .or([{ username: login }, { email: email }])
+          .or([{ username }, { email: email }])
           .exec();
         if (existingUser) throw apiError("User already exists", 400);
 
         const pass = await genHash(password);
 
         const accountData: IAccountData = {
-          username: login,
+          username,
           email,
           password: pass,
           avatarURL: "https://pp.userapi.com/c840225/v840225382/7839a/kQV6BpB5yAg.jpg",
@@ -114,15 +116,15 @@ const API: IAPI = {
         const account = await new AccountData(accountData).save();
 
         const userDataDoc: IUserData = {
-          dob: new Date(1998, 2, 3),
-          firstName: "Poopich",
-          secondName: "Loopich",
-          thirdName: "DIedied"
+          dob: new Date(dob),
+          firstName: firstName,
+          secondName: secondName,
+          thirdName: thirdName
         };
         const userData = await new UserData(userDataDoc).save();
 
         const userProfile: IUserProfile = {
-          dor: new Date(1998, 20, 10)
+          dor: new Date() 
         };
 
         const profile = await new UserProfile(userProfile).save();
