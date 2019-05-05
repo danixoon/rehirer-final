@@ -6,7 +6,7 @@ import { CustomInput, FormGroup, Form, Spinner } from "reactstrap";
 import Checkbox from "../Checkbox";
 import { connect } from "react-redux";
 
-const UserRating = ({ rating, className }: { rating: number; className?: string }) => {
+export const UserRating = ({ rating, className }: { rating: number; className?: string }) => {
   return (
     <div className={className}>
       <div className="" style={{ clipPath: `inset(0 ${(1 - rating) * 10}rem 0 0)`, width: `${5 * 2}rem` }}>
@@ -102,7 +102,7 @@ class UserProfilePage extends React.Component<any> {
           <UserProflieField label="Пароль" value="*******">
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
-          <UserProflieField label="Тип Аккаунта" value="Работник">
+          <UserProflieField label="Связь" value="www.vk.com/danux">
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
 

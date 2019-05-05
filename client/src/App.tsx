@@ -9,6 +9,8 @@ import AuthPage from "./components/AuthPage";
 import { connect } from "react-redux";
 import { fetchUserProfile, fetchUserData } from "./actions/userActions";
 import { accountCheckToken } from "./actions/accountActions";
+import UserJobList from "./components/UserJobList";
+import UserRespondList from "./components/UserRespondList";
 
 // const baseUrl = process.env.PUBLIC_URL;
 
@@ -39,7 +41,9 @@ class App extends React.Component<any> {
         <Header />
         <Switch>
           <Route path="/account/settings" component={accountStatus === "SUCCESS" ? UserProfilePage : AuthRequired} />
+          <Route path="/user/responds" component={accountStatus === "SUCCESS" ? UserRespondList : AuthPage} />
           <Route path="/account/auth" component={accountStatus === "SUCCESS" ? ToProfile : AuthPage} />
+          <Route path="/user/jobs" component={accountStatus === "SUCCESS" ? UserJobList : AuthPage} />
           <Route path="/main" component={StartPage} />
           <Route path="/jobs" component={JobListPage} />
           <Route path="*" component={InvalidPage} />

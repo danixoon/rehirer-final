@@ -20,7 +20,7 @@ const API: IAPI = {
       }
     }
   }
-};
+}; 
 
 // @route WHATEVER api/job
 // @decs ALL WHAT U WANT

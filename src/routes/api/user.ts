@@ -20,8 +20,8 @@ const API: IAPI = {
       execute: async ({ id }): Promise<any> => {
         // const account = await AccountData.findOne({ username }).exec();
         // const user = await User.findOne({ accountDataId: account.id }).exec();
-        const user = await User.findById(id).exec();
-        const profile = await UserProfile.findById(user.userProfileId)
+        // const user = await User.findById(id).exec();
+        const profile = await UserProfile.findOne({ userId: id })
           .select("-_id -__v")
           .exec();
         if (profile) return profile.toObject();
@@ -35,8 +35,8 @@ const API: IAPI = {
         // await new Promise(res => setTimeout(res, 5000));
         // const account = await AccountData.findOne({ username }).exec();
         // const user = await User.findOne({ accountDataId: account.id }).exec();
-        const user = await User.findById(id).exec();
-        const data = await UserData.findById(user.userDataId)
+        // const user = await User.findById(id).exec();
+        const data = await UserData.findOne({ userId: id })
           .select("-_id -__v")
           .exec();
         if (data) return data.toObject();

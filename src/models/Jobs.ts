@@ -1,16 +1,12 @@
 import * as mongoose from "mongoose";
 
-export enum JobStatus {
-  TAKED,
-  WAITING,
-  COMPLETED
-}
+export type JobStatus = "PENDING" | "COMPLETED";
 
 export interface IJob {
   label: string;
   description: string;
-  tagIds?: mongoose.Schema.Types.ObjectId[];
-  status?: JobStatus;
+  tags: string[];
+  status: JobStatus;
   workerUserId?: mongoose.Schema.Types.ObjectId;
 }
 
@@ -26,10 +22,20 @@ const JobSchema = new Schema({
     type: String,
     required: true
   },
-  tagIds: { type: [Schema.Types.ObjectId], ref: "JobTag", default: [] },
+  city: {
+    type: String,
+    required: true
+  },
+  secretInfo: {
+    type: String
+  },
+  tags: { type: [Schema.Types.String], default: [] },
   status: {
     type: Number,
-    default: JobStatus.WAITING
+    default: "PENDING"
+  },
+  rating: {
+    type: Number,
   },
   workerUserId: {
     type: Schema.Types.ObjectId,

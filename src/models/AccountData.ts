@@ -5,8 +5,11 @@ export interface IAccountData {
   email: string;
   password: string;
   avatarURL: string;
-  accountTypeId: mongoose.Types.ObjectId;
+  userId: mongoose.Schema.Types.ObjectId;
+  accountScope?: AccountScope;
 }
+
+export type AccountScope = "ADMIN" | "USER";
 
 export interface IAccountDataModel extends mongoose.Document, IAccountData {}
 
@@ -30,9 +33,15 @@ const AccountDataSchema = new Schema({
     type: String,
     required: true
   },
-  accountTypeId: {
-    type: mongoose.Types.ObjectId,
-    ref: "AccountType"
+  accountScope: {
+    type: String,
+    default: "USER"
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true
   }
 });
 

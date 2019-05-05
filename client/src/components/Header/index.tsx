@@ -7,7 +7,7 @@ import UserProfileIcon from "../UserProfileIcon";
 import { connect } from "react-redux";
 
 import { Link } from "react-router-dom";
-import { MessageSquare, User, Settings, LogOut, LogIn } from "react-feather";
+import { MessageSquare, User, Settings, LogOut, LogIn, Briefcase, ThumbsUp } from "react-feather";
 
 import { Manager, Popper, Reference } from "react-popper";
 
@@ -36,7 +36,7 @@ class Header extends React.Component<any> {
               Вакансии
             </NavItem>
             {/* </Link> */}
-            <NavItem to="/main"> Анкеты </NavItem>
+            {/* <NavItem to="/main"> Анкеты </NavItem> */}
           </div>
           <div className="col-md-2 align-items-center order-sm-3 p-2 order-4" style={{ display: location.pathname === "/jobs" ? "none" : "flex" }}>
             <Search />
@@ -83,11 +83,20 @@ const UserData = ({ userData }: any) => {
 const AuthPopover = ({ logout }: any) => {
   return (
     <PopoverBody>
-      <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
+      {/* <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
         <MessageSquare className="mr-2 text-primary " /> Сообщения
         <span className="notification-badge " />
-      </button>
+      </button> */}
       {/* <hr className="my-2" /> */}
+
+      <button onClick={() => history.push("/user/jobs")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
+        <Briefcase className="mr-2 text-primary " /> Мои вакансии
+        <span className="notification-badge " />
+      </button>
+      <button onClick={() => history.push("/user/responds")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
+        <ThumbsUp className="mr-2 text-primary " /> Мои отклики
+        <span className="notification-badge " />
+      </button>
       <button onClick={() => history.push("/account/settings")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block">
         <Settings className="mr-2 text-primary" /> Аккаунт
       </button>

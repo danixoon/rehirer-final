@@ -4,6 +4,7 @@ import SlideBarTree from "./SlideBarTree";
 import SlideBarRange from "./SlideBarRange";
 import { CustomInput } from "reactstrap";
 import AddJobModal from "./AddJobModal";
+import SlideBarTags from "./SlideBarTags";
 
 const modals = {
   addJob: AddJobModal
@@ -11,7 +12,7 @@ const modals = {
 
 class SideBar extends React.Component {
   state = {
-    items: ["Вася", "Пупя"],
+    items: ["Уборка"],
     modal: {
       component: modals.addJob,
       open: false
@@ -47,17 +48,12 @@ class SideBar extends React.Component {
           <Search />
         </div>
         <SlideBarTree
-          placeholder="Введите имя"
+          placeholder="Введите тег"
           onSubmit={this.addItem}
           items={items.map((item, i) => ({ label: item, onClick: () => this.removeItem(i) }))}
-          header="Список мёртвых"
+          header="Теги"
         />
-        <SlideBarTree
-          placeholder="Введите имя"
-          onSubmit={this.addItem}
-          items={items.map((item, i) => ({ label: item, onClick: () => this.removeItem(i) }))}
-          header="Список живых"
-        />
+
         <SlideBarRange label="Цена" />
       </div>
     );

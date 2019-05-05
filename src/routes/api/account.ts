@@ -8,11 +8,9 @@ import createApiMiddleware, { ApiAccess, IAPI, apiError } from "../../middleware
 import auth from "../../middleware/auth";
 
 import * as joi from "joi";
-import AccountType, { workerUserScope } from "../../models/AccountType";
 import UserData, { IUserData } from "../../models/UserData";
 import UserProfile, { IUserProfile } from "../../models/UserProfile";
 import User, { IUser } from "../../models/User";
-import JobTag from "../../models/JobTag";
 
 const router = Router();
 
@@ -45,26 +43,21 @@ const API: IAPI = {
           const isMatch = await bcrypt.compare(password, accountData.password);
           if (!isMatch) rej(apiError("Неверный логин или пароль", 400));
 
-          if (accountData) {
-            const isMatch = await bcrypt.compare(password, accountData.password);
-            if (!isMatch) rej(apiError("Неверный логин или пароль", 400));
-
-            const user = await User.findOne({ accountDataId: accountData.id }).exec();
-            jwt.sign(
-              {
-                id: user.id
-              },
-              process.env.JWT_SECRET,
-              { expiresIn: "10h" },
-              (err, token) => {
-                if (err) rej(err);
-                res({
-                  token,
-                  ...accountData.toObject()
-                });
-              }
-            );
-          } else rej(apiError("Неверный логин или пароль", 400));
+          const user = await User.findById(accountData.userId).exec();
+          jwt.sign(
+            {
+              id: user.id
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "10h" },
+            (err, token) => {
+              if (err) rej(err);
+              res({
+                token,
+                ...accountData.toObject()
+              });
+            }
+          );
         });
       }
     },
@@ -78,8 +71,9 @@ const API: IAPI = {
           auth(token, async (err, userId) => {
             if (err) rej(err);
             else {
-              const user = await User.findById(userId).exec();
-              const accountData = await AccountData.findById(user.accountDataId).exec();
+              // const user = await User.findById(userId).exec();
+              const accountData = await AccountData.findOne({ userId }).exec();
+              // if(!accou)
               return res({ ...accountData.toObject(), token });
             }
           });
@@ -93,15 +87,19 @@ const API: IAPI = {
         password: joi.string().required(),
         firstName: joi.string().required(),
         secondName: joi.string().required(),
-        thirdName: joi.string().required(),
-        dob: joi.date().required()
+        thirdName: joi.string(),
+        dob: joi.date().required(),
+        city: joi.string().required()
       },
       access: ApiAccess.GUEST,
-      execute: async ({ username, password, email, firstName, secondName, thirdName, dob }) => {
+      execute: async ({ username, password, email, firstName, secondName, thirdName, dob, city, socialURL }) => {
         const existingUser = await AccountData.findOne()
           .or([{ username }, { email: email }])
           .exec();
         if (existingUser) throw apiError("Пользователь уже существует", 400);
+
+        const user = await new User().save().catch(err => console.log(err));
+        if (!user) throw "WHATA FUCK";
 
         const pass = await genHash(password);
 
@@ -110,31 +108,25 @@ const API: IAPI = {
           email,
           password: pass,
           avatarURL: "https://pp.userapi.com/c840225/v840225382/7839a/kQV6BpB5yAg.jpg",
-          accountTypeId: (await AccountType.findOne({ label: "admin" }).exec()).id
+          userId: user.id
         };
-
-        const account = await new AccountData(accountData).save();
 
         const userDataDoc: IUserData = {
           dob: new Date(dob),
-          firstName: firstName,
-          secondName: secondName,
-          thirdName: thirdName
+          firstName,
+          secondName,
+          thirdName,
+          city,
+          socialURL,
+          userId: user.id
         };
-        const userData = await new UserData(userDataDoc).save();
 
         const userProfile: IUserProfile = {
-          dor: new Date()
+          dor: new Date(),
+          userId: user.id
         };
 
-        const profile = await new UserProfile(userProfile).save();
-
-        const userDoc: IUser = {
-          userProfileId: profile.id,
-          accountDataId: account.id,
-          userDataId: userData.id
-        };
-        const user = await new User(userDoc).save();
+        await Promise.all([new UserProfile(userProfile).save(), new UserData(userDataDoc).save(), new AccountData(accountData).save()]);
 
         return await new Promise((res, rej) => {
           jwt.sign(
@@ -146,8 +138,7 @@ const API: IAPI = {
             (err, token) => {
               if (err) rej(err);
               res({
-                token,
-                user: userData
+                token
               });
             }
           );

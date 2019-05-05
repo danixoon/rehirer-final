@@ -82,11 +82,14 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
             </div>
             <p>Теги</p>
             <TagInput addTag={this.addTag} removeTag={this.removeTag} tags={tags} />
-            <p>Адрес</p>
-            <input className="w-100" onChange={this.onChange} name="address" />
+            <p>Город</p>
+            <input className="w-100" onChange={this.onChange} name="city" />
+            <p>Скрытая информациия</p>
+            <textarea className="w-100 mb-1" />
+            <small>Видна только для нанятого Вами работника</small>
 
-            <Checkbox className="mb-3" id="hideAddress" label="Спрятать адрес" checked={hideAddress} toggle={this.toggleCheckbox} />
-            <p>Цена</p>
+            {/* <Checkbox className="mb-3" id="hideAddress" label="Спрятать адрес" checked={hideAddress} toggle={this.toggleCheckbox} /> */}
+            <p className="mt-3">Цена</p>
             <div className="d-flex">
               <input className="w-100" value={price} onChange={this.onChange} name="price" /> <span>₽</span>
             </div>

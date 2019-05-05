@@ -17,11 +17,13 @@ interface IJobCardProps {
   distance: number;
   time: number;
   price: number;
+
+  toggleRespondModal: () => void;
 }
 
 class JobCard extends React.Component<IJobCardProps> {
   render() {
-    const { label, tags, description, author, distance, time, price } = this.props;
+    const { label, tags, description, author, distance, time, price, toggleRespondModal } = this.props;
     const hours = time / 1000 / 60 / 60;
     return (
       <div className="border rounded container-fluid no-gutters mb-2">
@@ -31,13 +33,21 @@ class JobCard extends React.Component<IJobCardProps> {
             <JobInfo label="Расстояние">{distance} м</JobInfo>
             <JobInfo label="Время выполнения">{hours} час</JobInfo>
             <JobInfo label="Предложенная цена">{price}₽</JobInfo>
-            <button className="btn-primary btn w-100 rounded-0">Откинуться</button>
+            <button onClick={toggleRespondModal} className="btn-primary btn w-100 rounded-0">
+              Откинуться
+            </button>
           </div>
           <div className="col py-2 order-1">
             <a href="#">
               <h3>{label}</h3>
             </a>
-            <span>{tags.join(" | ")}</span>
+            <div className="d-flex flex-wrap">
+              {tags.map((t, i) => (
+                <div key={i} className="bg-primary text-light mt-auto p-1 mr-1">
+                  {t}
+                </div>
+              ))}
+            </div>
             <hr />
             <span>{description}</span>
           </div>

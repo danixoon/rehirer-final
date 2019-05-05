@@ -5,10 +5,21 @@ import JobCard from "./JobCard";
 import SideBar from "./SideBar";
 import SortPanel from "./SortPanel";
 import { connect } from "react-redux";
+import AddRespondModal from "./AddRespondModal";
 
 class JobListPage extends React.Component<any> {
+  state = {
+    respondModal: false
+  };
+
+  toggleRespondModal = () => {
+    const { respondModal } = this.state;
+    this.setState({ respondModal: !respondModal });
+  };
+
   render() {
     const { jobs } = this.props;
+    const { respondModal } = this.state;
     return (
       <div className="fluid-container bg-white" style={{ minHeight: "85vh" }}>
         <div className="row no-gutters">
@@ -18,9 +29,9 @@ class JobListPage extends React.Component<any> {
           <div className="col-sm-12 col-md col-lg p-3">
             <div className="container p-0">
               <SortPanel />
-
+              <AddRespondModal open={respondModal} toggle={this.toggleRespondModal} />
               {jobs.map((j: any, i: number) => (
-                <JobCard key={i} {...j} />
+                <JobCard key={i} {...j} toggleRespondModal={this.toggleRespondModal} />
               ))}
             </div>
           </div>

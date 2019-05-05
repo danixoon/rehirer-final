@@ -62,6 +62,8 @@ class AuthPage extends React.Component<any> {
       fullname: "",
       dob: "",
       description: "",
+      socialUrl: "",
+      city: "",
       schema: {
         email: joi
           .string()
@@ -131,11 +133,13 @@ class AuthPage extends React.Component<any> {
   };
 
   registration = () => {
-    const { description, dob, password, fullname, email, tags, username } = this.state.signUp;
+    const { description, dob, password, fullname, email, tags, username, city, socialUrl } = this.state.signUp;
     this.setState({ status: "LOADING" });
     const names = fullname.split(/\s+/);
     axios
-      .get("/api/account/create", { params: { description, dob, password, firstName: names[1], thirdName: names[2], secondName: names[0], email, tags, username } })
+      .get("/api/account/create", {
+        params: { description, dob, password, firstName: names[1], thirdName: names[2], secondName: names[0], email, tags, username, city, socialUrl }
+      })
       .then(res => {
         // console.lo
         this.props.accountCheckToken(res.data.token);
@@ -254,6 +258,10 @@ class SignUpForm extends React.Component<any> {
             className="w-100"
             placeholder="Дружелюбный, люблю животных, часто посещаю субботники"
           />
+          <p className="mr-auto mb-2">Страница соц-сети</p>
+          <input value={signUp.socialUrl} onChange={e => onChange(e, "signUp")} name="socialUrl" className="w-100" placeholder="vk.com/helloitsmedio" />
+          <p className="mr-auto mb-2">Ваш город</p>
+          <input value={signUp.city} onChange={e => onChange(e, "signUp")} name="city" className="w-100" placeholder="Прага" />
           <p className="mr-auto mb-2">Ваши навыки</p>
           <TagInput className="w-100" tags={signUp.tags} addTag={addTag} removeTag={removeTag} />
           {/* <input className="w-100" placeholder="Че умееш?" /> */}
