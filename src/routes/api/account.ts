@@ -40,14 +40,14 @@ const API: IAPI = {
           const accountData = await AccountData.findOne()
             .or([{ username: login }, { email: login }])
             .exec();
-          if (!accountData) rej(apiError("Invalid credentials", 400));
+          if (!accountData) rej(apiError("Неверный логин или пароль", 400));
 
           const isMatch = await bcrypt.compare(password, accountData.password);
-          if (!isMatch) rej(apiError("Invalid credentials", 400));
+          if (!isMatch) rej(apiError("Неверный логин или пароль", 400));
 
           if (accountData) {
             const isMatch = await bcrypt.compare(password, accountData.password);
-            if (!isMatch) rej(apiError("invalid credentials", 400));
+            if (!isMatch) rej(apiError("Неверный логин или пароль", 400));
 
             const user = await User.findOne({ accountDataId: accountData.id }).exec();
             jwt.sign(
@@ -55,7 +55,7 @@ const API: IAPI = {
                 id: user.id
               },
               process.env.JWT_SECRET,
-              { expiresIn: 3600 },
+              { expiresIn: "10h" },
               (err, token) => {
                 if (err) rej(err);
                 res({
@@ -64,7 +64,7 @@ const API: IAPI = {
                 });
               }
             );
-          } else rej(apiError("invalid credentials", 400));
+          } else rej(apiError("Неверный логин или пароль", 400));
         });
       }
     },
@@ -74,9 +74,9 @@ const API: IAPI = {
       },
       access: ApiAccess.GUEST,
       execute: ({ token }): Promise<any> => {
-        return new Promise(async (res, rej) => {
+        return new Promise((res, rej) => {
           auth(token, async (err, userId) => {
-            if (err) return rej(err);
+            if (err) rej(err);
             else {
               const user = await User.findById(userId).exec();
               const accountData = await AccountData.findById(user.accountDataId).exec();
@@ -101,7 +101,7 @@ const API: IAPI = {
         const existingUser = await AccountData.findOne()
           .or([{ username }, { email: email }])
           .exec();
-        if (existingUser) throw apiError("User already exists", 400);
+        if (existingUser) throw apiError("Пользователь уже существует", 400);
 
         const pass = await genHash(password);
 
@@ -124,7 +124,7 @@ const API: IAPI = {
         const userData = await new UserData(userDataDoc).save();
 
         const userProfile: IUserProfile = {
-          dor: new Date() 
+          dor: new Date()
         };
 
         const profile = await new UserProfile(userProfile).save();
@@ -142,7 +142,7 @@ const API: IAPI = {
               id: user.id
             },
             process.env.JWT_SECRET,
-            { expiresIn: 0 },
+            { expiresIn: "10h" },
             (err, token) => {
               if (err) rej(err);
               res({

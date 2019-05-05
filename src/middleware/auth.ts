@@ -17,7 +17,7 @@ function auth(token: string, next: (err?: any, userId?: string) => void) {
     next(null, decoded.id);
   } catch (e) {
     // res.status(400).json({ msg: "token is not valid" });
-    if (!token) next(apiError("token is not valid", 400));
+    next(apiError("token is not valid", 400));
   }
 }
 

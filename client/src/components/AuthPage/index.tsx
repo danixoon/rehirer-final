@@ -6,6 +6,9 @@ import { history } from "../../store";
 import { ArrowLeft } from "react-feather";
 import { TagInput } from "../JobListPage/TagInput";
 import axios from "axios";
+import InputCheck from "../ValidateInputField";
+
+import joi, { func } from "joi";
 
 function switchForm(action: string, payload: any) {
   switch (action) {
@@ -19,9 +22,36 @@ function isEmpty(str: string) {
   return str === undefined || str === null || str.length === 0 || !str.trim();
 }
 
+const usernameExtend: joi.Extension = {
+  base: joi.string(),
+  name: "username",
+  language: {
+    exists: "already exists"
+  },
+  rules: [
+    {
+      name: "exists",
+      validate(params, value, state, options) {
+        if (!value.exists) {
+          return this.createError("username.exists", {}, state, options);
+        }
+        return value; // Everything is OK
+      }
+    }
+  ]
+};
+
 class AuthPage extends React.Component<any> {
   state = {
-    signIn: { login: "", password: "" },
+    signIn: {
+      username: "",
+      password: "",
+      validate: null as any,
+      schema: {
+        username: joi.string().error(e => "Поле не может быть пустым"),
+        password: joi.string().error(e => "Поле не может быть пустым")
+      }
+    },
     signUp: {
       tags: [] as string[],
       tagInput: "",
@@ -31,16 +61,36 @@ class AuthPage extends React.Component<any> {
       passwordRepeat: "",
       fullname: "",
       dob: "",
-      description: ""
+      description: "",
+      schema: {
+        email: joi
+          .string()
+          .email()
+          .error(e => "Некорректная почта"),
+        password: joi
+          .string()
+          .min(8)
+          .error(e => "Не менее 8 символов"),
+        passwordRepeat: joi
+          // .extend()
+          .string()
+          .valid(joi.ref("password"))
+          .error((e: any) => "Пароли должны совпадать")
+      },
+      validate: null as any
     },
     form: "AUTH",
     status: "IDLE"
   };
 
   login = () => {
+    // this.validate();
     const { accountLogin } = this.props;
-    const { login, password } = this.state.signIn;
-    accountLogin(login, password);
+    const { username, password } = this.state.signIn;
+
+    this.validateSignIn();
+
+    if (this.state.signIn.validate === null) accountLogin(username, password);
   };
 
   onChange = (e: any, obj: string) => {
@@ -48,6 +98,7 @@ class AuthPage extends React.Component<any> {
     const prop = (this.state as any)[obj];
     if (!prop) throw "Invalid prop name";
     prop[e.target.name] = e.target.value;
+
     this.setState({ prop });
   };
 
@@ -56,11 +107,13 @@ class AuthPage extends React.Component<any> {
     if (status === "SUCCESS") history.push("/account/settings");
   }
 
+  componentDidMount() {}
+
   switchForm = (form: string) => {
+    // console.log(this.state.signUp.validate);
+    this.validateSignUp();
     if (form === "SIGNUP") {
-      const field = ["username", "password", "passwordRepeat", "email"].find(v => isEmpty((this.state.signUp as any)[v]));
-      if (field !== undefined) return console.log("OH GOD");
-      this.setState({ form });
+      if (!this.state.signUp.validate) this.setState({ form });
     } else this.setState({ form });
   };
 
@@ -84,10 +137,26 @@ class AuthPage extends React.Component<any> {
     axios
       .get("/api/account/create", { params: { description, dob, password, firstName: names[1], thirdName: names[2], secondName: names[0], email, tags, username } })
       .then(res => {
-        // console.lo 
+        // console.lo
         this.props.accountCheckToken(res.data.token);
       })
       .catch(console.log);
+  };
+
+  validateSignUp = () => {
+    const signUp = this.state.signUp;
+    // console.log("validationn");
+    signUp.validate = joi.validate(this.state.signUp, signUp.schema, { allowUnknown: true, convert: true });
+    if (!signUp.validate.error) signUp.validate = null;
+    this.setState({ signUp });
+  };
+
+  validateSignIn = () => {
+    const signIn = this.state.signIn;
+    // console.log("validationn");
+    signIn.validate = joi.validate(this.state.signIn, signIn.schema, { allowUnknown: true, convert: true });
+    if (!signIn.validate.error) signIn.validate = null;
+    this.setState({ signIn });
   };
 
   render() {
@@ -108,6 +177,11 @@ class AuthPage extends React.Component<any> {
   }
 }
 
+function validationMessage(details: any[], field: string) {
+  const det = details.find(c => c.context.key === field);
+  if (det !== undefined) return det.message;
+}
+
 class AuthForm extends React.Component<any> {
   switchForm = (form: string) => {
     this.props.switchForm(form);
@@ -115,15 +189,20 @@ class AuthForm extends React.Component<any> {
 
   render() {
     const { signIn, signUp, login, onChange, status, error, switchForm } = this.props;
+    const signUpDetails = (signUp.validate && signUp.validate.error.details) || [];
+    const signInDetails = (signIn.validate && signIn.validate.error.details) || [];
+    // console.log(signUpDetails);
     return (
       <div className="py-3 px-0 overflow-hidden mx-auto container no-gutters row bg-white border border-top-0 border-bottom-0" style={{ minHeight: "85vh", zIndex: 3 }}>
         <div className="col-sm col-100 px-md-5 px-3 d-flex flex-column justify-content-center align-items-center" onKeyDown={e => e.key === "Enter" && login()}>
           {/* <form> */}
           <p className="mb-5">Войти</p>
-          <input value={signIn.login} type="login" onChange={e => onChange(e, "signIn")} className="w-100" name="login" placeholder="Логин | Email" />
+          <input value={signIn.username} type="username" onChange={e => onChange(e, "signIn")} className="w-100" name="username" placeholder="Логин | Email" />
+          <InputCheck className="mr-auto" error={validationMessage(signInDetails, "username")} />
           <input value={signIn.password} type="password" onChange={e => onChange(e, "signIn")} className="w-100" name="password" placeholder="Пароль" />
+          <InputCheck className="mr-auto" error={validationMessage(signInDetails, "password")} />
           {status === "ERROR" ? <small className="text-danger my-1 align-self-start">{error.msg}</small> : ""}
-          <button onClick={login} className="btn btn-primary w-100 rounded-0">
+          <button onClick={login} className={"btn btn-primary w-100 rounded-0 "}>
             Войти
           </button>
           {/* </form> */}
@@ -133,12 +212,14 @@ class AuthForm extends React.Component<any> {
         </div>
         <div onKeyDown={e => e.key === "Enter" && this.switchForm("SIGNUP")} className="col-sm col-100 px-md-5 px-3 d-flex flex-column justify-content-center align-items-center">
           <p className="mb-5">Зарегистрироваться</p>
-
-          <input type="email" name="email" value={signUp.email} onChange={e => onChange(e, "signUp")} className="w-100" placeholder="Email" />
+          <input type="email" name="email" value={signUp.email} onChange={e => onChange(e, "signUp")} className="w-100 mb-2" placeholder="Email" />
+          <InputCheck className="mr-auto" error={validationMessage(signUpDetails, "email")} />
           <input type="username" name="username" value={signUp.username} onChange={e => onChange(e, "signUp")} className="w-100" placeholder="Логин" />
           <input type="password" name="password" value={signUp.password} onChange={e => onChange(e, "signUp")} className="w-100" placeholder="Пароль" />
+          <InputCheck className="mr-auto" error={validationMessage(signUpDetails, "password")} />
           <input type="password" name="passwordRepeat" value={signUp.passwordRepeat} onChange={e => onChange(e, "signUp")} className="w-100" placeholder="Повторите пароль" />
-          <button onClick={() => this.switchForm("SIGNUP")} className="btn btn-primary w-100 rounded-0">
+          <InputCheck className="mr-auto" error={validationMessage(signUpDetails, "passwordRepeat")} />
+          <button onClick={() => this.switchForm("SIGNUP")} className={"btn btn-primary w-100 rounded-0 "}>
             Регистрация
           </button>
         </div>
