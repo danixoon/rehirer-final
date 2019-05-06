@@ -3,10 +3,12 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 import Checkbox from "../Checkbox";
 import { TagInput } from "./TagInput";
 import { connect } from "react-redux";
+import { addRespond } from "../../actions/jobActions";
 
 // import { pushJob } from "../../actions/jobActions";
 
 interface IJobModalProps {
+  jobId: string;
   open: boolean;
   toggle: () => void;
 }
@@ -24,7 +26,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
   };
 
   render() {
-    const { open, toggle } = this.props;
+    const { open, toggle, jobId } = this.props;
     const { message } = this.state.input;
     return (
       <div>
@@ -32,11 +34,25 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
           <ModalHeader>Заявка</ModalHeader>
           <ModalBody>
             <p>Информация для работодателя</p>
-            <textarea placeholder="Я гений всея руси и легко выгуляю вашу Жужу не моргнув и глазом!" value={message} onChange={this.onChange} name="message" className="w-100 mb-1" rows={5} />
+            <textarea
+              placeholder="Я гений всея руси и легко выгуляю вашу Жужу не моргнув и глазом!"
+              value={message}
+              onChange={this.onChange}
+              name="message"
+              className="w-100 mb-1"
+              rows={5}
+            />
             <small>Опишите свои навыки и заинтересуйте работодателя</small>
           </ModalBody>
           <ModalFooter>
-            <Button className="rounded-0" color="primary">
+            <Button
+              onClick={() => {
+                this.props.addRespond(jobId, message);
+                toggle();
+              }}
+              className="rounded-0"
+              color="primary"
+            >
               Откликнуться
             </Button>
             <Button className="rounded-0" color="secondary" onClick={toggle}>
@@ -50,7 +66,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
 }
 
 const mapDispatchToProps = {
-  // pushJob
+  addRespond
 };
 
 const mapStateToProps = (state: any) => {};

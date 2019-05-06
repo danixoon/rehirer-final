@@ -50,20 +50,26 @@ export enum ApiAccess {
 }
 
 const createApiMiddlware: (api: IAPI) => RequestHandler = api => (req: Request, res: Response, next: NextFunction) => {
-  console.log(`Query:`, req.query);
+  const methodName = `${req.method} ${req.baseUrl}`;
+  console.log(`API_QUERY ${methodName}\n`, req.query, "\n");
   const apiHttpMethod = api[req.method.toLocaleLowerCase()];
   if (!apiHttpMethod) return res.status(400).send({ msg: `http method ${req.method} unsupported` });
   const method = apiHttpMethod[req.params.method];
   if (!method) return res.status(400).send({ msg: "invalid api method" });
   if (method.access & ApiAccess.TOKEN) {
     auth(req.header("x-auth-token"), async (err, id) => {
-      if (err) return res.status(err.code || 500).send({ msg: err.msg || "error" });
-      executeMethod(method, { ...req.query, id }, res, req).then(() => next());
+      if (err) {
+        console.log(`API_ERROR ${methodName}\n`, err, "\n")
+        return res.status(err.code || 500).send({ msg: err.msg || "error" });
+      }
+      executeMethod(method, { ...req.query, id }, res, req)
+        .then(() => next())
+        .catch(err => console.log(`API_ERROR ${methodName}\n`, err, "\n"));
     });
   } else {
     executeMethod(method, req.query, res, req)
       .then(() => next())
-      .catch(console.log);
+      .catch(err => console.log(`API_ERROR ${methodName}\n`, err, "\n"));
   }
 };
 

@@ -11,12 +11,14 @@ import { fetchJobs } from "../../actions/jobActions";
 
 class JobListPage extends React.Component<any> {
   state = {
-    respondModal: false
+    respondModal: false,
+    jobId: null
   };
 
-  toggleRespondModal = () => {
+  toggleRespondModal = (jobId: string) => {
     const { respondModal } = this.state;
-    this.setState({ respondModal: !respondModal });
+    if (respondModal === true) (jobId as any) = null;
+    this.setState({ respondModal: !respondModal, jobId });
   };
 
   componentDidMount() {
@@ -25,7 +27,7 @@ class JobListPage extends React.Component<any> {
 
   render() {
     const { job } = this.props;
-    const { respondModal } = this.state;
+    const { respondModal, jobId } = this.state;
     return (
       <div className="fluid-container bg-white" style={{ minHeight: "85vh" }}>
         <div className="row no-gutters">
@@ -35,8 +37,12 @@ class JobListPage extends React.Component<any> {
           <div className="col-sm-12 col-md col-lg p-3">
             <div className="container d-flex flex-column p-0">
               <SortPanel />
-              <AddRespondModal open={respondModal} toggle={this.toggleRespondModal} />
-              {job.status === "SUCCESS" ? job.data.map((j: any, i: number) => <JobCard key={i} {...j} toggleRespondModal={this.toggleRespondModal} />) : <Spinner color="primary" className="m-auto" />}
+              <AddRespondModal jobId={jobId} open={respondModal} toggle={this.toggleRespondModal} />
+              {job.status === "SUCCESS" ? (
+                job.data.map((j: any, i: number) => <JobCard key={i} {...j} respond={job.respond} toggleRespondModal={this.toggleRespondModal} />)
+              ) : (
+                <Spinner color="primary" className="m-auto" />
+              )}
             </div>
           </div>
         </div>

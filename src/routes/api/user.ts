@@ -55,7 +55,7 @@ const API: IAPI = {
         const jobs = await Job.find({ authorId: id })
           .select("_id")
           .exec();
-        return jobs && jobs.map(j => j._id);
+        return !jobs ? [] : jobs.map(j => j._id);
         // await new Promise(res => setTimeout(res, 5000));
         // const account = await AccountData.findOne({ username }).exec();
         // const user = await User.findOne({ accountDataId: account.id }).exec();
@@ -64,6 +64,13 @@ const API: IAPI = {
         // if (data) return data.toObject();
         // else throw apiError("user not found", 404);
         // result.toJSON();
+      }
+    },
+    myResponds: {
+      access: ApiAccess.TOKEN,
+      execute: async ({ id }): Promise<any> => {
+        const respond = await JobRespond.find({ authorId: id }).exec();
+        return respond;
       }
     },
     jobResponds: {
@@ -77,6 +84,53 @@ const API: IAPI = {
         if (job.authorId.toString() !== id) throw apiError("Access denied");
         const responds = await JobRespond.find({ jobId }).exec();
         return responds.map(r => r.toObject());
+        // await new Promise(res => setTimeout(res, 5000));
+        // const account = await AccountData.findOne({ username }).exec();
+        // const user = await User.findOne({ accountDataId: account.id }).exec();
+        // const user = await User.findById(id).exec();
+        // const data = await UserData.findOne({ userId: userId || id }).exec();
+        // if (data) return data.toObject();
+        // else throw apiError("user not found", 404);
+        // result.toJSON();
+      }
+    },
+    deleteRespond: {
+      access: ApiAccess.TOKEN,
+      schema: {
+        respondId: joi.string().required()
+      },
+      execute: async ({ respondId, id }): Promise<any> => {
+        const respond = await JobRespond.findById(respondId).exec();
+        if (!respond) throw apiError("Invalid respondId");
+        if (respond.authorId.toString() !== id) throw apiError("Access denied");
+        await respond.remove();
+        return { deletedId: respond.id };
+        // const responds = await JobRespond.find({ jobId }).exec();
+        // return responds.map(r => r.toObject());
+        // await new Promise(res => setTimeout(res, 5000));
+        // const account = await AccountData.findOne({ username }).exec();
+        // const user = await User.findOne({ accountDataId: account.id }).exec();
+        // const user = await User.findById(id).exec();
+        // const data = await UserData.findOne({ userId: userId || id }).exec();
+        // if (data) return data.toObject();
+        // else throw apiError("user not found", 404);
+        // result.toJSON();
+      }
+    },
+    deleteJob: {
+      access: ApiAccess.TOKEN,
+      schema: {
+        jobId: joi.string().required()
+      },
+      execute: async ({ jobId, id }): Promise<any> => {
+        const job = await Job.findById(jobId).exec();
+        if (!job) throw apiError("Invalid respondId");
+        if (job.authorId.toString() !== id) throw apiError("Access denied");
+        await JobRespond.deleteMany({ jobId }).exec();
+        await job.remove();
+        return { deletedId: job.id };
+        // const responds = await JobRespond.find({ jobId }).exec();
+        // return responds.map(r => r.toObject());
         // await new Promise(res => setTimeout(res, 5000));
         // const account = await AccountData.findOne({ username }).exec();
         // const user = await User.findOne({ accountDataId: account.id }).exec();

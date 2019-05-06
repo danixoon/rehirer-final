@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
 import { Spinner } from "reactstrap";
+import { connect } from "react-redux";
+import { deleteRespond } from "../../actions/jobActions";
 
 const JobInfo = (props: { label: string } & any) => (
   <div className="mb-2">
@@ -20,7 +22,9 @@ interface IJobCardProps {
   city: number;
   timespan: number;
   price: number;
-  toggleRespondModal: () => void;
+  respond: any;
+  toggleRespondModal: (_id: string) => void;
+  [key: string]: any;
 }
 
 class JobCard extends React.Component<IJobCardProps> {
@@ -47,9 +51,11 @@ class JobCard extends React.Component<IJobCardProps> {
   }
 
   render() {
-    const { label, tags, description, authorId, city, timespan, price, toggleRespondModal } = this.props;
+    const { respond, label, tags, description, authorId, city, timespan, price, toggleRespondModal, _id } = this.props;
     const { author } = this.state;
     const hours = Math.round(timespan / 1000 / 60 / 60);
+    const cardRespond = respond.find((r: any) => r.jobId === _id);
+
     return (
       <div className="border rounded container-fluid no-gutters mb-2">
         <div className="row">
@@ -60,8 +66,11 @@ class JobCard extends React.Component<IJobCardProps> {
               {hours} {"час" + bowHours(hours)}
             </JobInfo>
             <JobInfo label="Предложенная цена">{price}₽</JobInfo>
-            <button onClick={toggleRespondModal} className="btn-primary btn w-100 rounded-0">
-              Откликнуться
+            <button
+              onClick={!cardRespond ? () => toggleRespondModal(_id) : () => this.props.deleteRespond(cardRespond._id)}
+              className={"btn w-100 rounded-0 " + (!cardRespond ? "btn-primary" : "btn-danger")}
+            >
+              {!cardRespond ? "Откликнуться" : "Отменить отклик"}
             </button>
           </div>
           <div className="col py-2 order-1">
@@ -91,4 +100,11 @@ export const bowHours = (hours: number) => {
   return "";
 };
 
-export default JobCard;
+const mapDispatchToProps = {
+  deleteRespond
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(JobCard);

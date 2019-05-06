@@ -4,25 +4,16 @@ import querystring from "query-string";
 
 import { history } from "../../store";
 import { UserRating } from "../UserProfilePage";
-import { fetchUserJob, fetchUserData } from "../../actions/userActions";
+import { fetchUserJob, fetchUserData, deleteUserJob } from "../../actions/userActions";
 import { Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
 import axios from "axios";
-import { bowHours } from "../JobListPage/JobCard";
 import { string } from "joi";
 import InputCheck from "../ValidateInputField";
+import { bowHours } from "../JobListPage/JobCard";
+// import { UserJob } from "./UserJob";
 
 class UserJobList extends React.Component<any> {
-  constructor(props: any) {
-    super(props);
-    props.fetchUserJob();
-  }
-
-  state = {
-    jobData: null as any,
-    status: "IDLE"
-  };
-
   setPanel = (panel: string) => {
     const { location } = this.props.router;
     history.push(location.pathname + "?panel=" + panel);
@@ -31,30 +22,13 @@ class UserJobList extends React.Component<any> {
   componentDidMount() {
     const panel = this.getPanel();
     if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
+
+    this.props.fetchUserJob();
   }
 
-  fetchJobIds = (ids: string[]) => {
-    // const { ids } = this.props.job.data;
-    this.setState({ status: "LOADING" });
-    axios
-      .get("/api/job/find", { params: { ids }, headers: { "x-auth-token": sessionStorage.getItem("authToken") } })
-      .then(res => {
-        this.setState({ jobData: res.data, status: "SUCCESS" });
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({ jobData: null, status: "ERROR" });
-      });
-  };
-
-  componentDidUpdate(prevProps: any) {
+  componentDidUpdate() {
     const panel = this.getPanel();
     if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
-
-    const { job } = this.props;
-    const { jobData, status } = this.state;
-
-    if (job.status === "SUCCESS" && status === "IDLE") this.fetchJobIds(job.data);
   }
 
   getPanel = () => {
@@ -64,15 +38,8 @@ class UserJobList extends React.Component<any> {
   };
 
   render() {
-    // const { location } = this.props.router;
     const panel = this.getPanel();
-    // if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
-
     const { job } = this.props;
-    const { jobData } = this.state;
-
-    console.log(this.props.router);
-
     return (
       <div className="container">
         <div className="row">
@@ -96,12 +63,13 @@ class UserJobList extends React.Component<any> {
           </div>
         </div>
         <div className="row">
-          {job.status !== "SUCCESS" || jobData === null ? (
+          {job.status !== "SUCCESS" ? (
             <Spinner color="primary" className="m-auto" />
           ) : (
-            jobData.map((j: any) => (
+            // ""
+            job.data.map((j: any) => (
               <div key={j._id} className="col-100 border mb-2 w-100">
-                <UserJob reload={this.props.router.location.reload} {...j} />
+                <UserJob {...j} reload={this.props.fetchUserJob} delete={this.props.deleteUserJob} />
               </div>
             ))
           )}
@@ -111,7 +79,22 @@ class UserJobList extends React.Component<any> {
   }
 }
 
-interface IUserJobProps {
+const mapStateToProps = (store: any) => ({
+  router: store.router,
+  job: store.user.job
+});
+
+const mapDispatchToProps = {
+  fetchUserJob,
+  deleteUserJob
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserJobList);
+
+export interface IUserJobProps {
   _id: string;
   label: string;
   description: string;
@@ -121,47 +104,22 @@ interface IUserJobProps {
   [key: string]: any;
 }
 
-class UserJob extends React.Component<IUserJobProps> {
+class UserJob extends React.Component<any> {
   state = {
-    responds: [] as any[],
-    status: "IDLE",
     deleteModal: false
-  };
-
-  componentDidMount() {
-    this.fetchResponds(this.props._id);
-  }
-
-  fetchResponds = (jobId: string) => {
-    this.setState({ status: "LOADING" });
-    axios
-      .get("/api/user/jobResponds", { params: { jobId }, headers: { "x-auth-token": sessionStorage.getItem("authToken") } })
-      .then(res => this.setState({ status: "SUCCESS", responds: res.data }))
-      .catch(err => {
-        this.setState({ status: "ERROR", data: null });
-        console.log(err);
-      });
   };
 
   toggleDeleteModal = () => {
     const { deleteModal } = this.state;
     this.setState({ deleteModal: !deleteModal });
   };
-
   render() {
-    const { label, city, timespan, price, description } = this.props;
-    const { responds, status, deleteModal } = this.state;
+    const { label, city, timespan, price, description, respond, _id } = this.props;
+    const { deleteModal } = this.state;
     const hours = Math.round(timespan / 1000 / 60 / 60);
     return (
       <div className="d-flex flex-column p-3 w-100">
-        <AreYouSureModal
-          sure={() => {
-            console.log("RELOAD");
-            window.location.reload();
-          }}
-          open={deleteModal}
-          toggle={this.toggleDeleteModal}
-        />
+        <AreYouSureModal sure={() => this.props.delete(_id)} open={deleteModal} toggle={this.toggleDeleteModal} />
         <div className="d-flex">
           <h3>{label}</h3>
           <button onClick={this.toggleDeleteModal} className="btn btn-outline-danger rounded-0 ml-auto">
@@ -180,24 +138,24 @@ class UserJob extends React.Component<IUserJobProps> {
         <span className="mb-2">{price}₽</span>
         <p className="mb-2">Отклики</p>
         <div className="container-fluid row no-gutters p-0">
-          {status !== "SUCCESS" ? (
+          {/* {status !== "SUCCESS" ? (
             <Spinner color="primary" className="m-auto" />
           ) : responds.length === 0 ? (
             <span>Пока нет</span>
-          ) : (
-            responds.map((r: any) => (
-              <div key={r._id} className="border-top w-100">
-                <UserRespond {...r} />
-              </div>
-            ))
-          )}
+          ) : ( */}
+          {respond && respond.map((r: any) => (
+            <div key={r._id} className="border-top w-100">
+              <UserRespond {...r} />
+            </div>
+          ))}
+          {/* )} */}
         </div>
       </div>
     );
   }
 }
 
-class AreYouSureModal extends React.Component<any> {
+export class AreYouSureModal extends React.Component<any> {
   render() {
     const { open, toggle, sure } = this.props;
     return (
@@ -226,7 +184,7 @@ class AreYouSureModal extends React.Component<any> {
   }
 }
 
-class UserRespond extends React.Component<any> {
+export class UserRespond extends React.Component<any> {
   state = {
     status: "IDLE",
     data: null as any
@@ -281,17 +239,3 @@ class UserRespond extends React.Component<any> {
     );
   }
 }
-
-const mapStateToProps = (store: any) => ({
-  router: store.router,
-  job: store.user.job
-});
-
-const mapDispatchToProps = {
-  fetchUserJob
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(UserJobList);

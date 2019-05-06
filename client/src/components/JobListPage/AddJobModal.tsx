@@ -87,7 +87,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
       console.log("success");
       // this.props.pushJob(this.state.input);
       axios
-        .post("/api/job/new", null, {
+        .get("/api/job/new", {
           headers: {
             "x-auth-token": sessionStorage.getItem("authToken")
           },
@@ -170,7 +170,14 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
             <InputCheck className="mr-auto" error={validationMessage(inputDetails, "price")} />
           </ModalBody>
           <ModalFooter>
-            <Button onClick={this.pushJob} className="rounded-0" color="primary">
+            <Button
+              onClick={() => {
+                this.pushJob();
+                toggle();
+              }}
+              className="rounded-0"
+              color="primary"
+            >
               Опубликовать
             </Button>
             <Button className="rounded-0" color="secondary" onClick={toggle}>

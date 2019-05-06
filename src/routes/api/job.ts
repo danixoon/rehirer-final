@@ -22,18 +22,32 @@ const API: IAPI = {
     find: {
       access: ApiAccess.TOKEN,
       schema: {
-        count: joi.number().integer(),
-        offset: joi.number().integer(),
-        ids: joi.array()
+        count: joi
+          .number()
+          .integer()
+          .default(100),
+        offset: joi
+          .number()
+          .integer()
+          .default(0)
       },
-      execute: async ({ count, offset, ids }): Promise<IJobModel[]> => {
-        let jobs;
-        if (ids) jobs = Job.find({ _id: { $in: ids } });
-        else jobs = Job.find();
-
-        jobs
+      execute: async ({ count, offset }): Promise<IJobModel[]> => {
+        const jobs = await Job.find()
           .skip(offset)
           .limit(count)
+          .select("city tags description timespan price label authorId")
+          .exec();
+        // await new Promise(res => setTimeout(res, 5000));
+        return jobs;
+      }
+    },
+    byId: {
+      access: ApiAccess.TOKEN,
+      schema: {
+        ids: joi.array().required()
+      },
+      execute: async ({ ids }): Promise<IJobModel[]> => {
+        const jobs = await Job.find({ _id: { $in: ids } })
           .select("city tags description timespan price label authorId")
           .exec();
         // await new Promise(res => setTimeout(res, 5000));
@@ -88,10 +102,10 @@ const API: IAPI = {
       },
       execute: async ({ jobId, message, id }, req) => {
         const responded = await JobRespond.find({ jobId, authorId: id }).exec();
-        if (!responded) throw apiError("You already responded");
+        if (responded.length > 0) throw apiError("You already responded");
 
         const respond = await new JobRespond({ message, jobId, authorId: id }).save();
-        return { id: respond.id };
+        return respond.toObject();
       }
     },
     cancelRespond: {
@@ -107,7 +121,8 @@ const API: IAPI = {
         // const respond = await new JobRespond({ message, jobId, respondUserId: id });
         // return { id: respond.id };
       }
-    }
+    },
+    
   }
 };
 
