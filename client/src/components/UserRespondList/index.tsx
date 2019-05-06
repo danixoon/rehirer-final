@@ -91,9 +91,9 @@ class UserRespondJob extends React.Component<any> {
         <div className="d-flex">
           {(() => {
             switch (status) {
-              case "REJECTED":
+              case "DECLINED":
                 return <span className="my-auto text-danger">Отменено</span>;
-              case "RESOLVED":
+              case "APPROVED":
                 return <span className="my-auto text-success">Вы приняты!</span>;
               default:
                 return <span className="my-auto">Ожидается ответ..</span>;
@@ -101,9 +101,9 @@ class UserRespondJob extends React.Component<any> {
           })()}
           {(() => {
             switch (status) {
-              case "REJECTED":
+              case "DECLINED":
                 return <button className="btn btn-secondary rounded-0 ml-auto">Удалить</button>;
-              case "RESOLVED":
+              case "APPROVED":
                 return <button className="btn btn-primary rounded-0 ml-auto">Работать</button>;
               default:
                 return <button className="btn btn-danger rounded-0 ml-auto">Отменить</button>;

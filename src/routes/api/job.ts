@@ -108,21 +108,25 @@ const API: IAPI = {
         return respond.toObject();
       }
     },
-    cancelRespond: {
+    changeRespondStatus: {
       access: ApiAccess.TOKEN,
       schema: {
-        respondId: joi.string().required()
+        respondId: joi.string().required(),
+        status: joi.string().valid(["APPROVED", "DECLINED"])
       },
-      execute: async ({ respondId, id }, req) => {
+      execute: async ({ respondId, id, status }, req) => {
         const respond = await JobRespond.findById(respondId).exec();
         if (respond.authorId.toString() !== id) throw apiError("Access denied");
-        await respond.remove();
-        return "yeah";
+        if (respond.status !== "PENDING") throw apiError("Already " + respond.status.toLowerCase());
+        await respond.updateOne({ status }).exec();
+        return (await JobRespond.findById(respond.id).exec()).toObject();
+        // return respond;
+        // await respond.remove();
+        // return "yeah";
         // const respond = await new JobRespond({ message, jobId, respondUserId: id });
         // return { id: respond.id };
       }
-    },
-    
+    }
   }
 };
 

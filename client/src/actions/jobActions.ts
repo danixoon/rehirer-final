@@ -49,4 +49,15 @@ export const deleteRespond = (respondId: string) => async (dispatch: any, getSta
   }
 };
 
+export const changeRespondStatus = (respondId: string, status: "DECLINE" | "APPROVED") => async (dispatch: any, getState: any) => {
+  const state = getState();
+  dispatch({ type: "JOB_RESPOND_STATUS" });
+  try {
+    const { data } = await axios.get("/api/job/changeRespondStatus", { params: { respondId, status }, headers: { "x-auth-token": state.account.data.token } });
+    dispatch({ type: "JOB_RESPOND_STATUS_SUCCESS", payload: data });
+  } catch (err) {
+    dispatch({ type: "JOB_RESPOND_STATUS_ERROR", payload: !err.response ? err : err.response.data });
+  }
+};
+
 // export const pushJob = (job: any) => ({ type: "JOB_PUSH", payload: [job] });

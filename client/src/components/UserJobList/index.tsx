@@ -3,14 +3,13 @@ import { connect } from "react-redux";
 import querystring from "query-string";
 
 import { history } from "../../store";
-import { UserRating } from "../UserProfilePage";
 import { fetchUserJob, fetchUserData, deleteUserJob } from "../../actions/userActions";
 import { Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
-import axios from "axios";
 import { string } from "joi";
 import InputCheck from "../ValidateInputField";
 import { bowHours } from "../JobListPage/JobCard";
+import UserRespond from "./UserRespond";
 // import { UserJob } from "./UserJob";
 
 class UserJobList extends React.Component<any> {
@@ -143,11 +142,12 @@ class UserJob extends React.Component<any> {
           ) : responds.length === 0 ? (
             <span>Пока нет</span>
           ) : ( */}
-          {respond && respond.map((r: any) => (
-            <div key={r._id} className="border-top w-100">
-              <UserRespond {...r} />
-            </div>
-          ))}
+          {respond &&
+            respond.map((r: any) => (
+              <div key={r._id} className="border-top w-100">
+                <UserRespond {...r} />
+              </div>
+            ))}
           {/* )} */}
         </div>
       </div>
@@ -180,62 +180,6 @@ export class AreYouSureModal extends React.Component<any> {
           </Button>
         </ModalFooter>
       </Modal>
-    );
-  }
-}
-
-export class UserRespond extends React.Component<any> {
-  state = {
-    status: "IDLE",
-    data: null as any
-  };
-
-  componentDidMount() {
-    this.fetchUserData(this.props.userId);
-  }
-
-  fetchUserData = (id: string) => {
-    this.setState({ status: "LOADING" });
-    axios
-      .get("/api/user/data", { params: { userId: id }, headers: { "x-auth-token": sessionStorage.getItem("authToken") } })
-      .then(res => this.setState({ data: res.data, status: "SUCCESS" }))
-      .catch(err => {
-        this.setState({ data: null, status: "ERROR" });
-        console.log(err);
-      });
-  };
-
-  render() {
-    const { userId, message } = this.props;
-    const { status, data } = this.state;
-    return (
-      <div className="container-fluid p-2">
-        <div className="row no-gutters">
-          <div className="col-auto pr-2">
-            <img className="rounded-pill" style={{ height: "50px" }} src="https://picsum.photos/200" />
-          </div>
-          <div className="col p-0 d-flex flex-column">
-            {status === "SUCCESS" ? <p>{`${data.firstName} ${data.secondName}`}</p> : <Spinner color="primary" size="sm" />}
-            <span> {message} </span>
-            <div className="d-flex pt-2 flex-wrap">
-              {status === "SUCCESS" ? (
-                data.tags.map((t: any, i: number) => (
-                  <div key={i} className="bg-primary text-light mt-auto p-1 m-1">
-                    {t}
-                  </div>
-                ))
-              ) : (
-                <Spinner color="primary" size="sm" />
-              )}
-            </div>
-          </div>
-          <div className="col-md-auto col-100 d-flex flex-column justify-content-end">
-            <UserRating className="ml-sm-auto mx-auto" rating={0.8} />
-            <button className="btn btn-outline-danger  rounded-0 m-1 mt-0">Отказать</button>
-            <button className="btn btn-primary rounded-0 m-1 mb-0 ">Нанять</button>
-          </div>
-        </div>
-      </div>
     );
   }
 }
