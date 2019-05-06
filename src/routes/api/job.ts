@@ -11,16 +11,25 @@ import UserData from "../../models/UserData";
 
 const router = Router();
 
+function isEmpty(str: string) {
+  return str === undefined || str === null || str.length === 0 || !str.trim();
+}
+
 const API: IAPI = {
   get: {
-    jobs: {
+    find: {
       access: ApiAccess.TOKEN,
       schema: {
         count: joi.number().integer(),
-        offset: joi.number().integer()
+        offset: joi.number().integer(),
+        ids: joi.array()
       },
-      execute: async ({ count, offset }): Promise<IJobModel[]> => {
-        const jobs = await Job.find()
+      execute: async ({ count, offset, ids }): Promise<IJobModel[]> => {
+        let jobs;
+        if (ids) jobs = Job.find({ _id: { $in: ids } });
+        else jobs = Job.find();
+        
+        jobs
           .skip(offset)
           .limit(count)
           .select("city tags description timespan price label authorId")
@@ -31,7 +40,7 @@ const API: IAPI = {
     }
   },
   post: {
-    job: {
+    new: {
       access: ApiAccess.TOKEN,
       schema: {
         label: joi
@@ -52,7 +61,7 @@ const API: IAPI = {
         // userId: joi.string(),
         price: joi.number().required()
       },
-      execute: async ({ label, description, city, timespan, tags, secretInfo, price, id }) => {
+      execute: async ({ label, description, city, timespan, tags, secretInfo, price, id }, req) => {
         const jobDoc: IJob = {
           authorId: id,
           description,
@@ -63,7 +72,7 @@ const API: IAPI = {
           city,
           timespan
         };
-        if (!city) {
+        if (isEmpty(city)) {
           const data = await UserData.findOne({ userId: id }).exec();
           jobDoc.city = data.city;
         }

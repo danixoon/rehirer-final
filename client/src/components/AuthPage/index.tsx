@@ -18,9 +18,6 @@ function switchForm(action: string, payload: any) {
       return <AuthForm {...payload} />;
   }
 }
-function isEmpty(str: string) {
-  return str === undefined || str === null || str.length === 0 || !str.trim();
-}
 
 const usernameExtend: joi.Extension = {
   base: joi.string(),

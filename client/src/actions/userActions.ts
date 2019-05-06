@@ -27,3 +27,6 @@ export const fetchUserData = () => async (dispatch: any, getState: any) => {
       dispatch({ type: "USER_DATA_FETCH_ERROR", payload: err.response.data });
     });
 };
+
+
+// export const fetchUserDataById()

@@ -4,7 +4,7 @@ import Checkbox from "../Checkbox";
 import { TagInput } from "./TagInput";
 import { connect } from "react-redux";
 
-import { pushJob } from "../../actions/jobActions";
+// import { pushJob } from "../../actions/jobActions";
 
 interface IJobModalProps {
   open: boolean;
@@ -50,7 +50,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
 }
 
 const mapDispatchToProps = {
-  pushJob
+  // pushJob
 };
 
 const mapStateToProps = (state: any) => {};

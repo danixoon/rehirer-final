@@ -4,7 +4,12 @@ import Checkbox from "../Checkbox";
 import { TagInput } from "./TagInput";
 import { connect } from "react-redux";
 
-import { pushJob } from "../../actions/jobActions";
+import { fetchJobs } from "../../actions/jobActions";
+
+import axios from "axios";
+
+import joi from "joi";
+import InputCheck from "../ValidateInputField";
 
 interface IJobModalState {
   input: {
@@ -24,17 +29,50 @@ interface IJobModalProps {
   toggle: () => void;
 }
 
+function validationMessage(details: any[], field: string) {
+  const det = details.find(c => c.context.key === field);
+  if (det !== undefined) return det.message;
+}
+
+function isEmpty(str: string) {
+  return str === undefined || str === null || str.length === 0 || !str.trim();
+}
+
 class AddJobModal extends React.Component<any & IJobModalProps> {
   state = {
     input: {
-      author: "Пупапапап",
-      hideAddress: false,
       label: "",
       description: "",
-      time: 0,
+      timespan: "",
       tags: ["hi"],
-      distance: 0,
-      price: 0
+      city: "",
+      secretInfo: "",
+      price: "",
+      validate: null as any,
+      schema: {
+        label: joi
+          .string()
+          .min(5)
+          .required()
+          .error(e => "Минимум 5 символов"),
+        description: joi
+          .string()
+          .min(10)
+          .required()
+          .error(e => "Минимум 10 символов"),
+        timespan: joi
+          .number()
+          .integer()
+          .required()
+          .error(e => "Требуется целое число"),
+        // city: joi.string(),
+        // secretInfo: joi.string(),
+        price: joi
+          .number()
+          .required()
+          .integer()
+          .error(e => "Требуется целое число")
+      }
     }
   };
 
@@ -43,7 +81,32 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
     this.setState({ input: { ...input, [e.target.id]: e.target.checked } });
   };
   pushJob = () => {
-    this.props.pushJob(this.state.input);
+    this.validate();
+    if (!this.state.input.validate) {
+      const { city, label, description, price, secretInfo, timespan, tags } = this.state.input;
+      console.log("success");
+      // this.props.pushJob(this.state.input);
+      axios
+        .post("/api/job/new", null, {
+          headers: {
+            "x-auth-token": sessionStorage.getItem("authToken")
+          },
+          params: {
+            city: isEmpty(city) ? undefined : city,
+            label,
+            description,
+            price,
+            secretInfo: isEmpty(secretInfo) ? undefined : secretInfo,
+            timespan: Number(timespan) * 60 * 60 * 1000,
+            tags
+          }
+        })
+        .then(res => {
+          console.log(res.data);
+          this.props.fetchJobs();
+        })
+        .catch(console.log);
+    }
   };
 
   onChange = (e: any) => {
@@ -60,39 +123,51 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
     // this.props.removeTag(tag);
     const input = this.state.input;
     input.tags = input.tags.filter(t => t != tag);
+    this.setState({ input });
+  };
 
+  validate = () => {
+    const { input } = this.state;
+    // console.log("validationn");
+    input.validate = joi.validate(input, input.schema, { allowUnknown: true, convert: true });
+    if (!input.validate.error) input.validate = null;
     this.setState({ input });
   };
 
   render() {
     const { open, toggle } = this.props;
-    const { hideAddress, tags, label, description, time, price } = this.state.input;
+    const { tags, label, description, timespan, price, validate } = this.state.input;
+    const inputDetails = (validate && validate.error.details) || [];
     return (
       <div>
         <Modal isOpen={open} toggle={toggle}>
           <ModalHeader>Создание новой вакансии</ModalHeader>
           <ModalBody>
             <p>Заголовок</p>
-            <input value={label} className="w-100" onChange={this.onChange} name="label" />
-            <p>Содержание вакансии</p>
-            <textarea value={description} onChange={this.onChange} name="description" className="w-100" />
-            <p>Время выполнения (в часах)</p>
+            <input value={label} placeholder="Выгул собаки" className="w-100 mb-1" onChange={this.onChange} name="label" />
+            <InputCheck className="mr-auto" error={validationMessage(inputDetails, "label")} />
+            <p className="mt-3">Содержание вакансии</p>
+            <textarea rows={5} value={description} placeholder="Работа заключается в.." onChange={this.onChange} name="description" className="w-100 mb-1" />
+            <InputCheck idle="Видно всем" className="mr-auto" error={validationMessage(inputDetails, "description")} />
+            <p className="mt-3">Время выполнения (в часах)</p>
             <div className="d-flex">
-              <input value={time} onChange={this.onChange} name="time" className="w-100" /> <span>ч.</span>
+              <input value={timespan} onChange={this.onChange} name="timespan" placeholder="3" className="w-100 mb-1" /> <span>ч.</span>
             </div>
-            <p>Теги</p>
+            <InputCheck className="mr-auto" idle="Расчётное время выполнения" error={validationMessage(inputDetails, "timespan")} />
+            <p className="mt-3">Теги</p>
             <TagInput addTag={this.addTag} removeTag={this.removeTag} tags={tags} />
             <p>Город</p>
-            <input className="w-100" onChange={this.onChange} name="city" />
-            <p>Скрытая информациия</p>
-            <textarea className="w-100 mb-1" />
+            <input className="w-100 mb-1" onChange={this.onChange} name="city" placeholder="Москва" />
+            <small>По умолчанию - Ваш</small>
+            <p className="mt-3">Скрытая информациия</p>
+            <textarea rows={5} onChange={this.onChange} name="secretInfo" placeholder="Ключ от дома - под горшком" className="w-100 mb-1" />
             <small>Видна только для нанятого Вами работника</small>
-
             {/* <Checkbox className="mb-3" id="hideAddress" label="Спрятать адрес" checked={hideAddress} toggle={this.toggleCheckbox} /> */}
             <p className="mt-3">Цена</p>
             <div className="d-flex">
-              <input className="w-100" value={price} onChange={this.onChange} name="price" /> <span>₽</span>
+              <input className="w-100 mb-1" value={price} placeholder="1000" onChange={this.onChange} name="price" /> <span>₽</span>
             </div>
+            <InputCheck className="mr-auto" error={validationMessage(inputDetails, "price")} />
           </ModalBody>
           <ModalFooter>
             <Button onClick={this.pushJob} className="rounded-0" color="primary">
@@ -109,7 +184,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
 }
 
 const mapDispatchToProps = {
-  pushJob
+  fetchJobs
 };
 
 const mapStateToProps = (state: any) => {};

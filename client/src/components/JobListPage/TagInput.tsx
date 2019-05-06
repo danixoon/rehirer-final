@@ -31,18 +31,25 @@ export class TagInput extends React.Component<ITagInputProps> {
     const { className, tags, addTag, removeTag } = this.props;
     return (
       <div className={className}>
+        <div className="d-flex">
+          <input
+            className="w-100 mb-1"
+            value={tagInput}
+            onKeyDown={k => (k.key === "Enter" ? this.addTag(tagInput) : "")}
+            placeholder="Уборщик"
+            name="tagInput"
+            onChange={this.onChange}
+          />
+          <button className="btn p-0" onClick={() => this.addTag(tagInput)}>
+            <Plus className="text-muted" />
+          </button>
+        </div>
         <div className={"d-flex flex-wrap mb-2"}>
           {tags.map((t, i) => (
             <div onClick={() => this.removeTag(t)} className="bg-primary text-truncate overflow-hidden text-light p-1 m-1 rounded-0" style={{ cursor: "pointer" }} key={i}>
               {t}
             </div>
           ))}
-        </div>
-        <div className="d-flex">
-          <input className="w-100" value={tagInput} onKeyDown={k => (k.key === "Enter" ? this.addTag(tagInput) : "")} placeholder="Уборщик" name="tagInput" onChange={this.onChange} />
-          <button className="btn p-0" onClick={() => this.addTag(tagInput)}>
-            <Plus className="text-muted" />
-          </button>
         </div>
       </div>
     );

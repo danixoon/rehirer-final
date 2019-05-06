@@ -5,7 +5,7 @@ import * as joi from "joi";
 export interface IAPIMethod {
   schema?: joi.SchemaLike;
   access: ApiAccess;
-  execute: (query: any) => Promise<any>;
+  execute: (query: any, req: any) => Promise<any>;
 }
 
 export function apiError(msg: string, code?: number) {
@@ -21,7 +21,7 @@ export interface IAPI {
   };
 }
 
-function executeMethod(method: IAPIMethod, query: any, res: Response): Promise<void> {
+function executeMethod(method: IAPIMethod, query: any, res: Response, req: Request): Promise<void> {
   return new Promise((resolve, reject) => {
     if (method.schema) {
       const result = joi.validate(query, joi.object().keys(method.schema as any), { allowUnknown: true, convert: true });
@@ -32,7 +32,7 @@ function executeMethod(method: IAPIMethod, query: any, res: Response): Promise<v
       query = result.value;
     }
     method
-      .execute(query)
+      .execute(query, req)
       .then(data => {
         res.status(200).send(data);
         return resolve(data);
@@ -58,10 +58,10 @@ const createApiMiddlware: (api: IAPI) => RequestHandler = api => (req: Request, 
   if (method.access & ApiAccess.TOKEN) {
     auth(req.header("x-auth-token"), async (err, id) => {
       if (err) return res.status(err.code || 500).send({ msg: err.msg || "error" });
-      executeMethod(method, { ...req.query, id }, res).then(() => next());
+      executeMethod(method, { ...req.query, id }, res, req).then(() => next());
     });
   } else {
-    executeMethod(method, req.query, res)
+    executeMethod(method, req.query, res, req)
       .then(() => next())
       .catch(console.log);
   }
