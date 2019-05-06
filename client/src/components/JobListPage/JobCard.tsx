@@ -84,7 +84,7 @@ class JobCard extends React.Component<IJobCardProps> {
   }
 }
 
-const bowHours = (hours: number) => {
+export const bowHours = (hours: number) => {
   const number = hours % 100;
   if (number % 10 >= 5 && (number <= 20 || number % 10 <= 9 || number % 10 === 0)) return "ов";
   if (number % 10 >= 2 && number % 10 <= 4) return "а";

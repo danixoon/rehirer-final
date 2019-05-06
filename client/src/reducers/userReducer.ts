@@ -2,7 +2,8 @@ import { IReduxAction, ActionStatus } from "../types";
 
 const initalState: { [key: string]: any } = {
   profile: { status: "IDLE" },
-  data: { status: "IDLE" }
+  data: { status: "IDLE" },
+  job: { status: "IDLE" }
 };
 
 export default (state = initalState, action: IReduxAction) => {
@@ -20,6 +21,13 @@ export default (state = initalState, action: IReduxAction) => {
       return { ...state, data: { error: null, status: "SUCCESS", data: action.payload } };
     case "USER_DATA_FETCH_ERROR":
       return { ...state, data: { error: action.payload, status: "ERROR", data: null } };
+
+    case "USER_JOB_FETCH":
+      return { ...state, job: { error: null, status: "LOADING", data: null } };
+    case "USER_JOB_FETCH_SUCCESS":
+      return { ...state, job: { error: null, status: "SUCCESS", data: action.payload } };
+    case "USER_JOB_FETCH_ERROR":
+      return { ...state, job: { error: action.payload, status: "ERROR", data: null } };
 
     case "ACCOUNT_LOGOUT":
       return { ...state, profile: { error: null, status: "IDLE", data: null }, data: { error: null, status: "IDLE", data: null } };

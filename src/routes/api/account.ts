@@ -3,7 +3,7 @@ import { Router, RequestHandler, Response } from "express";
 import AccountData, { IAccountData } from "../../models/AccountData";
 import * as jwt from "jsonwebtoken";
 
-import Job, { IJobModel } from "../../models/Jobs";
+import Job, { IJobModel } from "../../models/Job";
 import createApiMiddleware, { ApiAccess, IAPI, apiError } from "../../middleware/api";
 import auth from "../../middleware/auth";
 

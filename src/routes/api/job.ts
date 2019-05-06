@@ -3,11 +3,13 @@ import { Router, RequestHandler, Response } from "express";
 import User from "../../models/User";
 import * as jwt from "jsonwebtoken";
 
-import Job, { IJobModel, IJob } from "../../models/Jobs";
-import createApiMiddleware, { ApiAccess, IAPI } from "../../middleware/api";
+import Job, { IJobModel, IJob } from "../../models/Job";
+import createApiMiddleware, { ApiAccess, IAPI, apiError } from "../../middleware/api";
 
 import * as joi from "joi";
 import UserData from "../../models/UserData";
+import JobRespond from "../../models/JobRespond";
+// import { apiError } from "../../middleware — backup/api";
 
 const router = Router();
 
@@ -28,7 +30,7 @@ const API: IAPI = {
         let jobs;
         if (ids) jobs = Job.find({ _id: { $in: ids } });
         else jobs = Job.find();
-        
+
         jobs
           .skip(offset)
           .limit(count)
@@ -37,9 +39,7 @@ const API: IAPI = {
         // await new Promise(res => setTimeout(res, 5000));
         return jobs;
       }
-    }
-  },
-  post: {
+    },
     new: {
       access: ApiAccess.TOKEN,
       schema: {
@@ -78,6 +78,34 @@ const API: IAPI = {
         }
         const job = await new Job(jobDoc).save();
         return { jobId: job.id };
+      }
+    },
+    respond: {
+      access: ApiAccess.TOKEN,
+      schema: {
+        jobId: joi.string().required(),
+        message: joi.string().required()
+      },
+      execute: async ({ jobId, message, id }, req) => {
+        const responded = await JobRespond.find({ jobId, authorId: id }).exec();
+        if (!responded) throw apiError("You already responded");
+
+        const respond = await new JobRespond({ message, jobId, authorId: id }).save();
+        return { id: respond.id };
+      }
+    },
+    cancelRespond: {
+      access: ApiAccess.TOKEN,
+      schema: {
+        respondId: joi.string().required()
+      },
+      execute: async ({ respondId, id }, req) => {
+        const respond = await JobRespond.findById(respondId).exec();
+        if (respond.authorId.toString() !== id) throw apiError("Access denied");
+        await respond.remove();
+        return "yeah";
+        // const respond = await new JobRespond({ message, jobId, respondUserId: id });
+        // return { id: respond.id };
       }
     }
   }

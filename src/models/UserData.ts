@@ -7,6 +7,7 @@ export interface IUserData {
   socialURL: string;
   city: string;
   dob: Date;
+  tags?: string[];
   userId: mongoose.Schema.Types.ObjectId;
 }
 
@@ -35,6 +36,10 @@ const UserDataSchema = new Schema({
   city: {
     type: String,
     required: true
+  },
+  tags: {
+    type: [Schema.Types.String],
+    default: []
   },
   userId: {
     type: Schema.Types.ObjectId,

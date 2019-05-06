@@ -8,16 +8,16 @@ function auth(token: string, next: (err?: any, userId?: string) => void) {
   // const token = req.header("x-auth-token");
 
   // Check for token
-  if (!token) next(apiError("Token is required", 401));
+  if (!token) return next(apiError("Token is required", 401));
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
     // Add user from payload
     // req.user = decoded;
-    next(null, decoded.id);
+    return next(null, decoded.id);
   } catch (e) {
     // res.status(400).json({ msg: "token is not valid" });
-    next(apiError("Token is not valid", 400));
+    return next(apiError("Token is not valid", 400));
   }
 }
 
