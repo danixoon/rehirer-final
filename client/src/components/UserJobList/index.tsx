@@ -39,6 +39,8 @@ class UserJobList extends React.Component<any> {
   render() {
     const panel = this.getPanel();
     const { job } = this.props;
+    console.log("SUPERRENDER");
+    console.log("SUPERRENDER");
     return (
       <div className="container">
         <div className="row">
@@ -113,9 +115,12 @@ class UserJob extends React.Component<any> {
     this.setState({ deleteModal: !deleteModal });
   };
   render() {
-    const { label, city, timespan, price, description, respond, _id } = this.props;
+    const { label, city, timespan, price, description, respond, _id, author } = this.props;
     const { deleteModal } = this.state;
     const hours = Math.round(timespan / 1000 / 60 / 60);
+
+    console.log("SUPERRENDER");
+    console.log("SUPERRENDER");
     return (
       <div className="d-flex flex-column p-3 w-100">
         <AreYouSureModal sure={() => this.props.delete(_id)} open={deleteModal} toggle={this.toggleDeleteModal} />

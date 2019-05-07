@@ -104,7 +104,7 @@ const API: IAPI = {
         if (!respond) throw apiError("Invalid respondId");
         if (respond.authorId.toString() !== id) throw apiError("Access denied");
         await respond.remove();
-        return { deletedId: respond.id };
+        return { deletedId: respondId };
         // const responds = await JobRespond.find({ jobId }).exec();
         // return responds.map(r => r.toObject());
         // await new Promise(res => setTimeout(res, 5000));

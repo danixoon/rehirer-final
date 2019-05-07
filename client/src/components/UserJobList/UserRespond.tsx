@@ -24,8 +24,10 @@ class UserRespond extends React.Component<any> {
       });
   };
   render() {
-    const { userId, message, _id, status: respondStatus } = this.props;
-    const { status, data } = this.state;
+    const { userId, message, _id, status: respondStatus, author } = this.props;
+    // const { status, data } = this.state;
+    const status = "SUCCESS";
+    console.log("YEAH");
     return (
       <div className="container-fluid p-2">
         <div className="row no-gutters">
@@ -33,11 +35,11 @@ class UserRespond extends React.Component<any> {
             <img className="rounded-pill" style={{ height: "50px" }} src="https://picsum.photos/200" />
           </div>
           <div className="col p-0 d-flex flex-column">
-            {status === "SUCCESS" ? <p>{`${data.firstName} ${data.secondName}`}</p> : <Spinner color="primary" size="sm" />}
+            {status === "SUCCESS" ? <p>{`${author.firstName} ${author.secondName}`}</p> : <Spinner color="primary" size="sm" />}
             <span> {message} </span>
             <div className="d-flex pt-2 flex-wrap">
               {status === "SUCCESS" ? (
-                data.tags.map((t: any, i: number) => (
+                author.tags.map((t: any, i: number) => (
                   <div key={i} className="bg-primary text-light mt-auto p-1 m-1">
                     {t}
                   </div>
@@ -63,9 +65,9 @@ class UserRespond extends React.Component<any> {
                     </div>
                   );
                 case "DECLINED":
-                  return <button className="btn btn-danger w-100 h-100 rounded-0 disabled"> Отменено </button>;
+                  return <button className="btn btn-danger w-100 h-100 mt-auto rounded-0 disabled"> Отменено </button>;
                 case "APPROVED":
-                  return <button className="btn btn-primary w-100 h-100 rounded-0 disabled"> Принято </button>;
+                  return <button className="btn btn-primary w-100 h-100 mt-auto rounded-0 disabled"> Принято </button>;
               }
             })()}
           </div>

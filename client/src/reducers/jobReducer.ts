@@ -15,6 +15,8 @@ const initalState = {
     ],
     respond: [],
     status: "IDLE",
+    secretStatus: "IDLE",
+    // secretError: null,
     error: null
   },
   searching: {}
@@ -38,11 +40,12 @@ export default (state = initalState, action: IReduxAction) => {
     case "JOB_RESPOND_STATUS_SUCCESS":
       // const respond = state.job.respond;
       const res = state.job.respond.find((r: any) => r._id === action.payload._id);
-      
+
       return { ...state, job: { ...state.job, respond: [...state.job.respond.filter(r => r !== res), action.payload] } };
+
+   
 
     default:
       return state;
   }
 };
-  

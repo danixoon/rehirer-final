@@ -60,4 +60,15 @@ export const changeRespondStatus = (respondId: string, status: "DECLINE" | "APPR
   }
 };
 
+export const getJobSecret = (jobId: string) => async (dispatch: any, getState: any) => {
+  const state = getState();
+  dispatch({ type: "JOB_GET_SECRET" });
+  try {
+    const { data } = await axios.get("/api/job/jobSecret", { params: { jobId }, headers: { "x-auth-token": state.account.data.token } });
+    dispatch({ type: "JOB_GET_SECRET_SUCCESS", payload: data });
+  } catch (err) {
+    dispatch({ type: "JOB_GET_SECRET_ERROR", payload: !err.response ? err : err.response.data });
+  }
+};
+
 // export const pushJob = (job: any) => ({ type: "JOB_PUSH", payload: [job] });

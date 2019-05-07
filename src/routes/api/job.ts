@@ -9,6 +9,7 @@ import createApiMiddleware, { ApiAccess, IAPI, apiError } from "../../middleware
 import * as joi from "joi";
 import UserData from "../../models/UserData";
 import JobRespond from "../../models/JobRespond";
+import AccountData from "../../models/AccountData";
 // import { apiError } from "../../middleware — backup/api";
 
 const router = Router();
@@ -112,14 +113,47 @@ const API: IAPI = {
       access: ApiAccess.TOKEN,
       schema: {
         respondId: joi.string().required(),
-        status: joi.string().valid(["APPROVED", "DECLINED"])
+        status: joi.string().valid(["APPROVED", "DECLINED", "CANCELED"])
       },
       execute: async ({ respondId, id, status }, req) => {
         const respond = await JobRespond.findById(respondId).exec();
-        if (respond.authorId.toString() !== id) throw apiError("Access denied");
+        const job = await Job.findById(respond.jobId).exec();
+        if ((status === "CANCELED" && respond.authorId.toString() !== id) || job.authorId.toString() !== id) throw apiError("Access denied");
         if (respond.status !== "PENDING") throw apiError("Already " + respond.status.toLowerCase());
         await respond.updateOne({ status }).exec();
         return (await JobRespond.findById(respond.id).exec()).toObject();
+        // return respond;
+        // await respond.remove();
+        // return "yeah";
+        // const respond = await new JobRespond({ message, jobId, respondUserId: id });
+        // return { id: respond.id };
+      }
+    },
+    jobSecret: {
+      access: ApiAccess.TOKEN,
+      schema: {
+        jobId: joi.string().required()
+        // respondId: joi.string().required(),
+        // status: joi.string().valid(["APPROVED", "DECLINED", "CANCELED"])
+      },
+      execute: async ({ jobId, id }, req) => {
+        const job = await Job.findById(jobId).exec();
+        if (!job) return apiError("Invalid Job Id");
+
+        const respond = await JobRespond.findOne({ jobId, authorId: id }).exec();
+        if (!respond) return apiError("Access Denied");
+
+        const jobAuthor = await UserData.findOne({ userId: job.authorId }).exec();
+        const jobUser = await AccountData.findOne({ userId: job.authorId }).exec();
+
+        return { secretInfo: job.secretInfo, socialURL: jobAuthor.socialURL, email: jobUser.email, respondId: respond.id  };
+
+        // const respond = await JobRespond.findById(respondId).exec();
+        // const job = await Job.findById(respond.jobId).exec();
+        // if ((status === "CANCELED" && respond.authorId.toString() !== id) || job.authorId.toString() !== id) throw apiError("Access denied");
+        // if (respond.status !== "PENDING") throw apiError("Already " + respond.status.toLowerCase());
+        // await respond.updateOne({ status }).exec();
+        // return (await JobRespond.findById(respond.id).exec()).toObject();
         // return respond;
         // await respond.remove();
         // return "yeah";

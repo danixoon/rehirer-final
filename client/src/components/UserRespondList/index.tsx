@@ -5,8 +5,9 @@ import querystring from "query-string";
 import { history } from "../../store";
 import { UserRating } from "../UserProfilePage";
 import { fetchUserRespond } from "../../actions/userActions";
-import { Spinner } from "reactstrap";
+import { Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 import { bowHours } from "../JobListPage/JobCard";
+import { deleteRespond, getJobSecret } from "../../actions/jobActions";
 
 class UserRespondList extends React.Component<any> {
   setPanel = (panel: string) => {
@@ -65,7 +66,7 @@ class UserRespondList extends React.Component<any> {
             ) : (
               respond.data.map((r: any) => (
                 <div key={r._id}>
-                  <UserRespondJob {...r} />
+                  <UserRespondJob deleteRespond={this.props.deleteRespond} {...r} getJobSecret={this.props.getJobSecret} secretStatus={respond.secretStatus} />
                   <hr className="w-100 m-0" />
                 </div>
               ))
@@ -82,12 +83,56 @@ class UserRespondList extends React.Component<any> {
   }
 }
 
-class UserRespondJob extends React.Component<any> {
+export class JobSecretModal extends React.Component<any> {
   render() {
-    const { status, job, message, author } = this.props;
+    const { open, toggle, secretData } = this.props;
+
+    return (
+      <Modal isOpen={open} toggle={toggle}>
+        <ModalHeader>Подробнее</ModalHeader>
+        <ModalBody className="d-flex flex-column">
+          {secretData ? (
+            <div>
+              <p>Данные о работе</p>
+              <span> {secretData.secretInfo || "Работодатель ничего не сообщил"} </span>
+              <p className="mt-2">Связь с работодателем</p>
+              <span> {secretData.socialURL || secretData.email} </span>
+            </div>
+          ) : (
+            <Spinner color="primary" className="m-auto" />
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button className="rounded-0" color="secondary" onClick={toggle}>
+            Закрыть
+          </Button>
+        </ModalFooter>
+      </Modal>
+    );
+  }
+}
+
+class UserRespondJob extends React.Component<any> {
+  state = {
+    secretModal: false
+  };
+
+  toggleSecretModal = () => {
+    const { secretModal } = this.state;
+    this.setState({ secretModal: !secretModal });
+  };
+
+  componentDidUpdate() {
+    if (this.props.status === "APPROVED" && this.props.secretStatus === "IDLE") this.props.getJobSecret(this.props.job._id);
+  }
+
+  render() {
+    const { secretModal } = this.state;
+    const { status, job, message, author, _id, secretData } = this.props;
     const hours = Math.round(job.timespan / 60 / 60 / 1000);
     return (
       <div className="d-flex flex-column w-100 p-3">
+        <JobSecretModal toggle={this.toggleSecretModal} secretData={secretData} open={secretModal} />
         <div className="d-flex">
           {(() => {
             switch (status) {
@@ -102,11 +147,23 @@ class UserRespondJob extends React.Component<any> {
           {(() => {
             switch (status) {
               case "DECLINED":
-                return <button className="btn btn-secondary rounded-0 ml-auto">Удалить</button>;
+                return (
+                  <button className="btn btn-secondary rounded-0 ml-auto" onClick={() => this.props.deleteRespond(_id)}>
+                    Удалить
+                  </button>
+                );
               case "APPROVED":
-                return <button className="btn btn-primary rounded-0 ml-auto">Работать</button>;
+                return (
+                  <button onClick={this.toggleSecretModal} className="btn btn-primary rounded-0 ml-auto">
+                    Работать
+                  </button>
+                );
               default:
-                return <button className="btn btn-danger rounded-0 ml-auto">Отменить</button>;
+                return (
+                  <button onClick={() => this.props.deleteRespond(_id)} className="btn btn-danger rounded-0 ml-auto">
+                    Отменить
+                  </button>
+                );
             }
           })()}
         </div>
@@ -132,7 +189,9 @@ class UserRespondJob extends React.Component<any> {
 }
 
 const mapDispatchToProps = {
-  fetchUserRespond
+  fetchUserRespond,
+  deleteRespond,
+  getJobSecret
 };
 
 const mapStateToProps = (store: any) => ({

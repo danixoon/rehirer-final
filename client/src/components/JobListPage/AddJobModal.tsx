@@ -84,7 +84,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
     this.validate();
     if (!this.state.input.validate) {
       const { city, label, description, price, secretInfo, timespan, tags } = this.state.input;
-      console.log("success");
+      this.props.toggle();
       // this.props.pushJob(this.state.input);
       axios
         .get("/api/job/new", {
@@ -173,7 +173,6 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
             <Button
               onClick={() => {
                 this.pushJob();
-                toggle();
               }}
               className="rounded-0"
               color="primary"
