@@ -7,7 +7,7 @@ export const authorsFetch = (jobIds: string[]) => async (dispatch: any, getState
   try {
     const authors = await Promise.all(
       jobIds.flatMap(async j => {
-        const respondIds = await axios.get("/api/user/jobResponds", { params: { jobId: j }, headers: { "x-auth-token": token } });
+        const respondIds = await axios.get("/api/respond/job", { params: { jobId: j }, headers: { "x-auth-token": token } });
         const result = await Promise.all(
           respondIds.data.flatMap(async (r: any) => {
             const user = await Promise.all([

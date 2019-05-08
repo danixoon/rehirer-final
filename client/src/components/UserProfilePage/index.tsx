@@ -61,7 +61,8 @@ class UserProfilePage extends React.Component<any> {
     const { user } = this.props;
     // console.log(this.props.account);
     if (user.statuses.data !== "SUCCESS" || user.statuses.profile !== "SUCCESS") return <Spinner className="m-auto" color="primary" />;
-    const { firstName, secondName, thirdName } = user.entities.data;
+    const { firstName, secondName, thirdName, city, socialUrl, tags, description } = user.entities.data;
+    // const { firstName, secondName, thirdName, city, socialURL } = user.entities.data;
     const { username, email } = user.entities.account;
     return (
       <div className="container row no-gutters mx-auto border border-top-0 bg-white" style={{ minHeight: "80vh", zIndex: 5 }}>
@@ -85,10 +86,13 @@ class UserProfilePage extends React.Component<any> {
           <UserProflieField label="ФИО" value={`${firstName} ${secondName}, ${thirdName}`}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
-          <UserProflieField label="Навыки" value="Курьер | Уборщик | Пулемёт">
+          <UserProflieField label="Навыки" value={tags.join(" | ")}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
-          <UserProflieField label="Адрес" value="г. undefined, ул. null, д. NaN">
+          <UserProflieField label="Город" value={city}>
+            Изменить <Edit3 height="1em" width="1em" />
+          </UserProflieField>
+          <UserProflieField label="О вас" value={description}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
           <hr className="d-md-none" />
@@ -103,7 +107,7 @@ class UserProfilePage extends React.Component<any> {
           <UserProflieField label="Пароль" value="*******">
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
-          <UserProflieField label="Связь" value="www.vk.com/danux">
+          <UserProflieField label="Связь" value={socialUrl}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
 

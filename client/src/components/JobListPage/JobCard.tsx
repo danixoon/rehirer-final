@@ -44,7 +44,7 @@ class JobCard extends React.Component<IJobCardProps> {
     axios
       .get("/api/user/data", { cancelToken: this.cancelToken.token, params: { userId: id }, headers: { "x-auth-token": sessionStorage.getItem("authToken") } })
       .then(res => this.setState({ author: res.data }))
-      .catch(console.log);
+      .catch(() => {});
   };
 
   componentWillUnmount() {
@@ -62,7 +62,7 @@ class JobCard extends React.Component<IJobCardProps> {
     const hours = Math.round(job.timespan / 1000 / 60 / 60);
 
     const res = respond.statuses.responds === "SUCCESS" && respond.entities.responds.find((r: any) => r.jobId === job._id);
-    console.log("test");
+
     return (
       <div className="border rounded container-fluid no-gutters mb-2">
         <div className="row">
@@ -89,11 +89,12 @@ class JobCard extends React.Component<IJobCardProps> {
               <h3>{job.label}</h3>
             </a>
             <div className="d-flex flex-wrap">
-              {job.tags && job.tags.map((t: any, i: number) => (
-                <div key={i} className="bg-primary text-light mt-auto p-1 mr-1">
-                  {t}
-                </div>
-              ))}
+              {job.tags &&
+                job.tags.map((t: any, i: number) => (
+                  <div key={i} className="bg-primary text-light mt-auto p-1 mr-1">
+                    {t}
+                  </div>
+                ))}
             </div>
             <hr />
             <span>{job.description}</span>

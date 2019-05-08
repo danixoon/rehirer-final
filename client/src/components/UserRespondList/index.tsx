@@ -11,6 +11,8 @@ import { fetchUserResponds, deleteUserRespond } from "../../store/actions/respon
 import { fetchRespondJobs } from "../../store/actions/jobActions";
 // import { deleteRespond, getJobSecret } from "../../actions/jobListActions";
 
+import axios from "axios";
+
 class UserRespondList extends React.Component<any> {
   setPanel = (panel: string) => {
     const { location } = this.props.router;
@@ -75,7 +77,7 @@ class UserRespondList extends React.Component<any> {
                 if (!j) return;
                 return (
                   <div key={r._id}>
-                    <UserRespondJob respond={r} job={j} deleteUserRespond={this.props.deleteUserRespond} userResponds={respond} getJobSecret={this.props.getJobSecret} />
+                    <UserRespondJob respond={r} job={j} deleteUserRespond={this.props.deleteUserRespond} userResponds={respond} />
                     <hr className="w-100 m-0" />
                   </div>
                 );
@@ -124,7 +126,8 @@ export class JobSecretModal extends React.Component<any> {
 
 class UserRespondJob extends React.Component<any> {
   state = {
-    secretModal: false
+    secretModal: false,
+    jobSecret: null
   };
 
   toggleSecretModal = () => {
@@ -132,17 +135,35 @@ class UserRespondJob extends React.Component<any> {
     this.setState({ secretModal: !secretModal });
   };
 
-  componentDidUpdate() {
-    if (this.props.status === "APPROVED" && this.props.secretStatus === "IDLE") this.props.getJobSecret(this.props.job._id);
+  cancelToken = axios.CancelToken.source();
+
+  getJobSecret = (jobId: string) => {
+    axios
+      .get("/api/job/secret", { cancelToken: this.cancelToken.token, params: { jobId }, headers: { "x-auth-token": sessionStorage.getItem("authToken") } })
+      .then(s => this.setState({ jobSecret: s.data }))
+      .catch(() => {});
+  };
+
+  componentDidMount() {
+    const { job } = this.props;
+    if (!this.state.jobSecret) this.getJobSecret(job._id);
   }
 
+  componentWillUnmount() {
+    this.cancelToken.cancel();
+  }
+
+  // componentDidUpdate() {
+  //   if (this.props.status === "APPROVED" && this.props.secretStatus === "IDLE") this.props.getJobSecret(this.props.job._id);
+  // }
+
   render() {
-    const { secretModal } = this.state;
+    const { secretModal, jobSecret } = this.state;
     const { job, respond } = this.props;
     const hours = Math.round(job.timespan / 60 / 60 / 1000);
     return (
       <div className="d-flex flex-column w-100 p-3">
-        <JobSecretModal toggle={this.toggleSecretModal} secretData={job.secretData} open={secretModal} />
+        <JobSecretModal toggle={this.toggleSecretModal} secretData={jobSecret} open={secretModal} />
         <div className="d-flex">
           {(() => {
             switch (respond.status) {
@@ -202,6 +223,7 @@ const mapDispatchToProps = {
   fetchUserResponds,
   deleteUserRespond,
   fetchRespondJobs
+  // fetchJobSecret
 };
 
 const mapStateToProps = (store: any) => ({

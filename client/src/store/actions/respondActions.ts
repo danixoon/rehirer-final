@@ -1,23 +1,11 @@
 import axios from "axios";
 import { handleActionError } from "../store";
-// import { async } from "q";
-
-async function mapDataToRespond(responds: any[], jobs: any[]) {
-  const token = sessionStorage.getItem("authToken");
-  return await Promise.all(
-    responds.map(async (r: any) => {
-      const job = jobs.find((d: any) => d._id === r.jobId);
-      if (r.status === "APPROVED") job.secretData = (await axios.get("/api/job/jobSecret", { params: { jobId: job._id }, headers: { "x-auth-token": token } })).data;
-      return { ...r, job };
-    })
-  );
-}
 
 export const fetchUserResponds = () => async (dispatch: any, getState: any) => {
   dispatch({ type: "RESPOND_FETCH_LOADING" });
   const token = sessionStorage.getItem("authToken");
   try {
-    const res = await axios.get("/api/user/myResponds", { headers: { "x-auth-token": token } });
+    const res = await axios.get("/api/respond/user", { headers: { "x-auth-token": token } });
     if (res.data.length === 0) return dispatch({ type: "RESPOND_FETCH_SUCCESS", payload: [] });
     // const data = await Promise.all(res.data.map(async (r: any) => {
     //   return { ...r, job: await  r.jobId }
@@ -37,7 +25,7 @@ export const addUserRespond = (jobId: string, message: string) => async (dispatc
   dispatch({ type: "RESPOND_ADD_LOADING" });
   const token = sessionStorage.getItem("authToken");
   try {
-    const res = await axios.get("/api/job/respond", { headers: { "x-auth-token": token }, params: { jobId, message } });
+    const res = await axios.get("/api/respond/create", { headers: { "x-auth-token": token }, params: { jobId, message } });
     // const jobs = await axios.get("/api/job/byId", { params: { ids: [jobId] }, headers: { "x-auth-token": token } });
     // dispatch({ type: "RESPOND_ADD_SUCCESS", payload: (await mapDataToRespond([res.data], jobs.data))[0] });
     dispatch({ type: "RESPOND_ADD_SUCCESS", payload: res.data });
@@ -50,7 +38,7 @@ export const deleteUserRespond = (respondId: string) => async (dispatch: any) =>
   dispatch({ type: "RESPOND_DELETE_LOADING" });
   const token = sessionStorage.getItem("authToken");
   try {
-    const res = await axios.get("/api/user/deleteRespond", { headers: { "x-auth-token": token }, params: { respondId } });
+    const res = await axios.get("/api/respond/delete", { headers: { "x-auth-token": token }, params: { respondId } });
     dispatch({ type: "RESPOND_DELETE_SUCCESS", payload: res.data });
   } catch (err) {
     handleActionError(dispatch, "RESPOND_DELETE_ERROR", err);
@@ -61,7 +49,7 @@ export const changeUserRespondStatus = (respondId: string, status: string) => as
   dispatch({ type: "RESPOND_MODIFY_LOADING" });
   const token = sessionStorage.getItem("authToken");
   try {
-    const res = await axios.get("/api/job/changeRespondStatus", { headers: { "x-auth-token": token }, params: { respondId, status } });
+    const res = await axios.get("/api/respond/setStatus", { headers: { "x-auth-token": token }, params: { respondId, status } });
     dispatch({ type: "RESPOND_MODIFY_SUCCESS", payload: res.data });
   } catch (err) {
     handleActionError(dispatch, "RESPOND_MODIFY_ERROR", err);

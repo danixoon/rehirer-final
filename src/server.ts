@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 import * as path from "path";
 
 // import auth from "./routes/api/auth";
-// import users from "./routes/api/users";
+import respond from "./routes/api/respond";
 import job from "./routes/api/job";
 import account from "./routes/api/account";
 import user from "./routes/api/user";
@@ -20,7 +20,7 @@ const app = express();
 app.use(express.json());
 
 // app.use("/api/auth", auth);
-// app.use("/api/users", users);
+app.use("/api/respond", respond);
 app.use("/api/job", job);
 app.use("/api/account", account);
 app.use("/api/user", user);

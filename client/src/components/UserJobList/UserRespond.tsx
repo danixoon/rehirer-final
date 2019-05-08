@@ -1,7 +1,6 @@
 import React from "react";
 import { UserRating } from "../UserProfilePage";
 import { Spinner } from "reactstrap";
-import axios from "axios";
 import { connect } from "react-redux";
 import { changeUserRespondStatus } from "../../store/actions/respondActions";
 // import { changeRespondStatus } from "../../actions/jobListActions";

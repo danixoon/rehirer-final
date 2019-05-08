@@ -35,17 +35,19 @@ class App extends React.Component<any> {
     // }
   }
   render() {
-    const { user } = this.props;
+    const { user, router } = this.props;
     const accountStatus = user.statuses.account;
+    const { location } = router;
+    const path = location.pathname + location.search;
     return (
       <div className="app align-items-stretch d-flex flex-column" style={{ minHeight: "100vh" }}>
         <Header />
         <Switch>
-          <Route path="/account/settings" component={accountStatus === "SUCCESS" ? UserProfilePage : AuthRequired("/account/settings")} />
-          <Route path="/user/responds" component={accountStatus === "SUCCESS" ? UserRespondList : AuthRequired("/user/responds")} />
+          <Route path="/account/settings" component={accountStatus === "SUCCESS" ? UserProfilePage : AuthRequired(path)} />
+          <Route path="/user/responds" component={accountStatus === "SUCCESS" ? UserRespondList : AuthRequired(path)} />
           <Route path="/account/auth" component={AuthPage} />
-          <Route path="/user/jobs" component={accountStatus === "SUCCESS" ? UserJobList : AuthRequired("/user/jobs")} />
-          <Route path="/jobs" component={accountStatus === "SUCCESS" ? JobListPage : AuthRequired("/jobs")} />
+          <Route path="/user/jobs" component={accountStatus === "SUCCESS" ? UserJobList : AuthRequired(path)} />
+          <Route path="/jobs" component={accountStatus === "SUCCESS" ? JobListPage : AuthRequired(path)} />
           <Route path="/main" component={StartPage} />
           <Route path="*" component={InvalidPage} />
         </Switch>
@@ -65,7 +67,8 @@ const mapDispatchToProps = {
   userAccountCheckToken
 };
 const mapStateToProps = (state: any) => ({
-  user: state.user
+  user: state.user,
+  router: state.router
 });
 
 export default connect(

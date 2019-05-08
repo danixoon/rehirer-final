@@ -52,7 +52,7 @@ export function createState(...entityNames: string[]): IInitialState {
 
 function getActionName(actionName: string) {
   const type = /[^_]+$/.exec(actionName);
-  console.log("ACTION", type);
+  // console.log("ACTION", type);
   if (type) return type[0];
 }
 

@@ -4,11 +4,12 @@ export interface IUserData {
   firstName: string;
   secondName: string;
   thirdName: string;
-  socialURL: string;
+  socialUrl: string;
   city: string;
   dob: Date;
   tags?: string[];
   userId: mongoose.Schema.Types.ObjectId;
+  description: string;
 }
 
 export interface IUserDataModel extends mongoose.Document, IUserData {}
@@ -26,7 +27,7 @@ const UserDataSchema = new Schema({
   thirdName: {
     type: String
   },
-  socialURL: {
+  socialUrl: {
     type: String
   },
   dob: {
@@ -46,6 +47,10 @@ const UserDataSchema = new Schema({
     ref: "User",
     required: true,
     unique: true
+  },
+  description: {
+    type: Schema.Types.String,
+    required: true
   }
 });
 

@@ -13,17 +13,18 @@ import { fetchUserJobs, deleteUserJob } from "../../store/actions/jobActions";
 import { fetchUserResponds } from "../../store/actions/respondActions";
 import UserJob from "./UserJob";
 import { authorsFetch } from "../../store/actions/authorActions";
+import SwitchPanelGroup, { SwitchPanel } from "../SwitchPanelGroup";
 // import { UserJob } from "./UserJob";
 
 class UserJobList extends React.Component<any> {
-  setPanel = (panel: string) => {
-    const { location } = this.props.router;
-    history.push(location.pathname + "?panel=" + panel);
-  };
+  // setPanel = (panel: string) => {
+  //   const { location } = this.props.router;
+  //   history.push(location.pathname + "?panel=" + panel);
+  // };
 
   componentDidMount() {
-    const panel = this.getPanel();
-    if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
+    // const panel = this.getPanel();
+    // if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
 
     this.props.fetchUserJobs();
     this.props.fetchUserResponds();
@@ -35,25 +36,39 @@ class UserJobList extends React.Component<any> {
       this.props.authorsFetch(job.entities.jobs.filter((j: any) => j.authorId === user.entities.account.userId).map((j: any) => j._id));
     }
 
-    const panel = this.getPanel();
-    if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
+    // const panel = this.getPanel();
+    // if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
   }
 
-  getPanel = () => {
-    const { location } = this.props.router;
-    const params = querystring.parse(location.search);
-    return params.panel;
-  };
+  // getPanel = () => {
+  //   const { location } = this.props.router;
+  //   const params = querystring.parse(location.search);
+  //   return params.panel;
+  // };
 
   render() {
-    const panel = this.getPanel();
+    // const panel = this.getPanel();
     const { job } = this.props;
-    console.log("SUPERRENDER");
-    console.log("SUPERRENDER");
+
     return (
       <div className="container">
         <div className="row">
-          <div
+          <SwitchPanelGroup>
+            <SwitchPanel name="pending" header="Ожидающие">
+              {job.statuses.jobs !== "SUCCESS" ? (
+                <Spinner color="primary" className="m-auto" />
+              ) : (
+                // ""
+                job.entities.jobs.map((j: any) => (
+                  <div key={j._id} className="col-100 border mb-2 w-100">
+                    <UserJob {...j} reload={this.props.fetchUserJob} delete={this.props.deleteUserJob} />
+                  </div>
+                ))
+              )}
+            </SwitchPanel>
+            <SwitchPanel name="completed" header="Выполненные" />
+          </SwitchPanelGroup>
+          {/* <div
             onClick={() => {
               this.setPanel("pending");
             }}
@@ -70,20 +85,9 @@ class UserJobList extends React.Component<any> {
             style={{ cursor: "pointer" }}
           >
             <p className={panel === "completed" ? "text-light" : ""}>Выполненные</p>
-          </div>
+          </div> */}
         </div>
-        <div className="row">
-          {job.statuses.jobs !== "SUCCESS" ? (
-            <Spinner color="primary" className="m-auto" />
-          ) : (
-            // ""
-            job.entities.jobs.map((j: any) => (
-              <div key={j._id} className="col-100 border mb-2 w-100">
-                <UserJob {...j} reload={this.props.fetchUserJob} delete={this.props.deleteUserJob} />
-              </div>
-            ))
-          )}
-        </div>
+        <div className="row" />
       </div>
     );
   }

@@ -50,5 +50,5 @@
     "exec": "yarn server:dev",
     "ext": "ts"
   },
-  "repository": "https://github.com/danixoon/rehirer"
+  "repository": "https://github.com/danixoon/rehirer-final"
 }

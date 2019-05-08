@@ -15,8 +15,7 @@ class UserJob extends React.Component<any> {
     const { label, city, timespan, price, description, _id, author, respond } = this.props;
     const { deleteModal } = this.state;
     const hours = Math.round(timespan / 1000 / 60 / 60);
-    console.log("SUPERRENDER");
-    console.log("SUPERRENDER");
+
     return (
       <div className="d-flex flex-column p-3 w-100">
         <AreYouSureModal sure={() => this.props.delete(_id)} open={deleteModal} toggle={this.toggleDeleteModal} />

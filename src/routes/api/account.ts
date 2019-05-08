@@ -87,12 +87,15 @@ const API: IAPI = {
         password: joi.string().required(),
         firstName: joi.string().required(),
         secondName: joi.string().required(),
+        description: joi.string().required(),
         thirdName: joi.string(),
         dob: joi.date().required(),
-        city: joi.string().required()
+        city: joi.string().required(),
+        socialUrl: joi.string(),
+        tags: joi.array()
       },
       access: ApiAccess.GUEST,
-      execute: async ({ username, password, email, firstName, secondName, thirdName, dob, city, socialURL }) => {
+      execute: async ({ username, description, password, email, firstName, secondName, thirdName, dob, city, socialUrl, tags }) => {
         const existingUser = await AccountData.findOne()
           .or([{ username }, { email: email }])
           .exec();
@@ -117,8 +120,10 @@ const API: IAPI = {
           secondName,
           thirdName,
           city,
-          socialURL,
-          userId: user.id
+          socialUrl,
+          userId: user.id,
+          tags,
+          description
         };
 
         const userProfile: IUserProfile = {
@@ -127,7 +132,6 @@ const API: IAPI = {
         };
 
         const fullUser = await Promise.all([new UserProfile(userProfile).save(), new UserData(userDataDoc).save(), new AccountData(accountData).save()]);
-
 
         return await new Promise((res, rej) => {
           jwt.sign(
@@ -139,7 +143,8 @@ const API: IAPI = {
             (err, token) => {
               if (err) rej(err);
               res({
-                token, ...fullUser[2]
+                token,
+                ...fullUser[2]
               });
             }
           );
