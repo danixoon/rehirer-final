@@ -7,8 +7,8 @@ import JobListPage from "./components/JobListPage";
 import UserProfilePage from "./components/UserProfilePage";
 import AuthPage from "./components/AuthPage";
 import { connect } from "react-redux";
-import { fetchUserProfile, fetchUserData } from "./actions/userActions";
-import { accountCheckToken } from "./actions/accountActions";
+import { userDataFetch, userProfileFetch, userAccountCheckToken } from "./store/actions/userActions";
+// import { userAccountCheckToken } from "./store/actions/userActions
 import UserJobList from "./components/UserJobList";
 import UserRespondList from "./components/UserRespondList";
 
@@ -19,23 +19,24 @@ class App extends React.Component<any> {
     super(props);
 
     const token = sessionStorage.getItem("authToken");
-    if (token) this.props.accountCheckToken(token);
+    if (token) this.props.userAccountCheckToken(token);
     // console.log("check");
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: any) {
     // console.log("what");
-    const { accountStatus, profile, userData } = this.props;
-    if (accountStatus === "SUCCESS") {
-      if (profile.status === "IDLE") this.props.fetchUserProfile();
-      if (userData.status === "IDLE") this.props.fetchUserData();
+    const { user } = this.props;
+    if (user.statuses.account === "SUCCESS") {
+      if (user.statuses.profile === "IDLE") this.props.userProfileFetch();
+      if (user.statuses.data === "IDLE") this.props.userDataFetch();
     }
 
     // console.log("OH NO");
     // }
   }
   render() {
-    const { accountStatus } = this.props;
+    const { user } = this.props;
+    const accountStatus = user.statuses.account;
     return (
       <div className="app align-items-stretch d-flex flex-column" style={{ minHeight: "100vh" }}>
         <Header />
@@ -59,14 +60,12 @@ const AuthRequired = (redirect: string) => () => <Redirect to={{ pathname: "/acc
 const ToProfile = () => <Redirect to="/account/settings" />;
 
 const mapDispatchToProps = {
-  fetchUserProfile,
-  fetchUserData,
-  accountCheckToken
+  userProfileFetch,
+  userDataFetch,
+  userAccountCheckToken
 };
 const mapStateToProps = (state: any) => ({
-  accountStatus: state.account.status,
-  profile: state.user.profile,
-  userData: state.user.data
+  user: state.user
 });
 
 export default connect(

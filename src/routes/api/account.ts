@@ -126,7 +126,8 @@ const API: IAPI = {
           userId: user.id
         };
 
-        await Promise.all([new UserProfile(userProfile).save(), new UserData(userDataDoc).save(), new AccountData(accountData).save()]);
+        const fullUser = await Promise.all([new UserProfile(userProfile).save(), new UserData(userDataDoc).save(), new AccountData(accountData).save()]);
+
 
         return await new Promise((res, rej) => {
           jwt.sign(
@@ -138,7 +139,7 @@ const API: IAPI = {
             (err, token) => {
               if (err) rej(err);
               res({
-                token
+                token, ...fullUser[2]
               });
             }
           );

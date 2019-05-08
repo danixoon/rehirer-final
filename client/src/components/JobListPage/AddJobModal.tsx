@@ -4,12 +4,13 @@ import Checkbox from "../Checkbox";
 import { TagInput } from "./TagInput";
 import { connect } from "react-redux";
 
-import { fetchJobs } from "../../actions/jobActions";
+// import { fetchJobs } from "../../actions/jobListActions";
 
 import axios from "axios";
 
 import joi from "joi";
 import InputCheck from "../ValidateInputField";
+import { addUserJob } from "../../store/actions/jobActions";
 
 interface IJobModalState {
   input: {
@@ -85,27 +86,15 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
     if (!this.state.input.validate) {
       const { city, label, description, price, secretInfo, timespan, tags } = this.state.input;
       this.props.toggle();
-      // this.props.pushJob(this.state.input);
-      axios
-        .get("/api/job/new", {
-          headers: {
-            "x-auth-token": sessionStorage.getItem("authToken")
-          },
-          params: {
-            city: isEmpty(city) ? undefined : city,
-            label,
-            description,
-            price,
-            secretInfo: isEmpty(secretInfo) ? undefined : secretInfo,
-            timespan: Number(timespan) * 60 * 60 * 1000,
-            tags
-          }
-        })
-        .then(res => {
-          console.log(res.data);
-          this.props.fetchJobs();
-        })
-        .catch(console.log);
+      this.props.addJob({
+        city: isEmpty(city) ? undefined : city,
+        label,
+        description,
+        price,
+        secretInfo: isEmpty(secretInfo) ? undefined : secretInfo,
+        timespan: Number(timespan) * 60 * 60 * 1000,
+        tags
+      });
     }
   };
 
@@ -190,7 +179,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
 }
 
 const mapDispatchToProps = {
-  fetchJobs
+  addJob: addUserJob
 };
 
 const mapStateToProps = (state: any) => {};

@@ -3,31 +3,14 @@ import { UserRating } from "../UserProfilePage";
 import { Spinner } from "reactstrap";
 import axios from "axios";
 import { connect } from "react-redux";
-import { changeRespondStatus } from "../../actions/jobActions";
+import { changeUserRespondStatus } from "../../store/actions/respondActions";
+// import { changeRespondStatus } from "../../actions/jobListActions";
 
 class UserRespond extends React.Component<any> {
-  state = {
-    status: "IDLE",
-    data: null as any
-  };
-  componentDidMount() {
-    this.fetchUserData(this.props.userId);
-  }
-  fetchUserData = (id: string) => {
-    this.setState({ status: "LOADING" });
-    axios
-      .get("/api/user/data", { params: { userId: id }, headers: { "x-auth-token": sessionStorage.getItem("authToken") } })
-      .then(res => this.setState({ data: res.data, status: "SUCCESS" }))
-      .catch(err => {
-        this.setState({ data: null, status: "ERROR" });
-        console.log(err);
-      });
-  };
   render() {
-    const { userId, message, _id, status: respondStatus, author } = this.props;
-    // const { status, data } = this.state;
-    const status = "SUCCESS";
-    console.log("YEAH");
+    const { respond, author } = this.props;
+    const { message, _id, status } = respond;
+    const user = author.statuses.authors === "SUCCESS" && author.entities.authors.find((a: any) => a.respondId === _id);
     return (
       <div className="container-fluid p-2">
         <div className="row no-gutters">
@@ -35,31 +18,33 @@ class UserRespond extends React.Component<any> {
             <img className="rounded-pill" style={{ height: "50px" }} src="https://picsum.photos/200" />
           </div>
           <div className="col p-0 d-flex flex-column">
-            {status === "SUCCESS" ? <p>{`${author.firstName} ${author.secondName}`}</p> : <Spinner color="primary" size="sm" />}
-            <span> {message} </span>
-            <div className="d-flex pt-2 flex-wrap">
-              {status === "SUCCESS" ? (
-                author.tags.map((t: any, i: number) => (
-                  <div key={i} className="bg-primary text-light mt-auto p-1 m-1">
-                    {t}
-                  </div>
-                ))
-              ) : (
-                <Spinner color="primary" size="sm" />
-              )}
-            </div>
+            {user ? (
+              <div>
+                <p>{`${user.data.firstName} ${user.data.secondName}`}</p>
+                <span> {message} </span>
+                <div className="d-flex pt-2 flex-wrap">
+                  {user.data.tags.map((t: any, i: number) => (
+                    <div key={i} className="bg-primary text-light mt-auto p-1 m-1">
+                      {t}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <Spinner color="primary" />
+            )}
           </div>
           <div className="col-md-auto col-100 d-flex flex-column justify-content-end">
             <UserRating className="ml-sm-auto mx-auto" rating={0.8} />
             {(() => {
-              switch (respondStatus) {
+              switch (status) {
                 case "PENDING":
                   return (
                     <div className="d-flex flex-column">
-                      <button onClick={() => this.props.changeRespondStatus(_id, "DECLINED")} className="btn btn-outline-danger  rounded-0 m-1 mt-0">
+                      <button onClick={() => this.props.changeUserRespondStatus(_id, "DECLINED")} className="btn btn-outline-danger  rounded-0 m-1 mt-0">
                         Отказать
                       </button>
-                      <button onClick={() => this.props.changeRespondStatus(_id, "APPROVED")} className="btn btn-primary rounded-0 m-1 mb-0 ">
+                      <button onClick={() => this.props.changeUserRespondStatus(_id, "APPROVED")} className="btn btn-primary rounded-0 m-1 mb-0 ">
                         Нанять
                       </button>
                     </div>
@@ -78,11 +63,11 @@ class UserRespond extends React.Component<any> {
 }
 
 const mapDispatchToProps = {
-  changeRespondStatus
+  changeUserRespondStatus
 };
 
 const mapStateToProps = (state: any) => ({
-  respond: state.job.job.respond
+  author: state.author
 });
 
 export default connect(

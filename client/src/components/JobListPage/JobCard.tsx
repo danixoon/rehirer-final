@@ -2,7 +2,8 @@ import React from "react";
 import axios from "axios";
 import { Spinner } from "reactstrap";
 import { connect } from "react-redux";
-import { deleteRespond } from "../../actions/jobActions";
+import { deleteUserRespond, fetchUserResponds } from "../../store/actions/respondActions";
+// import { deleteRespond } from "../../actions/jobListActions";
 
 const JobInfo = (props: { label: string } & any) => (
   <div className="mb-2">
@@ -50,42 +51,52 @@ class JobCard extends React.Component<IJobCardProps> {
     this.cancelToken.cancel("Component unmounted");
   }
 
-  render() {
-    const { respond, label, tags, description, authorId, city, timespan, price, toggleRespondModal, _id } = this.props;
-    const { author } = this.state;
-    const hours = Math.round(timespan / 1000 / 60 / 60);
-    const cardRespond = respond.find((r: any) => r.jobId === _id);
+  componentDidUpdate() {
+    const { respond } = this.props;
+    if (respond.statuses.responds === "IDLE" && respond.statuses.responds !== "LOADING") this.props.fetchUserResponds();
+  }
 
+  render() {
+    const { respond, job } = this.props;
+    const { author } = this.state;
+    const hours = Math.round(job.timespan / 1000 / 60 / 60);
+
+    const res = respond.statuses.responds === "SUCCESS" && respond.entities.responds.find((r: any) => r.jobId === job._id);
+    console.log("test");
     return (
       <div className="border rounded container-fluid no-gutters mb-2">
         <div className="row">
           <div className="col-sm-4 col-lg-3 border-bottom-0 border-md-right py-2 order-sm-1 order-2">
             <JobInfo label="Работодатель">{author ? `${author.firstName} ${author.secondName}` : <Spinner size="sm" color="primary" />}</JobInfo>
-            <JobInfo label="Город">{city}</JobInfo>
+            <JobInfo label="Город">{job.city}</JobInfo>
             <JobInfo label="Время выполнения">
               {hours} {"час" + bowHours(hours)}
             </JobInfo>
-            <JobInfo label="Предложенная цена">{price}₽</JobInfo>
-            <button
-              onClick={!cardRespond ? () => toggleRespondModal(_id) : () => this.props.deleteRespond(cardRespond._id)}
-              className={"btn w-100 rounded-0 " + (!cardRespond ? "btn-primary" : "btn-danger")}
-            >
-              {!cardRespond ? "Откликнуться" : "Отменить отклик"}
-            </button>
+            <JobInfo label="Предложенная цена">{job.price}₽</JobInfo>
+            {respond.statuses.responds === "SUCCESS" ? (
+              <button
+                onClick={!res ? () => this.props.toggleRespondModal(job._id) : () => this.props.deleteUserRespond(res._id)}
+                className={"btn w-100 rounded-0 " + (!res ? "btn-primary" : "btn-danger")}
+              >
+                {!res ? "Откликнуться" : "Отменить отклик"}
+              </button>
+            ) : (
+              <Spinner color="primary" />
+            )}
           </div>
           <div className="col py-2 order-1">
             <a href="#">
-              <h3>{label}</h3>
+              <h3>{job.label}</h3>
             </a>
             <div className="d-flex flex-wrap">
-              {tags.map((t, i) => (
+              {job.tags && job.tags.map((t: any, i: number) => (
                 <div key={i} className="bg-primary text-light mt-auto p-1 mr-1">
                   {t}
                 </div>
               ))}
             </div>
             <hr />
-            <span>{description}</span>
+            <span>{job.description}</span>
           </div>
         </div>
       </div>
@@ -101,10 +112,15 @@ export const bowHours = (hours: number) => {
 };
 
 const mapDispatchToProps = {
-  deleteRespond
+  deleteUserRespond,
+  fetchUserResponds
 };
 
+const mapStateToProps = (state: any) => ({
+  respond: state.respond
+});
+
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(JobCard);

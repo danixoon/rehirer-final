@@ -12,13 +12,13 @@ import { MessageSquare, User, Settings, LogOut, LogIn, Briefcase, ThumbsUp } fro
 import { Manager, Popper, Reference } from "react-popper";
 
 import { UncontrolledPopover, PopoverHeader, PopoverBody, Spinner } from "reactstrap";
-import { history } from "../../store";
-import { accountLogout } from "../../actions/accountActions";
+import { history } from "../../store/store";
+import { userAccountLogout } from "../../store/actions/userActions";
 
 class Header extends React.Component<any> {
   render() {
     const { location } = this.props.router;
-    const { userData, accountStatus, logout } = this.props;
+    const { user } = this.props;
     // console.log(location);
     return (
       <div className="shadow-sm w-100 container-fluid bg-white border-bottom" style={{ zIndex: 3 }}>
@@ -46,7 +46,7 @@ class Header extends React.Component<any> {
               {/* <button className="btn btn-primary rounded-pill p-2 d-flex"><MessageSquare /></button> */}
               {location.pathname.startsWith("/account/settings") ? <small className="mr-2">Аккаунт</small> : ""}
               <a className={"mx-auto nav-item text-secondary"}>
-                <UserData userData={userData} />
+                <UserData user={user} />
               </a>
               <button className="btn ml-2 btn-primary rounded-pill p-2 position-relative">
                 <User />
@@ -58,9 +58,9 @@ class Header extends React.Component<any> {
             <UncontrolledPopover trigger="legacy" placement="bottom" target="userContextMenu">
               {/* <PopoverHeader>Действия</PopoverHeader> */}
               {(() => {
-                switch (accountStatus) {
+                switch (user.statuses.account) {
                   case "SUCCESS":
-                    return <AuthPopover logout={logout} />;
+                    return <AuthPopover logout={this.props.logout} />;
                   case "IDLE":
                     return <GuestPopover />;
                   default:
@@ -75,9 +75,9 @@ class Header extends React.Component<any> {
   }
 }
 
-const UserData = ({ userData }: any) => {
-  if (userData.status === "LOADING") return <Spinner size="sm" color="primary" className="m-auto" />;
-  else return <span>{userData.status === "SUCCESS" ? `${userData.data.firstName} ${userData.data.secondName}` : "Войдите в аккаунт"}</span>;
+const UserData = ({ user }: any) => {
+  if (user.statuses.data === "LOADING") return <Spinner size="sm" color="primary" className="m-auto" />;
+  else return <span>{user.statuses.data === "SUCCESS" ? `${user.entities.data.firstName} ${user.entities.data.firstName}` : "Войдите в аккаунт"}</span>;
 };
 
 const AuthPopover = ({ logout }: any) => {
@@ -136,12 +136,11 @@ const NavItem = (props: { active?: boolean; to: string } & React.DetailedHTMLPro
 
 const mapStateToProps = (store: any) => ({
   router: store.router,
-  accountStatus: store.account.status,
-  userData: store.user.data
+  user: store.user
 });
 
 const mapDispatchToProps = {
-  logout: accountLogout
+  logout: userAccountLogout
 };
 
 export default connect(

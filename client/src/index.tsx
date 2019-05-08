@@ -4,7 +4,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
 import { Provider } from "react-redux";
-import store, { history } from "./store";
+import store, { history } from "./store/store";
 
 import "./_custom.scss";
 // import "bootstrap/js/dist"

@@ -3,7 +3,8 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 import Checkbox from "../Checkbox";
 import { TagInput } from "./TagInput";
 import { connect } from "react-redux";
-import { addRespond } from "../../actions/jobActions";
+import { addUserRespond } from "../../store/actions/respondActions";
+// import { addRespond } from "../../actions/jobListActions";
 
 // import { pushJob } from "../../actions/jobActions";
 
@@ -47,7 +48,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
           <ModalFooter>
             <Button
               onClick={() => {
-                this.props.addRespond(jobId, message);
+                this.props.addUserRespond(jobId, message);
                 toggle();
               }}
               className="rounded-0"
@@ -66,7 +67,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
 }
 
 const mapDispatchToProps = {
-  addRespond
+  addUserRespond
 };
 
 const mapStateToProps = (state: any) => {};

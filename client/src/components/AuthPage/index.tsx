@@ -1,8 +1,8 @@
 import React from "react";
 
 import { connect } from "react-redux";
-import { accountLogin, accountCheckToken } from "../../actions/accountActions";
-import { history } from "../../store";
+import { userAccountLogin, userAccountCheckToken } from "../../store/actions/userActions";
+import { history } from "../../store/store";
 import { ArrowLeft } from "react-feather";
 import { TagInput } from "../JobListPage/TagInput";
 import axios from "axios";
@@ -102,9 +102,9 @@ class AuthPage extends React.Component<any> {
   };
 
   componentDidUpdate() {
-    const { status, location } = this.props;
+    const { user, location } = this.props;
     // console.log(location);
-    if (status === "SUCCESS") history.push((location && location.state && location.state.redirect) || "/account/settings");
+    if (user.statuses.account === "SUCCESS") history.push((location && location.state && location.state.redirect) || "/account/settings");
   }
 
   componentDidMount() {}
@@ -273,13 +273,12 @@ class SignUpForm extends React.Component<any> {
 }
 
 const mapDispatchToProps = {
-  accountLogin,
-  accountCheckToken
+  accountLogin: userAccountLogin,
+  accountCheckToken: userAccountCheckToken
 };
 
 const mapStateToProps = (state: any) => ({
-  status: state.account.status,
-  error: state.account.error,
+  user: state.user,
   router: state.router
 });
 

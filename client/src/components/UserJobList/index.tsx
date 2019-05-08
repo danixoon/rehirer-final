@@ -2,14 +2,17 @@ import React from "react";
 import { connect } from "react-redux";
 import querystring from "query-string";
 
-import { history } from "../../store";
-import { fetchUserJob, fetchUserData, deleteUserJob } from "../../actions/userActions";
+import { history } from "../../store/store";
+
+// import { fetchUserData } from "../.."
 import { Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
 import { string } from "joi";
 import InputCheck from "../ValidateInputField";
-import { bowHours } from "../JobListPage/JobCard";
-import UserRespond from "./UserRespond";
+import { fetchUserJobs, deleteUserJob } from "../../store/actions/jobActions";
+import { fetchUserResponds } from "../../store/actions/respondActions";
+import UserJob from "./UserJob";
+import { authorsFetch } from "../../store/actions/authorActions";
 // import { UserJob } from "./UserJob";
 
 class UserJobList extends React.Component<any> {
@@ -22,10 +25,16 @@ class UserJobList extends React.Component<any> {
     const panel = this.getPanel();
     if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
 
-    this.props.fetchUserJob();
+    this.props.fetchUserJobs();
+    this.props.fetchUserResponds();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: any) {
+    const { job, author, user } = this.props;
+    if (job.statuses.jobs === "SUCCESS" && prevProps.job.statuses.jobs === "LOADING") {
+      this.props.authorsFetch(job.entities.jobs.filter((j: any) => j.authorId === user.entities.account.userId).map((j: any) => j._id));
+    }
+
     const panel = this.getPanel();
     if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
   }
@@ -64,11 +73,11 @@ class UserJobList extends React.Component<any> {
           </div>
         </div>
         <div className="row">
-          {job.status !== "SUCCESS" ? (
+          {job.statuses.jobs !== "SUCCESS" ? (
             <Spinner color="primary" className="m-auto" />
           ) : (
             // ""
-            job.data.map((j: any) => (
+            job.entities.jobs.map((j: any) => (
               <div key={j._id} className="col-100 border mb-2 w-100">
                 <UserJob {...j} reload={this.props.fetchUserJob} delete={this.props.deleteUserJob} />
               </div>
@@ -81,13 +90,17 @@ class UserJobList extends React.Component<any> {
 }
 
 const mapStateToProps = (store: any) => ({
+  author: store.author,
   router: store.router,
-  job: store.user.job
+  job: store.job,
+  user: store.user
 });
 
 const mapDispatchToProps = {
-  fetchUserJob,
-  deleteUserJob
+  fetchUserJobs,
+  deleteUserJob,
+  fetchUserResponds,
+  authorsFetch
 };
 
 export default connect(
@@ -103,61 +116,6 @@ export interface IUserJobProps {
   timespan: number;
   price: number;
   [key: string]: any;
-}
-
-class UserJob extends React.Component<any> {
-  state = {
-    deleteModal: false
-  };
-
-  toggleDeleteModal = () => {
-    const { deleteModal } = this.state;
-    this.setState({ deleteModal: !deleteModal });
-  };
-  render() {
-    const { label, city, timespan, price, description, respond, _id, author } = this.props;
-    const { deleteModal } = this.state;
-    const hours = Math.round(timespan / 1000 / 60 / 60);
-
-    console.log("SUPERRENDER");
-    console.log("SUPERRENDER");
-    return (
-      <div className="d-flex flex-column p-3 w-100">
-        <AreYouSureModal sure={() => this.props.delete(_id)} open={deleteModal} toggle={this.toggleDeleteModal} />
-        <div className="d-flex">
-          <h3>{label}</h3>
-          <button onClick={this.toggleDeleteModal} className="btn btn-outline-danger rounded-0 ml-auto">
-            Удалить
-          </button>
-        </div>
-        <span>{description}</span>
-        <hr className="m-0 my-3" />
-        <p>Город</p>
-        <span className="mb-2">{city}</span>
-        <p>Время выполнения</p>
-        <span className="mb-2">
-          {hours} {"час" + bowHours(hours)}
-        </span>
-        <p>Цена</p>
-        <span className="mb-2">{price}₽</span>
-        <p className="mb-2">Отклики</p>
-        <div className="container-fluid row no-gutters p-0">
-          {/* {status !== "SUCCESS" ? (
-            <Spinner color="primary" className="m-auto" />
-          ) : responds.length === 0 ? (
-            <span>Пока нет</span>
-          ) : ( */}
-          {respond &&
-            respond.map((r: any) => (
-              <div key={r._id} className="border-top w-100">
-                <UserRespond {...r} />
-              </div>
-            ))}
-          {/* )} */}
-        </div>
-      </div>
-    );
-  }
 }
 
 export class AreYouSureModal extends React.Component<any> {
@@ -188,3 +146,5 @@ export class AreYouSureModal extends React.Component<any> {
     );
   }
 }
+
+// export connect

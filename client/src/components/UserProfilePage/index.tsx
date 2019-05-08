@@ -58,10 +58,11 @@ class UserProfilePage extends React.Component<any> {
 
   render() {
     const { cursachSuccess } = this.state.input;
-    console.log(this.props.account);
-    if (this.props.userData.status !== "SUCCESS" || this.props.profile.status !== "SUCCESS") return <Spinner className="m-auto" color="primary" />;
-    const { firstName, secondName, thirdName } = this.props.userData.data;
-    const { username, email } = this.props.account.data;
+    const { user } = this.props;
+    // console.log(this.props.account);
+    if (user.statuses.data !== "SUCCESS" || user.statuses.profile !== "SUCCESS") return <Spinner className="m-auto" color="primary" />;
+    const { firstName, secondName, thirdName } = user.entities.data;
+    const { username, email } = user.entities.account;
     return (
       <div className="container row no-gutters mx-auto border border-top-0 bg-white" style={{ minHeight: "80vh", zIndex: 5 }}>
         <div className="col-md-4 col-md-auto">
@@ -116,9 +117,7 @@ class UserProfilePage extends React.Component<any> {
 }
 
 const mapStateToProps = (state: any) => ({
-  profile: state.user.profile,
-  userData: state.user.data,
-  account: state.account
+  user: state.user
 });
 
 export default connect(mapStateToProps)(UserProfilePage);

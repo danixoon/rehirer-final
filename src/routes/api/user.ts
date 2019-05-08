@@ -18,13 +18,11 @@ const API: IAPI = {
   get: {
     profile: {
       access: ApiAccess.TOKEN,
-      execute: async ({ id }): Promise<any> => {
+      execute: async ({ id, userId }): Promise<any> => {
         // const account = await AccountData.findOne({ username }).exec();
         // const user = await User.findOne({ accountDataId: account.id }).exec();
         // const user = await User.findById(id).exec();
-        const profile = await UserProfile.findOne({ userId: id })
-          .select("-_id -__v")
-          .exec();
+        const profile = await UserProfile.findOne({ userId: userId || id }).exec();
         if (profile) return profile.toObject();
         else throw apiError("user not found", 404);
         // result.toJSON();
