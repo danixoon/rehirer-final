@@ -37,7 +37,7 @@ export class InputValidate extends React.Component<InputValidateProps> {
   };
 
   render() {
-    const { children, disabled, idleMessage, successMessage, error, value } = this.props;
+    const { children, style, className, disabled, idleMessage, successMessage, error, value } = this.props;
 
     let message;
     if (disabled) message = idleMessage;
@@ -45,7 +45,7 @@ export class InputValidate extends React.Component<InputValidateProps> {
     else message = successMessage;
 
     return (
-      <div>
+      <div style={style} className={className || "w-100"}>
         {this.bindInputProps(value)}
         <small className={disabled ? "text-secondary" : error ? "text-danger" : "text-primary"}>{message}</small>
       </div>
@@ -137,7 +137,7 @@ export class InputValidateGroup extends React.Component<InputValidateGroupProps>
       });
     });
 
-    return <div>{childs}</div>;
+    return childs;
   }
 }
 
