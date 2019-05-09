@@ -20,11 +20,6 @@ class SwitchPanelGroup extends React.Component<React.PropsWithChildren<ISwitchPa
     return params.panel as string;
   };
 
-  // componentDidUpdate() {
-  //   const panel = this.getPanel();
-  //   if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
-  // }
-
   render() {
     const { children } = this.props;
     const panel = this.getPanel();
@@ -32,20 +27,24 @@ class SwitchPanelGroup extends React.Component<React.PropsWithChildren<ISwitchPa
     console.log("render");
 
     let activeContent;
+    let childProps = {} as any;
     const childs = React.Children.map(children, (child: any) => {
       // if (!React.isValidElement(child)) return;
       let props = child.props as any;
       panelNames.push(props.name);
       if (props.name === panel) {
         activeContent = props.children;
+        childProps = { style: props.style, className: props.className };
         return React.cloneElement<any>(child, { ...child.props, active: true });
       } else return React.cloneElement<any>(child, { ...child.props, setPanel: this.setPanel, active: false });
     });
     if (!panelNames.includes(panel)) this.setPanel(panelNames[0]);
     return (
-      <div className="container">
+      <div className="container d-flex flex-column">
         <div className="row">{childs}</div>
-        <div className="row">{activeContent}</div>
+        <div {...childProps} className={"row " + childProps.className || ""}>
+          {activeContent}
+        </div>
       </div>
     );
   }

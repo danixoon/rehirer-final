@@ -15,13 +15,9 @@ export class TagInput extends React.Component<ITagInputProps> {
   addTag = (tag: string) => {
     this.props.addTag(tag);
     this.setState({ tagInput: "" });
-    // const { tags } = this.state;
-    // this.setState({ tags: [...tags, tag], tagInput: "" });
   };
   removeTag = (tag: string) => {
     this.props.removeTag(tag);
-    // const { tags } = this.state;
-    // this.setState({ tags: tags.filter(t => t != tag) });
   };
   onChange = (e: any) => {
     this.setState({ [e.target.name]: e.target.value });

@@ -2,9 +2,8 @@ import React from "react";
 import Search from "../Search";
 import SlideBarTree from "./SlideBarTree";
 import SlideBarRange from "./SlideBarRange";
-import { CustomInput } from "reactstrap";
+
 import AddJobModal from "./AddJobModal";
-import SlideBarTags from "./SlideBarTags";
 
 const modals = {
   addJob: AddJobModal
@@ -39,20 +38,14 @@ class SideBar extends React.Component {
     return (
       <div className="shadow-sm p-3 overflow-auto sticky-top bg-white border border-top-0" style={{ zIndex: 4 }}>
         {modal.component ? <modal.component open={modal.open} toggle={this.toggleModal} /> : ""}
-        {/* <ModalExample open={true} /> */}
-        {/* <input placeholder="Введите запрос" className="input w-100" /> */}
+
         <div className="mb-3">
           <button className="btn btn-primary w-100 rounded-0 mb-3" onClick={this.toggleModal}>
             Предложить вакансию
           </button>
           <Search />
         </div>
-        <SlideBarTree
-          placeholder="Введите тег"
-          onSubmit={this.addItem}
-          items={items.map((item, i) => ({ label: item, onClick: () => this.removeItem(i) }))}
-          header="Теги"
-        />
+        <SlideBarTree placeholder="Введите тег" onSubmit={this.addItem} items={items.map((item, i) => ({ label: item, onClick: () => this.removeItem(i) }))} header="Теги" />
 
         <SlideBarRange label="Цена" />
       </div>

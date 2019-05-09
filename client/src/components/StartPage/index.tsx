@@ -4,15 +4,8 @@ import background from "../../images/background.jpg";
 
 import logoBig from "../../images/logo-big.png";
 
-import Search from "../Search";
-import UserProfileIcon from "../UserProfileIcon";
-
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-
 class StartPage extends React.Component<any> {
   render() {
-    // console.log(this.props);
     return (
       <div className="fluid-container bg-white">
         <div className="row no-gutters">
@@ -28,14 +21,12 @@ class StartPage extends React.Component<any> {
                   Rehirer
                 </h1>
                 <h3 className="text-dark">Поиск подработок</h3>
-                {/* <Link to="/jobs"> */}
+
                 <button onClick={() => this.props.history.push("/jobs")} className="btn btn-primary rounded-0 p-3 px-5 mt-5">
                   Найти работу
                 </button>
-                {/* </Link> */}
               </div>
             </div>
-            {/*  */}
           </div>
         </div>
       </div>

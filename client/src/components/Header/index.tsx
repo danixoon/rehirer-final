@@ -2,14 +2,11 @@ import React from "react";
 
 import icon from "../../images/icon.png";
 import Search from "../Search";
-import UserProfileIcon from "../UserProfileIcon";
 
 import { connect } from "react-redux";
 
 import { Link } from "react-router-dom";
-import { MessageSquare, User, Settings, LogOut, LogIn, Briefcase, ThumbsUp } from "react-feather";
-
-import { Manager, Popper, Reference } from "react-popper";
+import { User, Settings, LogOut, LogIn, Briefcase, ThumbsUp } from "react-feather";
 
 import { UncontrolledPopover, PopoverHeader, PopoverBody, Spinner } from "reactstrap";
 import { history } from "../../store/store";
@@ -19,7 +16,7 @@ class Header extends React.Component<any> {
   render() {
     const { location } = this.props.router;
     const { user } = this.props;
-    // console.log(location);
+
     return (
       <div className="shadow-sm w-100 container-fluid bg-white border-bottom" style={{ zIndex: 3 }}>
         <div className="row" style={{ minHeight: "70px" }}>
@@ -30,33 +27,25 @@ class Header extends React.Component<any> {
             <NavItem to="/main" active={location.pathname.startsWith("/main")}>
               Главная
             </NavItem>
-            {/* </Link> */}
-            {/* <Link to="/jobs"> */}
             <NavItem to="/jobs" active={location.pathname.startsWith("/jobs")}>
               Вакансии
             </NavItem>
-            {/* </Link> */}
-            {/* <NavItem to="/main"> Анкеты </NavItem> */}
           </div>
           <div className="col-md-2 align-items-center order-sm-3 p-2 order-4" style={{ display: location.pathname === "/jobs" ? "none" : "flex" }}>
             <Search />
           </div>
           <div className="mr-sm-2 col-sm w-100 d-flex order-4 align-items-center justify-items-end justify-content-end  p-2">
             <div id="userContextMenu" className="d-flex align-items-center">
-              {/* <button className="btn btn-primary rounded-pill p-2 d-flex"><MessageSquare /></button> */}
               {location.pathname.startsWith("/account/settings") ? <small className="mr-2">Аккаунт</small> : ""}
               <a className={"mx-auto nav-item text-secondary"}>
                 <UserData user={user} />
               </a>
               <button className="btn ml-2 btn-primary rounded-pill p-2 position-relative">
                 <User />
-                {/* <div> */}
                 <span className="notification-badge " />
-                {/* </div> */}
               </button>
             </div>
             <UncontrolledPopover trigger="legacy" placement="bottom" target="userContextMenu">
-              {/* <PopoverHeader>Действия</PopoverHeader> */}
               {(() => {
                 switch (user.statuses.account) {
                   case "SUCCESS":
@@ -83,12 +72,6 @@ const UserData = ({ user }: any) => {
 const AuthPopover = ({ logout }: any) => {
   return (
     <PopoverBody>
-      {/* <button className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
-        <MessageSquare className="mr-2 text-primary " /> Сообщения
-        <span className="notification-badge " />
-      </button> */}
-      {/* <hr className="my-2" /> */}
-
       <button onClick={() => history.push("/user/jobs")} className="my-1 w-100 text-dark text-left rounded-0 btn d-block position-relative">
         <Briefcase className="mr-2 text-primary " /> Мои вакансии
         <span className="notification-badge " />

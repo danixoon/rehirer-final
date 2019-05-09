@@ -8,7 +8,6 @@ class Spoiler extends React.Component<{ header: string; height: number } & any> 
 
   toggle = () => {
     this.setState({ open: !this.state.open });
-    // console.log(this.state.open);
   };
 
   render() {

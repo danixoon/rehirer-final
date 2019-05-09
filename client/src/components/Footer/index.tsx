@@ -1,9 +1,5 @@
 import React from "react";
 
-import icon from "./icon.png";
-import Search from "../Search";
-import UserProfileIcon from "../UserProfileIcon";
-
 class Footer extends React.Component {
   render() {
     return (

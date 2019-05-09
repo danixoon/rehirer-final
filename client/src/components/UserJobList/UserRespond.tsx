@@ -1,9 +1,8 @@
 import React from "react";
-import { UserRating } from "../UserProfilePage";
 import { Spinner } from "reactstrap";
 import { connect } from "react-redux";
 import { changeUserRespondStatus } from "../../store/actions/respondActions";
-// import { changeRespondStatus } from "../../actions/jobListActions";
+import UserRating from "../UserRating";
 
 class UserRespond extends React.Component<any> {
   render() {

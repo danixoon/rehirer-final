@@ -8,7 +8,6 @@ import { connect } from "react-redux";
 import AddRespondModal from "./AddRespondModal";
 
 import { fetchJobList } from "../../store/actions/jobActions";
-import { fetchUserResponds } from "../../store/actions/respondActions";
 
 class JobListPage extends React.Component<any> {
   state = {
@@ -24,7 +23,6 @@ class JobListPage extends React.Component<any> {
 
   componentDidMount() {
     this.props.fetchJobList();
-    // this.props.fetchUserResponds();
   }
 
   render() {
@@ -55,8 +53,6 @@ class JobListPage extends React.Component<any> {
 
 const mapStateToProps = (state: any) => ({
   job: state.job
-  // respond: state.respond
-  // userResponds: state.userResponds
 });
 
 const mapDispatchToProps = {

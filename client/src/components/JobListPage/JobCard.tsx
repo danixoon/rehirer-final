@@ -3,7 +3,6 @@ import axios from "axios";
 import { Spinner } from "reactstrap";
 import { connect } from "react-redux";
 import { deleteUserRespond, fetchUserResponds } from "../../store/actions/respondActions";
-// import { deleteRespond } from "../../actions/jobListActions";
 
 const JobInfo = (props: { label: string } & any) => (
   <div className="mb-2">
@@ -66,7 +65,7 @@ class JobCard extends React.Component<IJobCardProps> {
     return (
       <div className="border rounded container-fluid no-gutters mb-2">
         <div className="row">
-          <div className="col-sm-4 col-lg-3 border-bottom-0 border-md-right py-2 order-sm-1 order-2">
+          <div className="col-sm-4 col-lg-3 border-bottom-0 border-md-right py-2 order-sm-1 order-2 d-flex flex-column">
             <JobInfo label="Работодатель">{author ? `${author.firstName} ${author.secondName}` : <Spinner size="sm" color="primary" />}</JobInfo>
             <JobInfo label="Город">{job.city}</JobInfo>
             <JobInfo label="Время выполнения">
@@ -81,7 +80,7 @@ class JobCard extends React.Component<IJobCardProps> {
                 {!res ? "Откликнуться" : "Отменить отклик"}
               </button>
             ) : (
-              <Spinner color="primary" />
+              <Spinner color="primary" className="m-auto" />
             )}
           </div>
           <div className="col py-2 order-1">
