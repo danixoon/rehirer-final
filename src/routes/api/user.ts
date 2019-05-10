@@ -54,9 +54,10 @@ const API: IAPI = {
         description: joi.string(),
         city: joi.string(),
         socialUrl: joi.string(),
+        avatarUrl: joi.string(),
         tags: joi.array()
       },
-      execute: async ({ id, firstName, secondName, thirdName, dob, description, city, socialUrl, tags }): Promise<any> => {
+      execute: async ({ id, firstName, secondName, thirdName, dob, description, city, avatarUrl, socialUrl, tags }): Promise<any> => {
         const user = await UserData.findOne({ userId: id }).exec();
         if (!user) throw apiError("user not found", 404);
 
@@ -68,7 +69,8 @@ const API: IAPI = {
           description: description || user.description,
           city: city || user.city,
           tags: tags || user.tags,
-          socialUrl: socialUrl || user.socialUrl
+          socialUrl: socialUrl || user.socialUrl,
+          avatarUrl: avatarUrl || user.avatarUrl
         };
 
         await user.updateOne(doc);

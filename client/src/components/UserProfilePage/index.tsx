@@ -1,5 +1,4 @@
 import React from "react";
-import avatar from "../../images/sticker.webp";
 import { Star, Eye, Edit2, Edit, Edit3 } from "react-feather";
 import _ from "lodash";
 import { CustomInput, FormGroup, Form, Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
@@ -8,7 +7,7 @@ import { connect } from "react-redux";
 import UserRating from "../UserRating";
 import { InputValidateGroup, InputValidate } from "../ValidateInputField";
 import joi from "joi";
-import { userDataModify } from "../../store/actions/userActions";
+import { userDataModify, userDataUploadAvatar } from "../../store/actions/userActions";
 import { signUpExtend } from "../AuthPage/SignUpForm";
 import { TagInput } from "../JobListPage/TagInput";
 
@@ -51,6 +50,8 @@ const UserProflieField = ({ label, value, onAction, children, name, schema }: { 
   </div>
 );
 
+function getDate(date: Date) {}
+
 class UserProfilePage extends React.Component<any> {
   state = {
     modal: {
@@ -63,7 +64,8 @@ class UserProfilePage extends React.Component<any> {
       prop: "",
       schema: joi.string(),
       forceValidate: false,
-      submitted: false
+      submitted: false,
+      correct: false
     }
   };
 
@@ -86,8 +88,9 @@ class UserProfilePage extends React.Component<any> {
 
   validated = (correct: boolean, value: any) => {
     const { modal } = this.state;
-    if (correct) this.setState({ modal: { ...modal, input: { ...modal.input, ...value } } });
-    else if (!modal.forceValidate) this.setState({ modal: { ...modal, forceValidate: true } });
+    modal.correct = correct;
+    modal.input = value;
+    this.setState({ modal });
   };
 
   componentDidMount() {
@@ -113,8 +116,15 @@ class UserProfilePage extends React.Component<any> {
 
   modifyFields = () => {
     const { modal } = this.state;
-    const [firstName = undefined, secondName = undefined, thirdName = undefined] = (modal.input.fullname && modal.input.fullname.split(/\s+/)) || [];
-    this.props.modifyUserData({ ...modal.input, firstName, secondName, thirdName });
+    if (!modal.correct) {
+      if (!modal.forceValidate) this.setState({ modal: { ...modal, forceValidate: true } });
+      return;
+    }
+    if (modal.prop === "username" || modal.prop === "email") {
+    } else {
+      const [firstName = undefined, secondName = undefined, thirdName = undefined] = (modal.input.fullname && modal.input.fullname.split(/\s+/)) || [];
+      this.props.modifyUserData({ ...modal.input, firstName, secondName, thirdName });
+    }
     modal.submitted = true;
     this.setState({ modal });
   };
@@ -142,7 +152,7 @@ class UserProfilePage extends React.Component<any> {
       default:
         return (
           <InputValidateGroup forceValidate={forceValidate} validated={this.validated}>
-            <InputValidate name={prop} schema={schema}>
+            <InputValidate successMessage="Отлично" idleMessage="Введите новое значение" name={prop} schema={schema}>
               <input className="w-100" />
             </InputValidate>
           </InputValidateGroup>
@@ -150,17 +160,29 @@ class UserProfilePage extends React.Component<any> {
     }
   };
 
+  uploadImage = (e: any) => {
+    const { _id } = this.props.user.entities.account;
+    let imageForm = new FormData();
+
+    imageForm.append("name", `${_id}-profile-${Date.now()}`);
+    imageForm.append("data", e.target.files[0]);
+
+    this.props.userDataUploadAvatar(imageForm);
+    // axios.post()
+  };
+
   render() {
     const { input, forceValidate, label, open, prop, schema } = this.state.modal;
     const { user } = this.props;
     // console.log(this.props.account);
     if (user.statuses.data.fetch !== "SUCCESS" || user.statuses.profile.fetch !== "SUCCESS") return <Spinner className="m-auto" color="primary" />;
-    let { firstName, secondName, thirdName, city, socialUrl, tags, description, dob } = user.entities.data;
-    dob = new Date(dob);
-    let day = dob.getDate().toString();
-    if (day.length === 1) day = "0" + day;
-    let month = dob.getUTCMonth().toString();
-    if (month.length === 1) month = month === "0" ? "01" : "0" + month;
+    let { firstName, secondName, thirdName, avatarUrl, city, socialUrl, tags, description, dob } = user.entities.data;
+    dob = new Date(dob).toISOString().split("T")[0];
+    let dor = new Date(user.entities.profile.dor).toISOString().split("T")[0];
+    // let day = dob.getDate().toString();
+    // if (day.length === 1) day = "0" + day;
+    // let month = dob.getUTCMonth().toString();
+    // if (month.length === 1) month = month === "0" ? "01" : "0" + month;
     // const { firstName, secondName, thirdName, city, socialURL } = user.entities.data;
     const { username, email } = user.entities.account;
     return (
@@ -168,23 +190,27 @@ class UserProfilePage extends React.Component<any> {
         <EditFieldModal open={open} label={label} submit={this.modifyFields} toggle={this.toggleEditFieldModal}>
           {this.renderModalContent()}
         </EditFieldModal>
-        <div className="col-md-4 col-md-auto">
-          <img className="w-100" src={avatar} />
-          <button className="btn border-primary text-primary w-100 mt-1 rounded-0">Сменить изображение</button>
+        <div className="col-md-4 col-md-auto px-2">
+          <img className="w-100" src={avatarUrl} />
+          {/* <button className="btn border-primary text-primary w-100 mt-1 rounded-0">
+            Сменить изображение
+            
+          </button> */}
+          <label htmlFor="file-upload" className="btn border-primary text-primary w-100 mt-1 rounded-0">
+            Сменить изображение
+            {/* ss   */}
+            {/* <button >Custom Upload</button> */}
+          </label>
+          <input type="file" id="file-upload" className="d-none" onChange={this.uploadImage} />
           <div className="mt-2">
             <p className="mb-0">Рейтинг</p> <UserRating className="mr-auto" rating={0.5} />
           </div>
-          <UserProflieField onAction={this.toggleEditFieldModal} label="Зарегистрирован" value="19.01.19" />
-          <UserProflieField onAction={this.toggleEditFieldModal} label="Отзывов" value="33">
-            Просмотреть <Eye height="1em" width="1em" />
-          </UserProflieField>
-          <UserProflieField onAction={this.toggleEditFieldModal} label="Выполнено работ" value="11">
-            Просмотреть <Eye height="1em" width="1em" />
-          </UserProflieField>
+          <UserProflieField onAction={this.toggleEditFieldModal} label="Зарегистрирован" value={dor} />
+          <UserProflieField onAction={this.toggleEditFieldModal} label="Выполнено работ" value="11" />
           <hr className="d-md-none" />
         </div>
 
-        <div className="col-md-4 col-100">
+        <div className="col-md-4 col-100 px-2">
           <UserProflieField
             schema={signUpExtend
               .signUp()
@@ -197,7 +223,7 @@ class UserProfilePage extends React.Component<any> {
           >
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
-          <UserProflieField name="tags" onAction={this.toggleEditFieldModal} label="Навыки" value={tags.join(" | ")}>
+          <UserProflieField name="tags" onAction={this.toggleEditFieldModal} label="Теги" value={tags.join(" | ")}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
           <UserProflieField name="city" onAction={this.toggleEditFieldModal} label="Город" value={city}>
@@ -211,7 +237,7 @@ class UserProfilePage extends React.Component<any> {
             name="dob"
             onAction={this.toggleEditFieldModal}
             label="Дата рождения"
-            value={`${day}.${month}.${dob.getFullYear()}`}
+            value={dob}
           >
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
@@ -220,7 +246,7 @@ class UserProfilePage extends React.Component<any> {
           </UserProflieField>
           <hr className="d-md-none" />
         </div>
-        <div className="col-md-4 col-100">
+        <div className="col-md-4 col-100 px-2">
           <UserProflieField onAction={this.toggleEditFieldModal} label="Логин" value={username}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
@@ -244,7 +270,8 @@ class UserProfilePage extends React.Component<any> {
 }
 
 const mapDispatchToProps = {
-  modifyUserData: userDataModify
+  modifyUserData: userDataModify,
+  userDataUploadAvatar
 };
 
 const mapStateToProps = (state: any) => ({

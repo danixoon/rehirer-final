@@ -7,7 +7,7 @@ import JobListPage from "./components/JobListPage";
 import UserProfilePage from "./components/UserProfilePage";
 import AuthPage from "./components/AuthPage";
 import { connect } from "react-redux";
-import { userDataFetch, userProfileFetch, userAccountCheckToken } from "./store/actions/userActions";
+import { userDataFetch, userProfileFetch, userAccountCheckToken, userAccountDataFetch } from "./store/actions/userActions";
 // import { userAccountCheckToken } from "./store/actions/userActions
 import UserJobList from "./components/UserJobList";
 import UserRespondList from "./components/UserRespondList";
@@ -32,6 +32,7 @@ class App extends React.Component<any> {
     // console.log("what");
     const { user } = this.props;
     if (user.statuses.account.auth === "SUCCESS") {
+      if (user.statuses.account.fetch === "IDLE") this.props.userAccountDataFetch();
       if (user.statuses.profile.fetch === "IDLE") this.props.userProfileFetch();
       if (user.statuses.data.fetch === "IDLE") this.props.userDataFetch();
     }
@@ -87,7 +88,8 @@ const VerifyAccount = ({ salt, hash }: any, userAccountCheckToken: any) => () =>
 const mapDispatchToProps = {
   userProfileFetch,
   userDataFetch,
-  userAccountCheckToken
+  userAccountCheckToken,
+  userAccountDataFetch
 };
 const mapStateToProps = (state: any) => ({
   user: state.user,

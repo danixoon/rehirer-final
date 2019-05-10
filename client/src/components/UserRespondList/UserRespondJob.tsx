@@ -54,7 +54,7 @@ export class UserRespondJob extends React.Component<any> {
                   </button>);
             case "APPROVED":
               return (<button onClick={this.toggleSecretModal} className="btn btn-primary rounded-0 ml-auto">
-                Работать
+                Подробнее
                   </button>);
             default:
               return (<button onClick={() => this.props.deleteUserRespond(respond._id)} className="btn btn-danger rounded-0 ml-auto">

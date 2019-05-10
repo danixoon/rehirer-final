@@ -4,7 +4,6 @@ export interface IAccountData {
   username: string;
   email: string;
   password: string;
-  avatarURL: string;
   userId: mongoose.Schema.Types.ObjectId;
   accountScope?: AccountScope;
 }
@@ -26,10 +25,6 @@ const AccountDataSchema = new Schema({
     unique: true
   },
   password: {
-    type: String,
-    required: true
-  },
-  avatarURL: {
     type: String,
     required: true
   },

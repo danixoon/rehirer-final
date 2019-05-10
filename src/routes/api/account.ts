@@ -62,6 +62,51 @@ const API: IAPI = {
         });
       }
     },
+    data: {
+      // schema: {},
+      access: ApiAccess.TOKEN,
+      execute: async ({ id }) => {
+        return await AccountData.findOne({ userId: id })
+          .select("-password -_id -__v")
+          .exec();
+      }
+    },
+    changePassword: {
+      schema: {
+        oldPassword: joi.string().required(),
+        newPassword: joi
+          .string()
+          .min(8)
+          .required()
+      },
+      access: ApiAccess.TOKEN,
+      execute: async ({ id, oldPassword, newPassword }) => {
+        const account = await AccountData.findOne({ userId: id }).exec();
+        const isMatch = await bcrypt.compare(oldPassword, account.password);
+        if (!isMatch) throw apiError("Неверный пароль");
+        // const account = await AccountData.updateOne({ userId: id }, { username, email }).exec();
+        await account.updateOne({ password: await genHash(newPassword) }).exec();
+        return;
+        // return await AccountData.findOne({ userId: id })
+        //   .select("-password -_id -__v")
+        //   .exec();
+      }
+    },
+    edit: {
+      schema: { email: joi.string().email(), username: joi.string().min(4) },
+      access: ApiAccess.TOKEN,
+      execute: async ({ id, email, username }) => {
+        const exists = await AccountData.findOne({ $or: [{ email }, { username }] }).exec();
+        if (exists) throw apiError("user with this email or username already exists");
+        // const account = await AccountData.updateOne({ userId: id }, { username, email }).exec();
+        const account = await AccountData.findOne({ userId: id }).exec();
+        account.updateOne({ email: email || account.email, username: username || account.username }).exec();
+        return;
+        // return await AccountData.findOne({ userId: id })
+        //   .select("-password -_id -__v")
+        //   .exec();
+      }
+    },
     verify: {
       schema: {
         hash: joi.string().required(),
@@ -162,7 +207,6 @@ const API: IAPI = {
           username,
           email,
           password: pass,
-          avatarURL: "https://pp.userapi.com/c840225/v840225382/7839a/kQV6BpB5yAg.jpg",
           userId: user.id
         };
 

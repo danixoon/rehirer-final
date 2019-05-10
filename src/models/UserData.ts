@@ -10,6 +10,7 @@ export interface IUserData {
   tags?: string[];
   userId: mongoose.Schema.Types.ObjectId;
   description: string;
+  avatarUrl?: string;
 }
 
 export interface IUserDataModel extends mongoose.Document, IUserData {}
@@ -28,6 +29,9 @@ const UserDataSchema = new Schema({
     type: String
   },
   socialUrl: {
+    type: String
+  },
+  avatarUrl: {
     type: String
   },
   dob: {

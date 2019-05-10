@@ -7,7 +7,7 @@ import * as colors from "colors/safe";
 export interface IAPIMethod {
   schema?: joi.SchemaLike;
   access: ApiAccess;
-  execute: (query: any, req: any) => Promise<any>;
+  execute: (query: any, req: Request | any, res: Response | any) => Promise<any>;
 }
 
 export function apiError(msg: string, code?: number) {
@@ -34,7 +34,7 @@ function executeMethod(method: IAPIMethod, query: any, res: Response, req: Reque
       query = result.value;
     }
     return method
-      .execute(query, req)
+      .execute(query, req, res)
       .then(resolve)
       .catch(reject);
   });

@@ -127,6 +127,7 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
                 name="label"
                 idleMessage="Наименование вашей вакансии"
                 successMessage="Отлично"
+                // overrideError="sdfksdojfi"
                 schema={joi
                   .string()
                   .min(5)

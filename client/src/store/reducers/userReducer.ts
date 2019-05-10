@@ -10,15 +10,24 @@ const defaultState = {
 const initalState = createState(defaultState);
 
 const userData = ["USER_DATA_FETCH_LOADING", "USER_DATA_FETCH_SUCCESS", "USER_DATA_FETCH_ERROR"];
-const userAccount = ["USER_ACCOUNT_AUTH_SUCCESS", "USER_ACCOUNT_AUTH_LOADING", "USER_ACCOUNT_AUTH_ERROR"];
+const userAccountAuth = ["USER_ACCOUNT_AUTH_SUCCESS", "USER_ACCOUNT_AUTH_LOADING", "USER_ACCOUNT_AUTH_ERROR"];
+const userAccountFetch = ["USER_ACCOUNT_FETCH_SUCCESS", "USER_ACCOUNT_FETCH_LOADING", "USER_ACCOUNT_FETCH_ERROR"];
 const userProfile = ["USER_PROFILE_FETCH_LOADING", "USER_PROFILE_FETCH_SUCCESS", "USER_PROFILE_FETCH_ERROR"];
+const userAccountTokenCheck = ["USER_ACCOUNT_TOKEN_CHECK_LOADING", "USER_ACCOUNT_TOKEN_CHECK_SUCCESS", "USER_ACCOUNT_TOKEN_CHECK_ERROR"];
 
 export default (s = initalState, action: IReduxAction): IInitialState => {
   if (userData.includes(action.type)) return handleFetchReducer(s, action, "data");
-  if (userAccount.includes(action.type)) return handleEntityReducer(s, action, "account", "auth");
+  if (userAccountAuth.includes(action.type)) return handleEntityReducer(s, action, "account", "auth");
+  if (userAccountFetch.includes(action.type)) return handleFetchReducer(s, action, "account");
   if (userProfile.includes(action.type)) return handleFetchReducer(s, action, "profile");
+  if (userAccountTokenCheck.includes(action.type)) return handleEntityReducer(s, action, "account", "auth");
 
   switch (action.type) {
+    // case "USER_ACCOUNT_TOKEN_CHECK_LOADING":
+    //   return handleLoadingReducer(s, "account", "tokenCheck");
+    // case "USER_ACCOUNT_TOKEN_CHECK_ERROR":
+    //   return handleErrorReducer(s, action.payload, "account", "tokenCheck");
+
     case "USER_DATA_FETCH_LOADING":
       return { ...s, statuses: { ...s.statuses, data: { modify: "LOADING" } } };
     case "USER_ACCOUNT_LOGOUT_SUCCESS":
