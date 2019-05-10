@@ -38,7 +38,7 @@ class JobListPage extends React.Component<any> {
             <div className="container d-flex flex-column p-0">
               <SortPanel />
               <AddRespondModal jobId={jobId} open={respondModal} toggle={this.toggleRespondModal} />
-              {job.statuses.jobs === "SUCCESS" ? (
+              {job.statuses.jobs.fetch === "SUCCESS" ? (
                 job.entities.jobs.map((j: any, i: number) => <JobCard key={i} job={j} toggleRespondModal={this.toggleRespondModal} />)
               ) : (
                 <Spinner color="primary" className="m-auto" />

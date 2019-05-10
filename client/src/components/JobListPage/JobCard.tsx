@@ -52,7 +52,7 @@ class JobCard extends React.Component<IJobCardProps> {
 
   componentDidUpdate() {
     const { respond } = this.props;
-    if (respond.statuses.responds === "IDLE" && respond.statuses.responds !== "LOADING") this.props.fetchUserResponds();
+    if (respond.statuses.responds.fetch === "IDLE" && respond.statuses.responds.fetch !== "LOADING") this.props.fetchUserResponds();
   }
 
   render() {
@@ -60,7 +60,7 @@ class JobCard extends React.Component<IJobCardProps> {
     const { author } = this.state;
     const hours = Math.round(job.timespan / 1000 / 60 / 60);
 
-    const res = respond.statuses.responds === "SUCCESS" && respond.entities.responds.find((r: any) => r.jobId === job._id);
+    const res = respond.statuses.responds.fetch === "SUCCESS" && respond.entities.responds.find((r: any) => r.jobId === job._id);
 
     return (
       <div className="border rounded container-fluid no-gutters mb-2">
@@ -72,7 +72,7 @@ class JobCard extends React.Component<IJobCardProps> {
               {hours} {"час" + bowHours(hours)}
             </JobInfo>
             <JobInfo label="Предложенная цена">{job.price}₽</JobInfo>
-            {respond.statuses.responds === "SUCCESS" ? (
+            {respond.statuses.responds.fetch === "SUCCESS" ? (
               <button
                 onClick={!res ? () => this.props.toggleRespondModal(job._id) : () => this.props.deleteUserRespond(res._id)}
                 className={"btn w-100 rounded-0 " + (!res ? "btn-primary" : "btn-danger")}

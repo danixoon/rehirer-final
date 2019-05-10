@@ -44,7 +44,37 @@ const API: IAPI = {
         // result.toJSON();
       }
     },
-    
+    edit: {
+      access: ApiAccess.TOKEN,
+      schema: {
+        firstName: joi.string(),
+        secondName: joi.string(),
+        thirdName: joi.string(),
+        dob: joi.string(),
+        description: joi.string(),
+        city: joi.string(),
+        socialUrl: joi.string(),
+        tags: joi.array()
+      },
+      execute: async ({ id, firstName, secondName, thirdName, dob, description, city, socialUrl, tags }): Promise<any> => {
+        const user = await UserData.findOne({ userId: id }).exec();
+        if (!user) throw apiError("user not found", 404);
+
+        const doc = {
+          firstName: firstName || user.firstName,
+          secondName: secondName || user.secondName,
+          thirdName: thirdName || user.thirdName,
+          dob: dob || user.dob,
+          description: description || user.description,
+          city: city || user.city,
+          tags: tags || user.tags,
+          socialUrl: socialUrl || user.socialUrl
+        };
+
+        await user.updateOne(doc);
+        return await UserData.findById(user.id).exec();
+      }
+    }
   }
 };
 

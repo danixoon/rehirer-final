@@ -18,7 +18,7 @@ class UserJobList extends React.Component<any> {
 
   componentDidUpdate(prevProps: any) {
     const { job, user } = this.props;
-    if (job.statuses.jobs === "SUCCESS" && prevProps.job.statuses.jobs === "LOADING") {
+    if (job.statuses.jobs.fetch === "SUCCESS" && prevProps.job.statuses.jobs.fetch === "LOADING") {
       this.props.authorsFetch(job.entities.jobs.filter((j: any) => j.authorId === user.entities.account.userId).map((j: any) => j._id));
     }
   }
@@ -27,10 +27,10 @@ class UserJobList extends React.Component<any> {
     const { job } = this.props;
 
     return (
-      <div className="container row no-gutters" style={{ minHeight: "85vh" }}>
+      <div className="container mx-auto row no-gutters" style={{ minHeight: "85vh" }}>
         <SwitchPanelGroup>
           <SwitchPanel name="pending" header="Ожидающие" className="d-flex flex-column flex-grow-1">
-            {job.statuses.jobs !== "SUCCESS" ? (
+            {job.statuses.jobs.fetch !== "SUCCESS" ? (
               <Spinner color="primary" className="m-auto" />
             ) : (
               // ""

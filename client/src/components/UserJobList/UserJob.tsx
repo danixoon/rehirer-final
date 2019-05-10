@@ -37,8 +37,8 @@ class UserJob extends React.Component<any> {
         <span className="mb-2">{price}₽</span>
         <p className="mb-2">Отклики</p>
         <div className="container-fluid row no-gutters p-0">
-          {respond.statuses.responds === "SUCCESS" &&
-            author.statuses.authors === "SUCCESS" &&
+          {respond.statuses.responds.fetch === "SUCCESS" &&
+            author.statuses.authors.fetch === "SUCCESS" &&
             respond.entities.responds
               .filter((r: any) => r.jobId === _id)
               .map((r: any) => (

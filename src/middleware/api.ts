@@ -29,21 +29,14 @@ function executeMethod(method: IAPIMethod, query: any, res: Response, req: Reque
       const result = joi.validate(query, joi.object().keys(method.schema as any), { allowUnknown: true, convert: true });
       if (result.error) {
         const err = { code: 400, msg: result.error.details[0].message };
-        sendError(res, err);
         return reject(err);
       }
       query = result.value;
     }
     return method
       .execute(query, req)
-      .then(data => {
-        res.status(200).send(data);
-        resolve(data);
-      })
-      .catch(err => {
-        sendError(res, err);
-        reject(err);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 }
 
@@ -74,9 +67,11 @@ const createApiMiddlware: (api: IAPI) => RequestHandler = api => async (req: Req
       );
     }
     const data = await executeMethod(method, { ...req.query, id }, res, req);
+    res.status(200).send(data);
     console.log(`${colors.green("API_SUCCESS")} --- ${methodName}\n`, data, "\n");
     next();
   } catch (err) {
+    sendError(res, err);
     console.log(`${colors.red("API_ERROR")} --- ${methodName}\n`, err, "\n");
   }
 };

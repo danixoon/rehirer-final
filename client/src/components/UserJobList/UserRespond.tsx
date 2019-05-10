@@ -8,7 +8,7 @@ class UserRespond extends React.Component<any> {
   render() {
     const { respond, author } = this.props;
     const { message, _id, status } = respond;
-    const user = author.statuses.authors === "SUCCESS" && author.entities.authors.find((a: any) => a.respondId === _id);
+    const user = author.statuses.authors.fetch === "SUCCESS" && author.entities.authors.find((a: any) => a.respondId === _id);
     return (
       <div className="container-fluid p-2">
         <div className="row no-gutters">

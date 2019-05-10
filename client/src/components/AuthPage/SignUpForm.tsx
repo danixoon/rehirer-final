@@ -5,7 +5,7 @@ import { InputValidateGroup, InputValidate } from "../ValidateInputField";
 
 import joi from "joi";
 
-const signUpExtend: any = joi.extend((j: any) => ({
+export const signUpExtend: any = joi.extend((j: any) => ({
   name: "signUp",
   base: j.string(),
   rules: [

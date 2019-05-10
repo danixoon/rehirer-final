@@ -3,8 +3,6 @@ import InputCheck, { InputValidateGroup, InputValidate } from "../ValidateInputF
 
 import joi, { any } from "joi";
 
-
-
 export class AuthForm extends React.Component<any> {
   switchForm = (form: string) => {
     const { forceSignUpValidate } = this.props;
@@ -28,7 +26,11 @@ export class AuthForm extends React.Component<any> {
               <input type="username" className="w-100 mb-2" placeholder="Логин | Email" />
             </InputValidate>
             <p className="mr-auto mb-2">Ваш пароль</p>
-            <InputValidate name="password" overrideError={user.statuses.account === "ERROR" && user.errors.account.msg} schema={joi.string().error(e => "Обязательное поле")}>
+            <InputValidate
+              name="password"
+              overrideError={user.statuses.account.auth === "ERROR" && user.errors.account.auth.msg}
+              schema={joi.string().error(e => "Обязательное поле")}
+            >
               <input type="password" className="w-100 mb-2" placeholder="Пароль" />
             </InputValidate>
             {/* <InputCheck className="mr-auto" error={validationMessage(signInDetails, "password")} /> */}
@@ -41,7 +43,10 @@ export class AuthForm extends React.Component<any> {
         <div className="col-auto d-sm-block d-none">
           <hr className="bg-muted m-0" style={{ height: "100%", width: "1px" }} />
         </div>
-        <div onKeyDown={e => e.key === "Enter" && this.switchForm("SIGNUP")} className="col-sm col-100 px-md-5 px-3 d-flex flex-column justify-content-center align-items-center">
+        <div
+          onKeyDown={e => e.key === "Enter" && this.switchForm("SIGNUP")}
+          className="col-sm mt-5 col-100 px-md-5 px-3 d-flex flex-column justify-content-center align-items-center"
+        >
           <p className="mb-5">Зарегистрироваться</p>
           <InputValidateGroup validated={(c, d) => validatedSignUp(0, c, d)} forceValidate={signUp.stages[0].forceValidate}>
             <p className="mr-auto my-2">Email</p>

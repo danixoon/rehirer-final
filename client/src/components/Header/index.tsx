@@ -47,7 +47,7 @@ class Header extends React.Component<any> {
             </div>
             <UncontrolledPopover trigger="legacy" placement="bottom" target="userContextMenu">
               {(() => {
-                switch (user.statuses.account) {
+                switch (user.statuses.account.auth) {
                   case "SUCCESS":
                     return <AuthPopover logout={this.props.logout} />;
                   case "IDLE":
@@ -65,8 +65,8 @@ class Header extends React.Component<any> {
 }
 
 const UserData = ({ user }: any) => {
-  if (user.statuses.data === "LOADING") return <Spinner size="sm" color="primary" className="m-auto" />;
-  else return <span>{user.statuses.data === "SUCCESS" ? `${user.entities.data.firstName} ${user.entities.data.firstName}` : "Войдите в аккаунт"}</span>;
+  if (user.statuses.data.fetch === "LOADING") return <Spinner size="sm" color="primary" className="m-auto" />;
+  else return <span>{user.statuses.data.fetch === "SUCCESS" ? `${user.entities.data.firstName} ${user.entities.data.secondName}` : "Войдите в аккаунт"}</span>;
 };
 
 const AuthPopover = ({ logout }: any) => {

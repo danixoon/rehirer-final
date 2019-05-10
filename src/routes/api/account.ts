@@ -38,12 +38,13 @@ const API: IAPI = {
           const accountData = await AccountData.findOne()
             .or([{ username: login }, { email: login }])
             .exec();
-          if (!accountData) rej(apiError("Неверный логин или пароль", 400));
+          if (!accountData) return rej(apiError("Неверный логин или пароль", 400));
 
           const isMatch = await bcrypt.compare(password, accountData.password);
-          if (!isMatch) rej(apiError("Неверный логин или пароль", 400));
+          if (!isMatch) return rej(apiError("Неверный логин или пароль", 400));
 
           const user = await User.findById(accountData.userId).exec();
+          if (!user.verifed) return rej(apiError("Аккаунт не активирован", 401));
           jwt.sign(
             {
               id: user.id
@@ -61,6 +62,36 @@ const API: IAPI = {
         });
       }
     },
+    verify: {
+      schema: {
+        hash: joi.string().required(),
+        salt: joi.string()
+      },
+      access: ApiAccess.GUEST,
+      execute: async ({ hash, salt: id }) => {
+        if (await bcrypt.compare(process.env.JWT_SECRET, hash)) {
+          const user = await User.findById(id).exec();
+
+          if (!user || user.verifed) throw apiError("access denied", 401);
+          else user.verifed = true;
+
+          await user.save();
+          return await new Promise((res, rej) =>
+            jwt.sign(
+              {
+                id: user.id
+              },
+              process.env.JWT_SECRET,
+              { expiresIn: "10h" },
+              (err, token) => {
+                if (err) rej(err);
+                res({ token });
+              }
+            )
+          );
+        } else throw apiError("access denied");
+      }
+    },
     checkToken: {
       schema: {
         token: joi.string().required()
@@ -72,9 +103,9 @@ const API: IAPI = {
             if (err) rej(err);
             else {
               // const user = await User.findById(userId).exec();
-              const accountData = await AccountData.findOne({ userId }).exec();
+              // const accountData = await AccountData.findOne({ userId }).exec();
               // if(!accou)
-              return res({ ...accountData.toObject(), token });
+              return res({ token });
             }
           });
         });
@@ -82,20 +113,41 @@ const API: IAPI = {
     },
     create: {
       schema: {
-        email: joi.string().required(),
-        username: joi.string().required(),
-        password: joi.string().required(),
-        firstName: joi.string().required(),
-        secondName: joi.string().required(),
-        description: joi.string().required(),
-        thirdName: joi.string(),
+        email: joi
+          .string()
+          .email()
+          .required(),
+        username: joi
+          .string()
+          .required()
+          .min(5),
+        password: joi
+          .string()
+          .required()
+          .min(8),
+        firstName: joi
+          .string()
+          .required()
+          .max(20),
+        secondName: joi
+          .string()
+          .required()
+          .max(20),
+        description: joi
+          .string()
+          .required()
+          .min(10),
+        thirdName: joi.string().max(20),
         dob: joi.date().required(),
-        city: joi.string().required(),
+        city: joi
+          .string()
+          .required()
+          .min(2),
         socialUrl: joi.string(),
-        tags: joi.array()
+        tags: joi.array().max(5)
       },
       access: ApiAccess.GUEST,
-      execute: async ({ username, description, password, email, firstName, secondName, thirdName, dob, city, socialUrl, tags }) => {
+      execute: async ({ username, description, password, email, firstName, secondName, thirdName, dob, city, socialUrl, tags }, req) => {
         const existingUser = await AccountData.findOne()
           .or([{ username }, { email: email }])
           .exec();
@@ -133,22 +185,24 @@ const API: IAPI = {
 
         const fullUser = await Promise.all([new UserProfile(userProfile).save(), new UserData(userDataDoc).save(), new AccountData(accountData).save()]);
 
-        return await new Promise((res, rej) => {
-          jwt.sign(
-            {
-              id: user.id
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: "10h" },
-            (err, token) => {
-              if (err) rej(err);
-              res({
-                token,
-                ...fullUser[2]
-              });
-            }
-          );
+        // const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(process.env.JWT_SECRET, await bcrypt.genSalt(11));
+        const url = `${req.protocol}://${req.get("host")}/account/verify?hash=${hash}&salt=${user.id}`;
+
+        req.smtp.sendMail({
+          from: "rehirer@gmail.com", // sender address
+          to: email, // list of receivers
+          subject: "Добро пожаловать на Rehirer!", // Subject line
+          // text: "Hello world?", // plain text body
+          html: `<p><b>Активируйте аккаунт, пройдя по этой ссылке</b></p><a href='${url}'>${url}</a>`
         });
+        // let info =
+
+        // const dev = await bcrypt.compare("token", hash);
+
+        // return await new Promise((res, rej) => {
+
+        // });
       }
     }
   }

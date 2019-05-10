@@ -3,6 +3,7 @@ import * as mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 export interface IUser {
+  verifed: boolean;
   // userId: number;
   // accountDataId: mongoose.Types.ObjectId;
   // userDataId: mongoose.Types.ObjectId;
@@ -15,6 +16,10 @@ export interface IUser {
 export interface IUserModel extends mongoose.Document, IUser {}
 
 const UserSchema = new Schema({
+  verifed: {
+    type: Schema.Types.Boolean,
+    default: false
+  }
   // userDataId: {
   //   type: Schema.Types.ObjectId,
   //   ref: "UserData",

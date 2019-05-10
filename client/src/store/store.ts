@@ -24,9 +24,9 @@ export function handleActionError(dispatch: any, action: string, err: any) {
   console.log(`Action Error:`, error);
 }
 
-interface IInitialState {
+export interface IInitialState {
   statuses: {
-    [key: string]: "LOADING" | "SUCCESS" | "ERROR" | "IDLE";
+    [key: string]: { [key: string]: "LOADING" | "SUCCESS" | "ERROR" | "IDLE" };
   };
   errors: {
     [key: string]: any | null;
@@ -36,18 +36,26 @@ interface IInitialState {
   };
 }
 
-export function createState(...entityNames: string[]): IInitialState {
-  const initalState = {
+export interface IStateSchema {
+  [key: string]: string[];
+}
+
+export function createState(schema: IStateSchema): IInitialState {
+  const initialState = {
     statuses: {} as any,
     errors: {} as any,
     entities: {} as any
   };
-  for (let e of entityNames) {
-    initalState.statuses[e] = "IDLE";
-    initalState.errors[e] = null;
-    initalState.entities[e] = {};
+  for (let e in schema) {
+    initialState.entities[e] = {};
+    initialState.statuses[e] = {};
+    initialState.errors[e] = {};
+    for (let p of schema[e]) {
+      initialState.errors[e][p] = null;
+      initialState.statuses[e][p] = "IDLE";
+    }
   }
-  return initalState;
+  return initialState;
 }
 
 function getActionName(actionName: string) {
@@ -56,23 +64,59 @@ function getActionName(actionName: string) {
   if (type) return type[0];
 }
 
-export function handleFetchReducer(state: any, action: IReduxAction, entityName: string) {
+export function handleEntityReducer(state: any, action: IReduxAction, entityName: string, actionName: string) {
   switch (getActionName(action.type)) {
     case "ERROR":
-      return handleErrorReducer(state, action.payload, entityName);
+      return handleErrorReducer(state, action.payload, entityName, actionName);
     case "SUCCESS":
-      return { ...state, statuses: { ...state.statuses, [entityName]: "SUCCESS" }, entities: { ...state.entities, [entityName]: action.payload } };
+      return {
+        ...state,
+        statuses: {
+          ...state.statuses,
+          [entityName]: {
+            ...state.statuses[entityName],
+            [actionName]: "SUCCESS"
+          }
+        },
+        entities: {
+          ...state.entities,
+          [entityName]: action.payload
+        }
+      };
     case "LOADING":
-      return handleLoadingReducer(state, entityName);
+      return handleLoadingReducer(state, entityName, actionName);
     default:
       return state;
   }
 }
 
-export function handleErrorReducer(state: any, error: any, entityName: string) {
-  return { ...state, statuses: { ...state.statuses, [entityName]: "ERROR" }, errors: { ...state.errors, [entityName]: error } };
+export function handleFetchReducer(state: any, action: IReduxAction, entityName: string) {
+  return handleEntityReducer(state, action, entityName, "fetch");
 }
 
-export function handleLoadingReducer(state: any, entityName: string) {
-  return { ...state, statuses: { ...state.statuses, [entityName]: "LOADING" } };
+export function handleErrorReducer(state: any, error: any, entityName: string, actionName: string) {
+  return {
+    ...state,
+    statuses: {
+      ...state.statuses,
+      [entityName]: { ...state.statuses[entityName], [actionName]: "ERROR" }
+    },
+    errors: {
+      ...state.errors,
+      [entityName]: { ...state.errors[entityName], [actionName]: error }
+    }
+  };
+}
+
+export function handleLoadingReducer(state: any, entityName: string, actionName: string) {
+  return {
+    ...state,
+    statuses: {
+      ...state.statuses,
+      [entityName]: {
+        ...state.statuses[entityName],
+        [actionName]: "LOADING"
+      }
+    }
+  };
 }

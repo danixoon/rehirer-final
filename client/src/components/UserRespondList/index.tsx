@@ -27,7 +27,7 @@ class UserRespondList extends React.Component<any> {
     const panel = this.getPanel();
     if (panel !== "completed" && panel !== "pending") this.setPanel("pending");
     const { job, respond } = this.props;
-    if (respond.statuses.responds === "SUCCESS" && prevProps.respond.statuses.responds === "LOADING") {
+    if (respond.statuses.responds.fetch === "SUCCESS" && prevProps.respond.statuses.responds.fetch === "LOADING") {
       this.props.fetchRespondJobs(respond.entities.responds.map((r: any) => r.jobId));
     }
   }
@@ -42,10 +42,10 @@ class UserRespondList extends React.Component<any> {
     const { respond, job } = this.props;
 
     return (
-      <div className="container row no-gutters" style={{ minHeight: "85vh" }}>
+      <div className="container mx-auto row no-gutters" style={{ minHeight: "85vh" }}>
         <SwitchPanelGroup>
           <SwitchPanel name="pending" header="Ожидающие" className="d-flex flex-column flex-grow-1">
-            {respond.statuses.responds !== "SUCCESS" || job.statuses.jobs !== "SUCCESS" ? (
+            {respond.statuses.responds.fetch !== "SUCCESS" || job.statuses.jobs.fetch !== "SUCCESS" ? (
               <Spinner color="primary" className="m-auto" />
             ) : (
               respond.entities.responds.map((r: any) => {

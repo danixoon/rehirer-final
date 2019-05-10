@@ -41,6 +41,17 @@ export const userDataFetch = () => async (dispatch: any, getState: any) => {
   }
 };
 
+export const userDataModify = (fields: any) => async (dispatch: any, getState: any) => {
+  dispatch({ type: "USER_DATA_MODIFY_LOADING" });
+  const token = sessionStorage.getItem("authToken");
+  try {
+    const res = await axios.get("/api/user/edit", { params: { ...fields }, headers: { "x-auth-token": token } });
+    dispatch({ type: "USER_DATA_MODIFY_SUCCESS", payload: res.data });
+  } catch (err) {
+    handleActionError(dispatch, "USER_DATA_MODIFY_ERROR", err);
+  }
+};
+
 export const userProfileFetch = () => async (dispatch: any, getState: any) => {
   // const state = getState();
   dispatch({ type: "USER_PROFILE_FETCH_LOADING" });

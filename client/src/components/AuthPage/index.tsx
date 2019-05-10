@@ -8,6 +8,7 @@ import axios from "axios";
 import joi, { func } from "joi";
 import { AuthForm } from "./AuthForm";
 import { SignUpForm } from "./SignUpForm";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
 function switchForm(action: string, payload: any) {
   switch (action) {
@@ -76,7 +77,9 @@ class AuthPage extends React.Component<any> {
           input: {} as any
         }
       ],
-      tags: [] as any
+      tags: [] as any,
+      // completed: false,
+      modal: false
     },
     signIn: {
       correct: false,
@@ -109,7 +112,7 @@ class AuthPage extends React.Component<any> {
   componentDidUpdate() {
     const { user, location } = this.props;
     // console.log(location);
-    if (user.statuses.account === "SUCCESS") history.push((location && location.state && location.state.redirect) || "/account/settings");
+    if (user.statuses.account.auth === "SUCCESS") history.push((location && location.state && location.state.redirect) || "/account/settings");
   }
 
   switchForm = (form: string) => {
@@ -135,16 +138,30 @@ class AuthPage extends React.Component<any> {
       return this.forceSignUpValidate(1);
     }
     const { fullname, password, username, dob, city, socialUrl, email, description } = { ...signUp.stages[0].input, ...signUp.stages[1].input } as any;
-    const [day, month, year] = dob.split('.');
+    const [day, month, year] = dob.split(".");
     this.setState({ status: "LOADING" });
     const names = fullname.split(/\s+/);
     axios
       .get("/api/account/create", {
-        params: { description, dob: new Date(year, month, day).getMilliseconds(), password, firstName: names[1], thirdName: names[2], secondName: names[0], email, tags: signUp.tags, username, city, socialUrl }
+        params: {
+          description,
+          dob: new Date(year, month, day).getMilliseconds(),
+          password,
+          firstName: names[1],
+          thirdName: names[2],
+          secondName: names[0],
+          email,
+          tags: signUp.tags,
+          username,
+          city,
+          socialUrl
+        }
       })
       .then(res => {
+        signUp.modal = true;
+        this.setState({ signUp });
         // console.lo
-        this.props.accountCheckToken(res.data.token);
+        // this.props.accountCheckToken(res.data.token);
       })
       .catch(console.log);
   };
@@ -158,20 +175,47 @@ class AuthPage extends React.Component<any> {
   render() {
     const { error, user } = this.props;
     const { signIn, form, signUp } = this.state;
-    return switchForm(form, {
-      user,
-      error,
-      login: this.login,
-      signIn,
-      switchForm: this.switchForm,
-      signUp,
-      addTag: this.addTag,
-      removeTag: this.removeTag,
-      registration: this.registration,
-      validatedSignIn: this.validatedSignIn,
-      validatedSignUp: this.validatedSignUp,
-      forceSignUpValidate: this.forceSignUpValidate
-    });
+    return (
+      <div>
+        <RegistrationSuccessModal open={signUp.modal} />
+        {switchForm(form, {
+          user,
+          error,
+          login: this.login,
+          signIn,
+          switchForm: this.switchForm,
+          signUp,
+          addTag: this.addTag,
+          removeTag: this.removeTag,
+          registration: this.registration,
+          validatedSignIn: this.validatedSignIn,
+          validatedSignUp: this.validatedSignUp,
+          forceSignUpValidate: this.forceSignUpValidate
+        })}
+      </div>
+    );
+  }
+}
+
+class RegistrationSuccessModal extends React.Component<any> {
+  render() {
+    const { open } = this.props;
+    return (
+      <Modal isOpen={open}>
+        <ModalHeader>Завершение регистрации</ModalHeader>
+        <ModalBody>
+          <p>Для активации аккаунта перейдите по ссылке в письме в указанном Вами почтовом ящике</p>
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={() => window.location.reload()} className="rounded-0 w-100" color="primary">
+            Завершить
+          </Button>
+          {/* <Button className="rounded-0" color="secondary" onClick={toggle}>
+            Отмена
+          </Button> */}
+        </ModalFooter>
+      </Modal>
+    );
   }
 }
 
