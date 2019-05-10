@@ -1,7 +1,9 @@
 import React from "react";
 import InputCheck, { InputValidateGroup, InputValidate } from "../ValidateInputField";
 
-import joi from "joi";
+import joi, { any } from "joi";
+
+
 
 export class AuthForm extends React.Component<any> {
   switchForm = (form: string) => {
@@ -21,17 +23,18 @@ export class AuthForm extends React.Component<any> {
         <div className="col-sm col-100 px-md-5 px-3 d-flex flex-column justify-content-center align-items-center" onKeyDown={e => e.key === "Enter" && login()}>
           <p className="mb-5">Войти</p>
           <InputValidateGroup validated={validatedSignIn} forceValidate={signIn.forceValidate}>
-            <InputValidate name="username" schema={joi.string().error(e => "Обязательное поле")}>
-              <input type="username" className="w-100" placeholder="Логин | Email" />
+            <p className="mr-auto mb-2">Ваш логин/email</p>
+            <InputValidate name="username" schema={joi.string()}>
+              <input type="username" className="w-100 mb-2" placeholder="Логин | Email" />
             </InputValidate>
-            {/* <InputCheck className="mr-auto" error={validationMessage(signInDetails, "username")} /> */}
-            <InputValidate name="password" schema={joi.string().error(e => "Обязательное поле")}>
-              <input type="password" className="w-100" placeholder="Пароль" />
+            <p className="mr-auto mb-2">Ваш пароль</p>
+            <InputValidate name="password" overrideError={user.statuses.account === "ERROR" && user.errors.account.msg} schema={joi.string().error(e => "Обязательное поле")}>
+              <input type="password" className="w-100 mb-2" placeholder="Пароль" />
             </InputValidate>
             {/* <InputCheck className="mr-auto" error={validationMessage(signInDetails, "password")} /> */}
-            {user.statuses.account === "ERROR" ? <small className="text-danger my-1 align-self-start">{user.errors.account.msg}</small> : ""}
+            {/* {user.statuses.account === "ERROR" ? <small className="text-danger my-1 align-self-start">{}</small> : ""} */}
           </InputValidateGroup>
-          <button onClick={login} className={"btn btn-primary w-100 rounded-0 "}>
+          <button onClick={login} className={"btn btn-primary w-100 rounded-0 mt-2 "}>
             Войти
           </button>
         </div>
@@ -40,39 +43,49 @@ export class AuthForm extends React.Component<any> {
         </div>
         <div onKeyDown={e => e.key === "Enter" && this.switchForm("SIGNUP")} className="col-sm col-100 px-md-5 px-3 d-flex flex-column justify-content-center align-items-center">
           <p className="mb-5">Зарегистрироваться</p>
-          <InputValidateGroup validated={(c, d) => validatedSignUp(0, c, d)} forceValidate={signIn.forceValidate}>
+          <InputValidateGroup validated={(c, d) => validatedSignUp(0, c, d)} forceValidate={signUp.stages[0].forceValidate}>
+            <p className="mr-auto my-2">Email</p>
             <InputValidate
               name="email"
+              raw
+              idleMessage="Связь с вами"
+              successMessage="Отлично"
               schema={joi
                 .string()
                 .email()
-                .error(e => "Необходим корректный email")}
+                .error((e: any) => "Необходим корректный email")}
             >
-              <input type="email" className="w-100 mb-2" placeholder="Email" />
+              <input type="email" className="w-100 mb-2" placeholder="somebody@post.com" />
             </InputValidate>
+            <p className="mr-auto my-2">Логин</p>
             <InputValidate
               name="username"
+              idleMessage="Введите ваш логин"
+              successMessage="Отлично"
               schema={joi
                 .string()
                 .min(4)
                 .error(e => "Не менее 4 символов")}
             >
-              <input type="username" className="w-100" placeholder="Логин" />
+              <input type="username" className="w-100 mb-2" placeholder="somebody123" />
             </InputValidate>
+            <p className="mr-auto my-2">Пароль</p>
             <InputValidate
               name="password"
+              successMessage="Отлично"
               schema={joi
                 .string()
                 .min(8)
                 .error(e => "Не менее 8 символов")}
             >
-              <input type="password" className="w-100" placeholder="Пароль" />
+              <input type="password" className="w-100" placeholder="********" />
             </InputValidate>
-            <InputValidate name="passwordRepeat" schema={joi.valid(joi.ref("password")).error(e => "Пароли не совпадают")}>
-              <input type="password" className="w-100" placeholder="Повторите пароль" />
+            <p className="mr-auto my-2">Повторите пароль</p>
+            <InputValidate name="passwordRepeat" successMessage="Отлично" schema={joi.valid(joi.ref("password")).error(e => "Пароли не совпадают")}>
+              <input type="password" className="w-100 mb-2" placeholder="********" />
             </InputValidate>
           </InputValidateGroup>
-          <button onClick={() => this.switchForm("SIGNUP")} className={"btn btn-primary w-100 rounded-0 "}>
+          <button onClick={() => this.switchForm("SIGNUP")} className={"btn btn-primary w-100 rounded-0 mt-2 "}>
             Регистрация
           </button>
         </div>

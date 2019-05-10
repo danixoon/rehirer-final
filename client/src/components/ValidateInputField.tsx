@@ -18,6 +18,8 @@ interface InputValidateProps extends React.PropsWithChildren<any> {
   hardCheck?: boolean;
   successMessage?: string;
   idleMessage?: string;
+  overrideError?: string;
+  raw?: boolean;
 
   // error?: string;
   // value?: any;
@@ -37,17 +39,19 @@ export class InputValidate extends React.Component<InputValidateProps> {
   };
 
   render() {
-    const { children, style, className, disabled, idleMessage, successMessage, error, value } = this.props;
+    let { children, overrideError, style, className, disabled, idleMessage, successMessage, error, value } = this.props;
 
-    let message;
-    if (disabled) message = idleMessage;
-    else if (error) message = error;
-    else message = successMessage;
+    let message = overrideError;
+    if (!overrideError) {
+      if (disabled) message = idleMessage;
+      else if (error) message = error;
+      else message = successMessage;
+    } else error = true;
 
     return (
       <div style={style} className={className || "w-100"}>
         {this.bindInputProps(value)}
-        <small className={disabled ? "text-secondary" : error ? "text-danger" : "text-primary"}>{message}</small>
+        <small className={(disabled ? "text-secondary" : error ? "text-danger" : "text-primary") + (!message ? " invisible" : " visible")}>{message || "_"}</small>
       </div>
     );
   }
@@ -103,13 +107,13 @@ export class InputValidateGroup extends React.Component<InputValidateGroupProps>
     if (!prevProps.forceValidate && this.props.forceValidate) this.setState({ errors: this.validate(this.state.input).error });
   }
 
-  onChange = (e: any, hardCheck: any) => {
+  onChange = (e: any, hardCheck: any, raw: any) => {
     // e.preventDefault();
     let { input, errors, disabled } = this.state;
     let backup = input[e.target.name];
     input[e.target.name] = e.target.value;
     const result = this.validate(input);
-    input[e.target.name] = result.value[e.target.name];
+    if (!raw) input[e.target.name] = result.value[e.target.name];
     if (hardCheck && (result.error && result.error[e.target.name])) {
       input[e.target.name] = backup;
     }
@@ -132,7 +136,7 @@ export class InputValidateGroup extends React.Component<InputValidateGroupProps>
         ...c.props,
         value,
         disabled: forceValidate ? false : disabled || (!error && value === ""),
-        onChange: (e: any) => this.onChange(e, c.props.hardCheck),
+        onChange: (e: any) => this.onChange(e, c.props.hardCheck, c.props.raw),
         error: error
       });
     });

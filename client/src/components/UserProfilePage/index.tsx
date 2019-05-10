@@ -67,7 +67,7 @@ class UserProfilePage extends React.Component<any> {
         </div>
 
         <div className="col-md-4 col-100">
-          <UserProflieField label="ФИО" value={`${firstName} ${secondName}, ${thirdName}`}>
+          <UserProflieField label="ФИО" value={`${secondName} ${firstName} ${thirdName || ""}`}>
             Изменить <Edit3 height="1em" width="1em" />
           </UserProflieField>
           <UserProflieField label="Навыки" value={tags.join(" | ")}>

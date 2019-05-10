@@ -2,6 +2,8 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import auth from "./auth";
 import * as joi from "joi";
 
+import * as colors from "colors/safe";
+
 export interface IAPIMethod {
   schema?: joi.SchemaLike;
   access: ApiAccess;
@@ -26,20 +28,21 @@ function executeMethod(method: IAPIMethod, query: any, res: Response, req: Reque
     if (method.schema) {
       const result = joi.validate(query, joi.object().keys(method.schema as any), { allowUnknown: true, convert: true });
       if (result.error) {
-        res.status(400).send({ msg: result.error.details[0].message });
-        return reject(result.error);
+        const err = { code: 400, msg: result.error.details[0].message };
+        sendError(res, err);
+        return reject(err);
       }
       query = result.value;
     }
-    method
+    return method
       .execute(query, req)
       .then(data => {
         res.status(200).send(data);
-        return resolve(data);
+        resolve(data);
       })
       .catch(err => {
-        res.status(err.code || 500).send({ msg: err.msg || "error" });
-        return reject(err);
+        sendError(res, err);
+        reject(err);
       });
   });
 }
@@ -49,27 +52,32 @@ export enum ApiAccess {
   TOKEN = 1 << 2
 }
 
-const createApiMiddlware: (api: IAPI) => RequestHandler = api => (req: Request, res: Response, next: NextFunction) => {
-  const methodName = `${req.method} ${req.baseUrl}`;
-  console.log(`API_QUERY ${methodName}\n`, req.query, "\n");
+function sendError(res: Response, err: { code?: number; msg?: string }) {
+  return res.status(err.code || 500).send({ msg: err.msg || "error" });
+}
+
+const createApiMiddlware: (api: IAPI) => RequestHandler = api => async (req: Request, res: Response, next: NextFunction) => {
+  const methodName = `${req.method} ${req.baseUrl + req.path}`;
+  console.log(`${colors.yellow("API_QUERY")} --- ${methodName}\n`, req.query, "\n");
   const apiHttpMethod = api[req.method.toLocaleLowerCase()];
   if (!apiHttpMethod) return res.status(400).send({ msg: `http method ${req.method} unsupported` });
   const method = apiHttpMethod[req.params.method];
   if (!method) return res.status(400).send({ msg: "invalid api method" });
-  if (method.access & ApiAccess.TOKEN) {
-    auth(req.header("x-auth-token"), async (err, id) => {
-      if (err) {
-        console.log(`API_ERROR ${methodName}\n`, err, "\n")
-        return res.status(err.code || 500).send({ msg: err.msg || "error" });
-      }
-      executeMethod(method, { ...req.query, id }, res, req)
-        .then(() => next())
-        .catch(err => console.log(`API_ERROR ${methodName}\n`, err, "\n"));
-    });
-  } else {
-    executeMethod(method, req.query, res, req)
-      .then(() => next())
-      .catch(err => console.log(`API_ERROR ${methodName}\n`, err, "\n"));
+  try {
+    let id;
+    if (method.access & ApiAccess.TOKEN) {
+      id = await new Promise((resolve, reject) =>
+        auth(req.header("x-auth-token"), (err, id) => {
+          if (err) return reject(err);
+          return resolve(id);
+        })
+      );
+    }
+    const data = await executeMethod(method, { ...req.query, id }, res, req);
+    console.log(`${colors.green("API_SUCCESS")} --- ${methodName}\n`, data, "\n");
+    next();
+  } catch (err) {
+    console.log(`${colors.red("API_ERROR")} --- ${methodName}\n`, err, "\n");
   }
 };
 

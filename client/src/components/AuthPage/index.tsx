@@ -135,12 +135,12 @@ class AuthPage extends React.Component<any> {
       return this.forceSignUpValidate(1);
     }
     const { fullname, password, username, dob, city, socialUrl, email, description } = { ...signUp.stages[0].input, ...signUp.stages[1].input } as any;
-
+    const [day, month, year] = dob.split('.');
     this.setState({ status: "LOADING" });
     const names = fullname.split(/\s+/);
     axios
       .get("/api/account/create", {
-        params: { description, dob, password, firstName: names[1], thirdName: names[2], secondName: names[0], email, tags: signUp.tags, username, city, socialUrl }
+        params: { description, dob: new Date(year, month, day).getMilliseconds(), password, firstName: names[1], thirdName: names[2], secondName: names[0], email, tags: signUp.tags, username, city, socialUrl }
       })
       .then(res => {
         // console.lo
