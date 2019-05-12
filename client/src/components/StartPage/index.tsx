@@ -10,8 +10,11 @@ class StartPage extends React.Component<any> {
       <div className="fluid-container bg-white">
         <div className="row no-gutters">
           <div className="col-sm-auto col-lg-4 col-md-5 col-auto order-3 order-md-1 p-3 pt-5 ">
-            <StartPageMessage header="Работодателям">Тысячи пользователей ждут ваших вакансий и готовы принять вас</StartPageMessage>
-            <StartPageMessage header="Для обычных людей">Продайте себя в рабство прямо сейчас! По супер-цене, целых 0.00 рублей за голову</StartPageMessage>
+            <StartPageMessage header="Работодателям">Тысячи людей ждут Вашей вакансии и готовы откликнуться на Ваше дело!</StartPageMessage>
+            <StartPageMessage header="Работникам">Ищите, выполняйте и зарабатываете то, что Вам по душе!</StartPageMessage>
+            <StartPageMessage header="Как">
+              С помощью удобного интерфейса и функционала веб-приложения Rehirer у вас не составит труда найти оставить и найти работу, полностью безопасно и быстро.
+            </StartPageMessage>
           </div>
           <div className="col-sm order-2 overflow-none" style={{ height: "85vh", minHeight: "500px", backgroundImage: `url(${background})` }}>
             <div className="py-5 h-100">

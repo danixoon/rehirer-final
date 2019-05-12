@@ -1,5 +1,5 @@
 import React from "react";
-import { bowHours } from "../JobListPage/JobCard";
+import { bowWord } from "../JobListPage/JobCard";
 import axios from "axios";
 import { JobSecretModal } from "./JobSecretModal";
 export class UserRespondJob extends React.Component<any> {
@@ -71,7 +71,7 @@ export class UserRespondJob extends React.Component<any> {
       <span className="mb-2">{job.city}</span>
       <p>Время выполнения</p>
       <span className="mb-2">
-        {hours} {"час" + bowHours(hours)}
+        {hours} {"час" + bowWord(hours)}
       </span>
       <p>Цена</p>
       <span className="mb-2">{job.price}₽</span>

@@ -23,6 +23,7 @@ const API: IAPI = {
     find: {
       access: ApiAccess.TOKEN,
       schema: {
+        search: joi.string().allow(""),
         count: joi
           .number()
           .integer()
@@ -30,16 +31,48 @@ const API: IAPI = {
         offset: joi
           .number()
           .integer()
-          .default(0)
+          .default(0),
+        tags: joi.array(),
+        minPrice: joi.number(),
+        maxPrice: joi.number(),
+        priceSort: joi
+          .number()
+          .valid(1, -1)
+          .default(1)
+          .optional(),
+        // labelSort: joi
+        //   .number()
+        //   .valid(1, -1)
+        //   .default(1)
+        //   .optional()
       },
-      execute: async ({ count, offset }): Promise<IJobModel[]> => {
-        const jobs = await Job.find()
+      execute: async ({ search, count, offset, tags, minPrice, maxPrice, priceSort }) => {
+        // let total = Job.find()
+        //   .count()
+        //   .exec();
+        const findJobs = () => {
+          let query = Job.find();
+          if (search)
+            query = query.find({
+              $or: [{ label: { $regex: search } }, { description: { $regex: search } }]
+            });
+          if (tags) query = query.find({ tags: { $all: tags } });
+          if (minPrice) query = query.find({ price: { $gte: minPrice } });
+          if (maxPrice) query = query.find({ price: { $lte: maxPrice } });
+
+          query = query.sort({ price: priceSort });
+          // if (priceSort) query = query.sort({ price: priceSort });
+          return query;
+        };
+
+        const total = findJobs().count();
+        const jobs = findJobs()
           .skip(offset)
           .limit(count)
-          .select("city tags description timespan price label authorId")
-          .exec();
+          .select("city tags description timespan price label authorId");
+
         // await new Promise(res => setTimeout(res, 5000));
-        return jobs;
+        return { count: await total.exec(), items: (await jobs.exec()).map(j => j.toObject()) };
       }
     },
     byId: {
@@ -47,12 +80,15 @@ const API: IAPI = {
       schema: {
         ids: joi.array().required()
       },
-      execute: async ({ ids }): Promise<IJobModel[]> => {
-        const jobs = await Job.find({ _id: { $in: ids } })
-          .select("city tags description timespan price label authorId")
-          .exec();
+      execute: async ({ ids }) => {
+        const findJobs = () => {
+          return Job.find({ _id: { $in: ids } }).select("city tags description timespan price label authorId");
+        };
+        const total = findJobs().count();
+        // const jobs =
+
         // await new Promise(res => setTimeout(res, 5000));
-        return jobs;
+        return { count: await total.exec(), items: await findJobs().exec() };
       }
     },
     create: {

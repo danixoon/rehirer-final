@@ -4,29 +4,53 @@ import SlideBarTree from "./SlideBarTree";
 import SlideBarRange from "./SlideBarRange";
 
 import AddJobModal from "./AddJobModal";
+import { connect } from "react-redux";
+import { setJobSearch } from "../../store/actions/jobActions";
 
 const modals = {
   addJob: AddJobModal
 };
 
-class SideBar extends React.Component {
+class SideBar extends React.Component<any> {
   state = {
-    items: ["Уборка"],
     modal: {
       component: modals.addJob,
       open: false
     }
   };
 
-  removeItem = (id: number) => {
-    const { items } = this.state;
-    items.splice(id, 1);
-    this.setState({ items });
+  setJobSearch = (search: any) => {
+    this.props.setJobSearch(search);
   };
 
-  addItem = (label: string) => {
-    this.setState({ items: [...this.state.items, label] });
+  removeTag = (id: number) => {
+    const { search } = this.props;
+    search.tags.splice(id, 1);
+    this.setJobSearch(search);
   };
+
+  addTag = (label: string) => {
+    const { search } = this.props;
+    search.tags.push(label);
+    this.setJobSearch(search);
+  };
+
+  onSearchChange = (e: any) => {
+    const { search } = this.props;
+    search.search = e.target.value;
+    this.setJobSearch(search);
+  };
+
+  onPriceChange = (min: number, max: number) => {
+    const { search } = this.props;
+    search.maxPrice = max;
+    search.minPrice = min;
+    this.setJobSearch(search);
+  };
+
+  componentDidUpdate() {
+    console.log("updated");
+  }
 
   toggleModal = () => {
     const { modal } = this.state;
@@ -34,7 +58,8 @@ class SideBar extends React.Component {
   };
 
   render() {
-    const { items, modal } = this.state;
+    const { modal } = this.state;
+    const { search } = this.props;
     return (
       <div className="shadow-sm p-3 overflow-auto sticky-top bg-white border border-top-0" style={{ zIndex: 4 }}>
         {modal.component ? <modal.component open={modal.open} toggle={this.toggleModal} /> : ""}
@@ -43,14 +68,30 @@ class SideBar extends React.Component {
           <button className="btn btn-primary w-100 rounded-0 mb-3" onClick={this.toggleModal}>
             Предложить вакансию
           </button>
-          <Search />
+          <Search onChange={this.onSearchChange} value={search.search} />
         </div>
-        <SlideBarTree placeholder="Введите тег" onSubmit={this.addItem} items={items.map((item, i) => ({ label: item, onClick: () => this.removeItem(i) }))} header="Теги" />
+        <SlideBarTree
+          placeholder="Введите тег"
+          onSubmit={this.addTag}
+          items={search.tags.map((item: any, i: number) => ({ label: item, onClick: () => this.removeTag(i) }))}
+          header="Теги"
+        />
 
-        <SlideBarRange label="Цена" />
+        <SlideBarRange onMinChange={value => this.onPriceChange(value, search.maxPrice)} onMaxChange={value => this.onPriceChange(search.minPrice, value)} label="Цена" />
       </div>
     );
   }
 }
 
-export default SideBar;
+const mapDispatchToProps = {
+  setJobSearch
+};
+
+const mapStateToProps = (state: any) => ({
+  search: state.job.entities.search
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SideBar);

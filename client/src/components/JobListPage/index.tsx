@@ -7,7 +7,7 @@ import SortPanel from "./SortPanel";
 import { connect } from "react-redux";
 import AddRespondModal from "./AddRespondModal";
 
-import { fetchJobList } from "../../store/actions/jobActions";
+import { fetchJobList, setJobSearch } from "../../store/actions/jobActions";
 
 class JobListPage extends React.Component<any> {
   state = {
@@ -21,8 +21,12 @@ class JobListPage extends React.Component<any> {
     this.setState({ respondModal: !respondModal, jobId });
   };
 
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.job.entities.search !== this.props.job.entities.search) this.props.fetchJobList(this.props.job.entities.search);
+  }
   componentDidMount() {
-    this.props.fetchJobList();
+    this.props.setJobSearch(this.props.job.entities.search);
+    this.props.fetchJobList(this.props.job.entities.search);
   }
 
   render() {
@@ -39,7 +43,7 @@ class JobListPage extends React.Component<any> {
               <SortPanel />
               <AddRespondModal jobId={jobId} open={respondModal} toggle={this.toggleRespondModal} />
               {job.statuses.jobs.fetch === "SUCCESS" ? (
-                job.entities.jobs.map((j: any, i: number) => <JobCard key={i} job={j} toggleRespondModal={this.toggleRespondModal} />)
+                job.entities.jobs.items.map((j: any, i: number) => <JobCard key={i} job={j} toggleRespondModal={this.toggleRespondModal} />)
               ) : (
                 <Spinner color="primary" className="m-auto" />
               )}
@@ -56,7 +60,8 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = {
-  fetchJobList
+  fetchJobList,
+  setJobSearch
   // fetchUserResponds
 };
 

@@ -69,7 +69,7 @@ class JobCard extends React.Component<IJobCardProps> {
             <JobInfo label="Работодатель">{author ? `${author.firstName} ${author.secondName}` : <Spinner size="sm" color="primary" />}</JobInfo>
             <JobInfo label="Город">{job.city}</JobInfo>
             <JobInfo label="Время выполнения">
-              {hours} {"час" + bowHours(hours)}
+              {hours} {"час" + bowWord(hours)}
             </JobInfo>
             <JobInfo label="Предложенная цена">{job.price}₽</JobInfo>
             {respond.statuses.responds.fetch === "SUCCESS" ? (
@@ -104,9 +104,9 @@ class JobCard extends React.Component<IJobCardProps> {
   }
 }
 
-export const bowHours = (hours: number) => {
+export const bowWord = (hours: number) => {
   const number = hours % 100;
-  if (number % 10 >= 5 && (number <= 20 || number % 10 <= 9 || number % 10 === 0)) return "ов";
+  if ((number >= 10 && number <= 20) || number === 0 || (number % 10 >= 5 && (number <= 20 || number % 10 <= 9 || number % 10 === 0))) return "ов";
   if (number % 10 >= 2 && number % 10 <= 4) return "а";
   return "";
 };

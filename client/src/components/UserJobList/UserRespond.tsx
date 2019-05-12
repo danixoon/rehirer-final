@@ -12,9 +12,7 @@ class UserRespond extends React.Component<any> {
     return (
       <div className="container-fluid p-2">
         <div className="row no-gutters">
-          <div className="col-auto pr-2">
-            <img className="rounded-pill" style={{ height: "50px" }} src="https://picsum.photos/200" />
-          </div>
+          <div className="col-auto pr-2">{user && <img className="rounded-pill" style={{ height: "50px", width: "50px" }} src={user.data.avatarUrl} />}</div>
           <div className="col p-0 d-flex flex-column">
             {user ? (
               <div>

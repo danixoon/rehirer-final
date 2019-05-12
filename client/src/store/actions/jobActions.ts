@@ -1,5 +1,5 @@
 import axios from "axios";
-import { handleActionError } from "../store";
+import store, { handleActionError } from "../store";
 
 async function mapDataToJobs(jobs: any[]) {
   const token = sessionStorage.getItem("authToken");
@@ -16,6 +16,34 @@ async function mapDataToJobs(jobs: any[]) {
     })
   );
 }
+
+export const setJobSearch = (s: any) => {
+  // if (search.page)
+  const state = store.getState();
+  if (!s) return { type: "JOB_FETCH_SEARCH_SET", payload: state.job.entities.search };
+  const query = {
+    ...s,
+    search: s.search,
+    tags: s.tags,
+    minPrice: s.minPrice === "" ? undefined : s.minPrice,
+    maxPrice: s.maxPrice === "" ? undefined : s.maxPrice,
+    offset: s.page * s.maxOnPage,
+    count: s.maxOnPage
+  };
+  return { type: "JOB_FETCH_SEARCH_SET", payload: query };
+  // dispatch({ type: "JOB_FETCH_LOADING" });
+  // const token = sessionStorage.getItem("authToken");
+  // try {
+  //   const res = await axios.get("/api/job/user", { headers: { "x-auth-token": token } });
+  //   if (res.data.length === 0) return dispatch({ type: "JOB_FETCH_SUCCESS", payload: [] });
+  //   const jobs = await axios.get("/api/job/byId", { params: { ids: res.data }, headers: { "x-auth-token": token } });
+  //   // const responds = await axios.get("/api/user/jobResponds", { params: { jobId: }, headers: { "x-auth-token": token } });
+  //   // dispatch({ type: "JOB_FETCH_SUCCESS", payload: await mapDataToJobs(jobs.data) });
+  //   dispatch({ type: "JOB_FETCH_SUCCESS", payload: jobs.data });
+  // } catch (err) {
+  //   handleActionError(dispatch, "JOB_FETCH_ERROR", err);
+  // }
+};
 
 export const fetchUserJobs = () => async (dispatch: any, getState: any) => {
   dispatch({ type: "JOB_FETCH_LOADING" });
@@ -49,7 +77,7 @@ export const addUserJob = (jobData: IAddJob) => async (dispatch: any) => {
     const res = await axios.get("/api/job/create", { params: { ...jobData }, headers: { "x-auth-token": token } });
     const job = await axios.get("/api/job/byId", { params: { ids: [res.data.jobId] }, headers: { "x-auth-token": token } });
     // dispatch({ type: "JOB_ADD_LOADING", payload: (await mapDataToJobs(job.data))[0] });
-    dispatch({ type: "JOB_ADD_SUCCESS", payload: job.data[0] });
+    dispatch({ type: "JOB_ADD_SUCCESS", payload: job.data.items[0] });
     // dispatch()
     // dispatch(fetchJobList());
     // dispatch(fetchUserJobs());
@@ -71,11 +99,18 @@ export const deleteUserJob = (jobId: string) => async (dispatch: any) => {
   }
 };
 
-export const fetchJobList = () => async (dispatch: any) => {
+export const fetchJobList = (query: any) => async (dispatch: any) => {
   dispatch({ type: "JOB_FETCH_LOADING" });
+  // const q = {
+  //   ...query
+  // };
   const token = sessionStorage.getItem("authToken");
   try {
-    const res = await axios.get("/api/job/find", { headers: { "x-auth-token": token } });
+    const res = await axios.get("/api/job/find", {
+      params: query,
+
+      headers: { "x-auth-token": token }
+    });
     dispatch({ type: "JOB_FETCH_SUCCESS", payload: res.data });
   } catch (err) {
     handleActionError(dispatch, "JOB_FETCH_ERROR", err);

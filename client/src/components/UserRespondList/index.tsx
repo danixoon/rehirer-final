@@ -49,7 +49,7 @@ class UserRespondList extends React.Component<any> {
               <Spinner color="primary" className="m-auto" />
             ) : (
               respond.entities.responds.map((r: any) => {
-                const j = job.entities.jobs.find((j: any) => j._id === r.jobId);
+                const j = job.entities.jobs.items.find((j: any) => j._id === r.jobId);
                 if (!j) return;
                 return (
                   <div key={r._id}>

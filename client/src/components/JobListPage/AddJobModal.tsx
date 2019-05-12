@@ -32,43 +32,6 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
     tags: [] as any[]
   };
 
-  // state = {
-  //   input: {
-  //     label: "",
-  //     description: "",
-  //     timespan: "",
-  //     tags: ["hi"],
-  //     city: "",
-  //     secretInfo: "",
-  //     price: "",
-  //     validate: null as any,
-  //     schema: {
-  //       label: joi
-  //         .string()
-  //         .min(5)
-  //         .required()
-  //         .error(e => "Минимум 5 символов"),
-  //       description: joi
-  //         .string()
-  //         .min(10)
-  //         .required()
-  //         .error(e => "Минимум 10 символов"),
-  //       timespan: joi
-  //         .number()
-  //         .integer()
-  //         .required()
-  //         .error(e => "Требуется целое число"),
-  //       // city: joi.string(),
-  //       // secretInfo: joi.string(),
-  //       price: joi
-  //         .number()
-  //         .required()
-  //         .integer()
-  //         .error(e => "Требуется целое число")
-  //     }
-  //   }
-  // };
-
   toggleCheckbox = (e: any) => {
     const { input } = this.state;
     this.setState({ input: { ...input, [e.target.id]: e.target.checked } });
@@ -143,9 +106,9 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
                 successMessage="Отлично"
                 schema={joi
                   .string()
-                  .min(5)
+                  .min(10)
                   .required()
-                  .error(e => "Минимум 5 символов")}
+                  .error(e => "Минимум 10 символов")}
               >
                 <textarea rows={5} placeholder="Работа заключается в.." className="w-100 mb-1" />
               </InputValidate>
@@ -180,7 +143,15 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
               </InputValidate>
 
               <p className="mt-3">Скрытая информациия</p>
-              <InputValidate successMessage="Отлично" idleMessage="Видна только нанятому Вами работнику" name="secretInfo" schema={joi.string()}>
+              <InputValidate
+                successMessage="Отлично"
+                idleMessage="Видна только нанятому Вами работнику"
+                name="secretInfo"
+                schema={joi
+                  .string()
+                  .required()
+                  .error(() => "Необходимое поле")}
+              >
                 <textarea rows={5} placeholder="Ключ от дома - под горшком" className="w-100 mb-1" />
               </InputValidate>
 

@@ -24,7 +24,6 @@ class SwitchPanelGroup extends React.Component<React.PropsWithChildren<ISwitchPa
     const { children } = this.props;
     const panel = this.getPanel();
     const panelNames = [] as string[];
-    console.log("render");
 
     let activeContent;
     let childProps = {} as any;

@@ -43,7 +43,8 @@ export type JobAction =
   | "JOB_FETCH_ERROR"
   | "JOB_ADD_LOADING"
   | "JOB_ADD_SUCCESS"
-  | "JOB_ADD_ERROR";
+  | "JOB_ADD_ERROR"
+  | "JOB_FETCH_SEARCH_SET";
 
 export type AuthorAction = "AUTHOR_FETCH_LOADING" | "AUTHOR_FETCH_SUCCESS" | "AUTHOR_FETCH_ERROR";
 

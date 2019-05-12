@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 // import { fetchUserData } from "../.."
 import { Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
-import { fetchUserJobs, deleteUserJob } from "../../store/actions/jobActions";
+import { deleteUserJob, fetchUserJobs } from "../../store/actions/jobActions";
 import { fetchUserResponds } from "../../store/actions/respondActions";
 import UserJob from "./UserJob";
 import { authorsFetch } from "../../store/actions/authorActions";
@@ -19,7 +19,7 @@ class UserJobList extends React.Component<any> {
   componentDidUpdate(prevProps: any) {
     const { job, user } = this.props;
     if (job.statuses.jobs.fetch === "SUCCESS" && prevProps.job.statuses.jobs.fetch === "LOADING") {
-      this.props.authorsFetch(job.entities.jobs.filter((j: any) => j.authorId === user.entities.account.userId).map((j: any) => j._id));
+      this.props.authorsFetch(job.entities.jobs.items.filter((j: any) => j.authorId === user.entities.account.userId).map((j: any) => j._id));
     }
   }
 
@@ -34,7 +34,7 @@ class UserJobList extends React.Component<any> {
               <Spinner color="primary" className="m-auto" />
             ) : (
               // ""
-              job.entities.jobs.map((j: any) => (
+              job.entities.jobs.items.map((j: any) => (
                 <div key={j._id} className="col-100 border mb-2 w-100">
                   <UserJob {...j} reload={this.props.fetchUserJob} delete={this.props.deleteUserJob} />
                 </div>

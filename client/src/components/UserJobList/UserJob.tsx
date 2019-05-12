@@ -1,8 +1,9 @@
 import React from "react";
-import { bowHours } from "../JobListPage/JobCard";
+import { bowWord } from "../JobListPage/JobCard";
 import UserRespond from "./UserRespond";
 import { AreYouSureModal } from "./index";
 import { connect } from "react-redux";
+import { Spinner } from "reactstrap";
 class UserJob extends React.Component<any> {
   state = {
     deleteModal: false
@@ -31,21 +32,23 @@ class UserJob extends React.Component<any> {
         <span className="mb-2">{city}</span>
         <p>Время выполнения</p>
         <span className="mb-2">
-          {hours} {"час" + bowHours(hours)}
+          {hours} {"час" + bowWord(hours)}
         </span>
         <p>Цена</p>
         <span className="mb-2">{price}₽</span>
         <p className="mb-2">Отклики</p>
         <div className="container-fluid row no-gutters p-0">
-          {respond.statuses.responds.fetch === "SUCCESS" &&
-            author.statuses.authors.fetch === "SUCCESS" &&
+          {respond.statuses.responds.fetch === "SUCCESS" ? (
             respond.entities.responds
               .filter((r: any) => r.jobId === _id)
               .map((r: any) => (
                 <div key={r._id} className="border-top w-100">
                   <UserRespond respond={r} />
                 </div>
-              ))}
+              ))
+          ) : (
+            <Spinner color="primary" />
+          )}
         </div>
       </div>
     );

@@ -8,6 +8,7 @@ import job from "./routes/api/job";
 import account from "./routes/api/account";
 import user from "./routes/api/user";
 import upload from "./routes/api/upload";
+import images from "./routes/upload/images";
 
 import * as dotenv from "dotenv";
 
@@ -29,9 +30,9 @@ async function init() {
   app.use("/api/account", account);
   app.use("/api/user", user);
 
-  app.use("/upload", express.static(path.join(__dirname, "../upload")));
-
   app.use("/api/upload", upload);
+  
+  app.use("/upload/images", images);
 
   // Static file declaration
   // app.use(express.static(path.join(__dirname, "../client/build")));
