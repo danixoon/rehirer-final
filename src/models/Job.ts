@@ -1,7 +1,6 @@
 import * as mongoose from "mongoose";
 
 export type JobStatus = "PENDING" | "COMPLETED";
-
 export interface IJob {
   label: string;
   description: string;
@@ -47,9 +46,9 @@ const JobSchema = new Schema({
     type: String,
     default: "PENDING"
   },
-  rating: {
-    type: Number
-  },
+  // rating: {
+  //   type: Number
+  // },
   authorId: {
     type: Schema.Types.ObjectId,
     ref: "User",

@@ -3,14 +3,13 @@ import { Router, RequestHandler, Response } from "express";
 import AccountData, { IAccountData } from "../../models/AccountData";
 import * as jwt from "jsonwebtoken";
 
-import Job, { IJobModel } from "../../models/Job";
 import createApiMiddleware, { ApiAccess, IAPI, apiError } from "../../middleware/api";
 import auth from "../../middleware/auth";
 
 import * as joi from "joi";
 import UserData, { IUserData } from "../../models/UserData";
 import UserProfile, { IUserProfile } from "../../models/UserProfile";
-import User, { IUser } from "../../models/User";
+import User from "../../models/User";
 
 const router = Router();
 
@@ -63,7 +62,6 @@ const API: IAPI = {
       }
     },
     data: {
-      // schema: {},
       access: ApiAccess.TOKEN,
       execute: async ({ id }) => {
         return await AccountData.findOne({ userId: id })
@@ -87,9 +85,6 @@ const API: IAPI = {
         // const account = await AccountData.updateOne({ userId: id }, { username, email }).exec();
         await account.updateOne({ password: await genHash(newPassword) }).exec();
         return;
-        // return await AccountData.findOne({ userId: id })
-        //   .select("-password -_id -__v")
-        //   .exec();
       }
     },
     edit: {
@@ -102,9 +97,6 @@ const API: IAPI = {
         const account = await AccountData.findOne({ userId: id }).exec();
         account.updateOne({ email: email || account.email, username: username || account.username }).exec();
         return;
-        // return await AccountData.findOne({ userId: id })
-        //   .select("-password -_id -__v")
-        //   .exec();
       }
     },
     verify: {
@@ -147,9 +139,6 @@ const API: IAPI = {
           auth(token, async (err, userId) => {
             if (err) rej(err);
             else {
-              // const user = await User.findById(userId).exec();
-              // const accountData = await AccountData.findOne({ userId }).exec();
-              // if(!accou)
               return res({ token });
             }
           });
@@ -240,13 +229,6 @@ const API: IAPI = {
           // text: "Hello world?", // plain text body
           html: `<p><b>Активируйте аккаунт, пройдя по этой ссылке</b></p><a href='${url}'>${url}</a>`
         });
-        // let info =
-
-        // const dev = await bcrypt.compare("token", hash);
-
-        // return await new Promise((res, rej) => {
-
-        // });
       }
     }
   }

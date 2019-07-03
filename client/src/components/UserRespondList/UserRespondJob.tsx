@@ -26,9 +26,6 @@ export class UserRespondJob extends React.Component<any> {
   componentWillUnmount() {
     this.cancelToken.cancel();
   }
-  // componentDidUpdate() {
-  //   if (this.props.status === "APPROVED" && this.props.secretStatus === "IDLE") this.props.getJobSecret(this.props.job._id);
-  // }
   render() {
     const { secretModal, jobSecret } = this.state;
     const { job, respond } = this.props;

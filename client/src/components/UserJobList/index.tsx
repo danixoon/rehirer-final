@@ -11,7 +11,8 @@ import { authorsFetch } from "../../store/actions/authorActions";
 import SwitchPanelGroup, { SwitchPanel } from "../SwitchPanelGroup";
 
 class UserJobList extends React.Component<any> {
-  componentDidMount() {
+  constructor(props: any) {
+    super(props);
     this.props.fetchUserJobs();
     this.props.fetchUserResponds();
   }
@@ -30,7 +31,7 @@ class UserJobList extends React.Component<any> {
       <div className="container mx-auto row no-gutters" style={{ minHeight: "85vh" }}>
         <SwitchPanelGroup>
           <SwitchPanel name="pending" header="Ожидающие" className="d-flex flex-column flex-grow-1">
-            {job.statuses.jobs.fetch !== "SUCCESS" ? (
+            {job.statuses.jobs.fetch !== "SUCCESS" || job.entities.jobs.items === undefined ? (
               <Spinner color="primary" className="m-auto" />
             ) : (
               // ""

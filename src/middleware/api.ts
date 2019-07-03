@@ -82,21 +82,3 @@ const createApiMiddlware: (api: IAPI) => RequestHandler = api => async (req: Req
 };
 
 export default createApiMiddlware;
-
-// (req: Request, res: Response, next: NextFunction) => {
-//   console.log(`Query:`, req.query);
-//   const apiHttpMethod = api[req.method.toLocaleLowerCase()];
-//   if (!apiHttpMethod) return res.status(400).send({ msg: `http method ${req.method} unsupported` });
-//   const method = apiHttpMethod[req.params.method];
-//   if (!method) return res.status(400).send({ msg: "invalid api method" });
-//   if (method.access & ApiAccess.WITH_TOKEN)
-//     auth(req, res, async () => {
-//       executeMethod(method.execute, req.query, res)
-//         .then(() => next())
-//         .catch(console.log);
-//     });
-//   else
-//     executeMethod(method.execute, req.query, res)
-//       .then(next)
-//       .catch(console.log);
-// };

@@ -33,8 +33,6 @@ export class AuthForm extends React.Component<any> {
             >
               <input type="password" className="w-100 mb-2" placeholder="Пароль" />
             </InputValidate>
-            {/* <InputCheck className="mr-auto" error={validationMessage(signInDetails, "password")} /> */}
-            {/* {user.statuses.account === "ERROR" ? <small className="text-danger my-1 align-self-start">{}</small> : ""} */}
           </InputValidateGroup>
           <button onClick={login} className={"btn btn-primary w-100 rounded-0 mt-2 "}>
             Войти

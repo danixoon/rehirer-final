@@ -1,7 +1,4 @@
-import * as bcrypt from "bcrypt";
 import { Router, RequestHandler, Response } from "express";
-import User from "../../models/User";
-import * as jwt from "jsonwebtoken";
 
 import Job, { IJobModel, IJob } from "../../models/Job";
 import createApiMiddleware, { ApiAccess, IAPI, apiError } from "../../middleware/api";
@@ -10,7 +7,6 @@ import * as joi from "joi";
 import UserData from "../../models/UserData";
 import JobRespond from "../../models/JobRespond";
 import AccountData from "../../models/AccountData";
-// import { apiError } from "../../middleware — backup/api";
 
 const router = Router();
 
@@ -39,17 +35,9 @@ const API: IAPI = {
           .number()
           .valid(1, -1)
           .default(1)
-          .optional(),
-        // labelSort: joi
-        //   .number()
-        //   .valid(1, -1)
-        //   .default(1)
-        //   .optional()
+          .optional()
       },
       execute: async ({ search, count, offset, tags, minPrice, maxPrice, priceSort }) => {
-        // let total = Job.find()
-        //   .count()
-        //   .exec();
         const findJobs = () => {
           let query = Job.find();
           if (search)
@@ -61,7 +49,6 @@ const API: IAPI = {
           if (maxPrice) query = query.find({ price: { $lte: maxPrice } });
 
           query = query.sort({ price: priceSort });
-          // if (priceSort) query = query.sort({ price: priceSort });
           return query;
         };
 
@@ -135,8 +122,6 @@ const API: IAPI = {
       access: ApiAccess.TOKEN,
       schema: {
         jobId: joi.string().required()
-        // respondId: joi.string().required(),
-        // status: joi.string().valid(["APPROVED", "DECLINED", "CANCELED"])
       },
       execute: async ({ jobId, id }, req) => {
         const job = await Job.findById(jobId).exec();
@@ -149,18 +134,6 @@ const API: IAPI = {
         const jobUser = await AccountData.findOne({ userId: job.authorId }).exec();
 
         return { secretInfo: job.secretInfo, socialURL: jobAuthor.socialUrl, email: jobUser.email, respondId: respond.id };
-
-        // const respond = await JobRespond.findById(respondId).exec();
-        // const job = await Job.findById(respond.jobId).exec();
-        // if ((status === "CANCELED" && respond.authorId.toString() !== id) || job.authorId.toString() !== id) throw apiError("Access denied");
-        // if (respond.status !== "PENDING") throw apiError("Already " + respond.status.toLowerCase());
-        // await respond.updateOne({ status }).exec();
-        // return (await JobRespond.findById(respond.id).exec()).toObject();
-        // return respond;
-        // await respond.remove();
-        // return "yeah";
-        // const respond = await new JobRespond({ message, jobId, respondUserId: id });
-        // return { id: respond.id };
       }
     },
     user: {
@@ -172,15 +145,8 @@ const API: IAPI = {
         const jobs = await Job.find({ authorId: id })
           .select("_id")
           .exec();
-        return !jobs ? [] : jobs.map(j => j._id);
-        // await new Promise(res => setTimeout(res, 5000));
-        // const account = await AccountData.findOne({ username }).exec();
-        // const user = await User.findOne({ accountDataId: account.id }).exec();
-        // const user = await User.findById(id).exec();
-        // const data = await UserData.findOne({ userId: userId || id }).exec();
-        // if (data) return data.toObject();
-        // else throw apiError("user not found", 404);
-        // result.toJSON();
+        const items = !jobs ? [] : jobs.map(j => j._id);
+        return { items, count: items.length };
       }
     },
     delete: {
@@ -195,16 +161,6 @@ const API: IAPI = {
         await JobRespond.deleteMany({ jobId }).exec();
         await job.remove();
         return { deletedId: job.id };
-        // const responds = await JobRespond.find({ jobId }).exec();
-        // return responds.map(r => r.toObject());
-        // await new Promise(res => setTimeout(res, 5000));
-        // const account = await AccountData.findOne({ username }).exec();
-        // const user = await User.findOne({ accountDataId: account.id }).exec();
-        // const user = await User.findById(id).exec();
-        // const data = await UserData.findOne({ userId: userId || id }).exec();
-        // if (data) return data.toObject();
-        // else throw apiError("user not found", 404);
-        // result.toJSON();
       }
     }
   }

@@ -20,48 +20,6 @@ function switchForm(action: string, payload: any) {
 }
 
 class AuthPage extends React.Component<any> {
-  // state = {
-  //   signIn: {
-  //     username: "",
-  //     password: "",
-  //     validate: null as any,
-  //     schema: {
-  //       username: joi.string().error(e => "Поле не может быть пустым"),
-  //       password: joi.string().error(e => "Поле не может быть пустым")
-  //     }
-  //   },
-  //   signUp: {
-  //     tags: [] as string[],
-  //     tagInput: "",
-  //     email: "",
-  //     username: "",
-  //     password: "",
-  //     passwordRepeat: "",
-  //     fullname: "",
-  //     dob: "",
-  //     description: "",
-  //     socialUrl: "",
-  //     city: "",
-  //     schema: {
-  //       email: joi
-  //         .string()
-  //         .email()
-  //         .error(e => "Некорректная почта"),
-  //       password: joi
-  //         .string()
-  //         .min(8)
-  //         .error(e => "Не менее 8 символов"),
-  //       passwordRepeat: joi
-  //         // .extend()
-  //         .string()
-  //         .valid(joi.ref("password"))
-  //         .error((e: any) => "Пароли должны совпадать")
-  //     },
-  //     validate: null as any
-  //   },
-  //   form: "AUTH",
-  //   status: "IDLE"
-  // };
 
   state = {
     signUp: {
@@ -160,8 +118,6 @@ class AuthPage extends React.Component<any> {
       .then(res => {
         signUp.modal = true;
         this.setState({ signUp });
-        // console.lo
-        // this.props.accountCheckToken(res.data.token);
       })
       .catch(console.log);
   };

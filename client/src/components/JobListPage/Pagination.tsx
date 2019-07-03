@@ -35,10 +35,6 @@ class Pagination extends React.Component<any> {
 
   render() {
     const { search, job } = this.props;
-    // let start = search.page - 3;
-    // start = start < 0 ? 1 : start;
-    // let end = (search.total - search.page * search.maxOnPage) / search.maxOnPage;
-    // end = end > 3 ?
     if (job.statuses.jobs.fetch === "IDLE") return <Spinner color="primary" />;
     const max = Math.ceil(job.entities.jobs.count / search.maxOnPage);
     let start = search.page - 3;
@@ -52,17 +48,6 @@ class Pagination extends React.Component<any> {
             {this.renderButtonContent(v, start, end)}
           </button>
         ))}
-        {/* 
-        <button className="btn p-1 px-2 rounded-0 btn-primary">1</button>
-        <button className="btn p-1 px-2 rounded-0 text-secondary">2</button>
-
-        <button className="btn p-1 px-2 rounded-0 text-secondary">3</button>
-
-        <button className="btn p-1 px-2 rounded-0 text-secondary">...</button>
-
-        <button className="btn p-1 px-2 rounded-0 text-secondary">56</button>
-
-        <button className="btn p-1 px-2 rounded-0 text-secondary">→</button> */}
       </div>
     );
   }

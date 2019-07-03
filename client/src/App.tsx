@@ -8,7 +8,6 @@ import UserProfilePage from "./components/UserProfilePage";
 import AuthPage from "./components/AuthPage";
 import { connect } from "react-redux";
 import { userDataFetch, userProfileFetch, userAccountCheckToken, userAccountDataFetch } from "./store/actions/userActions";
-// import { userAccountCheckToken } from "./store/actions/userActions
 import UserJobList from "./components/UserJobList";
 import UserRespondList from "./components/UserRespondList";
 import { history } from "./store/store";
@@ -17,28 +16,21 @@ import querystring from "query-string";
 import axios from "axios";
 import { Spinner } from "reactstrap";
 
-// const baseUrl = process.env.PUBLIC_URL;
-
 class App extends React.Component<any> {
   constructor(props: any) {
     super(props);
 
     const token = sessionStorage.getItem("authToken");
     if (token) this.props.userAccountCheckToken(token);
-    // console.log("check");
   }
 
   componentDidUpdate(prevProps: any) {
-    // console.log("what");
     const { user } = this.props;
     if (user.statuses.account.auth === "SUCCESS") {
       if (user.statuses.account.fetch === "IDLE") this.props.userAccountDataFetch();
       if (user.statuses.profile.fetch === "IDLE") this.props.userProfileFetch();
       if (user.statuses.data.fetch === "IDLE") this.props.userDataFetch();
     }
-
-    // console.log("OH NO");
-    // }
   }
   render() {
     const { user, router } = this.props;
@@ -82,7 +74,6 @@ const VerifyAccount = ({ salt, hash }: any, userAccountCheckToken: any) => () =>
       <span>Аккаунт проверяется...</span>
     </div>
   );
-  // <Redirect to="/account/settings" />;
 };
 
 const mapDispatchToProps = {

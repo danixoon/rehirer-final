@@ -15,10 +15,7 @@ export const signUpExtend: any = joi.extend((j: any) => ({
         const error = this.createError("signUp.date", { v: value }, state, options);
         const [day, month, year] = value.split(".");
         if (!day || !month || !year) return error;
-        // const day = Number(dates[0]),
-        //   month = Number(dates[1]),
-        //   year = Number(dates[2]);
-        // if (Number.isNaN(day) || Number.isNaN(year) || Number.isNaN(month)) return error;
+
         try {
           const date = new Date(`${year}.${month}.${day}`);
           if (isNaN(date.getTime()) || date.getFullYear() <= 1900 || date.getFullYear() >= new Date().getFullYear() - 10) return error;
@@ -35,10 +32,6 @@ export const signUpExtend: any = joi.extend((j: any) => ({
         const [firstName, secondName, thirdName] = value.split(/\s+/);
         if (!firstName || !secondName) return error;
         else return value;
-        // const day = Number(dates[0]),
-        //   month = Number(dates[1]),
-        //   year = Number(dates[2]);
-        // if (Number.isNaN(day) || Number.isNaN(year) || Number.isNaN(month)) return error;
       }
     }
   ]
@@ -93,7 +86,8 @@ export class SignUpForm extends React.Component<any> {
               schema={joi
                 .string()
                 .required()
-                .error(e => "Необходимое поле")}
+                .min(10)
+                .error(e => "Не менее 10 символов")}
             >
               <input className="w-100 mb-2" placeholder="Дружелюбный, люблю животных, часто посещаю субботники" />
             </InputValidate>

@@ -174,16 +174,10 @@ class UserProfilePage extends React.Component<any> {
   render() {
     const { input, forceValidate, label, open, prop, schema } = this.state.modal;
     const { user } = this.props;
-    // console.log(this.props.account);
     if (user.statuses.data.fetch !== "SUCCESS" || user.statuses.profile.fetch !== "SUCCESS") return <Spinner className="m-auto" color="primary" />;
     let { firstName, secondName, thirdName, avatarUrl, city, socialUrl, tags, description, dob } = user.entities.data;
     dob = new Date(dob).toISOString().split("T")[0];
     let dor = new Date(user.entities.profile.dor).toISOString().split("T")[0];
-    // let day = dob.getDate().toString();
-    // if (day.length === 1) day = "0" + day;
-    // let month = dob.getUTCMonth().toString();
-    // if (month.length === 1) month = month === "0" ? "01" : "0" + month;
-    // const { firstName, secondName, thirdName, city, socialURL } = user.entities.data;
     const { username, email } = user.entities.account;
     return (
       <div className="container row no-gutters mx-auto border border-top-0 bg-white" style={{ minHeight: "85vh", zIndex: 5 }}>
@@ -192,14 +186,9 @@ class UserProfilePage extends React.Component<any> {
         </EditFieldModal>
         <div className="col-md-4 col-md-auto px-2">
           <img className="w-100" src={avatarUrl} />
-          {/* <button className="btn border-primary text-primary w-100 mt-1 rounded-0">
-            Сменить изображение
-            
-          </button> */}
+
           <label htmlFor="file-upload" className="btn border-primary text-primary w-100 mt-1 rounded-0">
             Сменить изображение
-            {/* ss   */}
-            {/* <button >Custom Upload</button> */}
           </label>
           <input type="file" id="file-upload" className="d-none" onChange={this.uploadImage} />
           <div className="mt-2">

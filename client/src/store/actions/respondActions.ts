@@ -7,13 +7,6 @@ export const fetchUserResponds = () => async (dispatch: any, getState: any) => {
   try {
     const res = await axios.get("/api/respond/user", { headers: { "x-auth-token": token } });
     if (res.data.length === 0) return dispatch({ type: "RESPOND_FETCH_SUCCESS", payload: [] });
-    // const data = await Promise.all(res.data.map(async (r: any) => {
-    //   return { ...r, job: await  r.jobId }
-    // }));
-    // const ids = res.data.map((r: any) => r.jobId);
-    // const jobs = await axios.get("/api/job/byId", { params: { ids }, headers: { "x-auth-token": token } });
-
-    // const result = await mapDataToRespond(res.data, jobs.data);
 
     dispatch({ type: "RESPOND_FETCH_SUCCESS", payload: res.data });
   } catch (err) {
@@ -26,8 +19,6 @@ export const addUserRespond = (jobId: string, message: string) => async (dispatc
   const token = sessionStorage.getItem("authToken");
   try {
     const res = await axios.get("/api/respond/create", { headers: { "x-auth-token": token }, params: { jobId, message } });
-    // const jobs = await axios.get("/api/job/byId", { params: { ids: [jobId] }, headers: { "x-auth-token": token } });
-    // dispatch({ type: "RESPOND_ADD_SUCCESS", payload: (await mapDataToRespond([res.data], jobs.data))[0] });
     dispatch({ type: "RESPOND_ADD_SUCCESS", payload: res.data });
   } catch (err) {
     handleActionError(dispatch, "RESPOND_ADD_ERROR", err);

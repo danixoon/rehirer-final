@@ -65,7 +65,6 @@ class AddJobModal extends React.Component<any & IJobModalProps> {
     this.setState({ tags });
   };
   removeTag = (tag: string) => {
-    // this.props.removeTag(tag);
     const { tags } = this.state;
     this.setState({ tags: tags.filter((t: any) => t != tag) });
   };

@@ -23,10 +23,6 @@ export default (s = initalState, action: IReduxAction): IInitialState => {
   if (userAccountTokenCheck.includes(action.type)) return handleEntityReducer(s, action, "account", "auth");
 
   switch (action.type) {
-    // case "USER_ACCOUNT_TOKEN_CHECK_LOADING":
-    //   return handleLoadingReducer(s, "account", "tokenCheck");
-    // case "USER_ACCOUNT_TOKEN_CHECK_ERROR":
-    //   return handleErrorReducer(s, action.payload, "account", "tokenCheck");
 
     case "USER_DATA_FETCH_LOADING":
       return { ...s, statuses: { ...s.statuses, data: { modify: "LOADING" } } };
@@ -50,7 +46,6 @@ export default (s = initalState, action: IReduxAction): IInitialState => {
         entities: { ...s.entities, data: action.payload }
       };
   }
-  // if (userProfile.includes(action.type)) return handleFetchReducer(state, action, "users");
 
   return s;
 };

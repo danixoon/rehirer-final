@@ -57,15 +57,12 @@ class UserRespond extends React.Component<any> {
     );
   }
 }
-
 const mapDispatchToProps = {
   changeUserRespondStatus
 };
-
 const mapStateToProps = (state: any) => ({
   author: state.author
 });
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps

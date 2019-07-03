@@ -1,26 +1,6 @@
 import { IReduxAction, ActionType } from "../types";
 import { handleFetchReducer, createState, handleLoadingReducer, handleErrorReducer, IInitialState } from "../store";
 
-// const initalState = {
-//   data: [] as any,
-//   status: "IDLE",
-//   error: null,
-//   search: {} as any
-// };
-
-// export default (state = initalState, action: IReduxAction) => {
-//   switch (action.type) {
-//     case "JOB_FETCH":
-//       return { ...state, status: "LOADING" };
-//     case "JOB_FETCH_SUCCESS":
-//       return { ...state, status: "SUCCESS", data: action.payload };
-//     case "JOB_FETCH_ERROR":
-//       return { ...state, status: "ERROR", error: action.payload };
-//     default:
-//       return state;
-//   }
-// };
-
 const initalState = createState({
   jobs: ["fetch", "add", "delete"],
   search: []
@@ -28,21 +8,15 @@ const initalState = createState({
 
 initalState.entities.search = {
   tags: [],
-  // search: "",
-  // minPrice: "",
-  // maxPrice: "",
   page: 0,
   maxOnPage: 5,
   priceSort: 1,
   labelSort: 1
-  // total: 0
 };
 
 const jobs = ["JOB_FETCH_SUCCESS", "JOB_FETCH_LOADING", "JOB_FETCH_ERROR"];
-// const listJobs = ["USER_ACCOUNT_AUTH_SUCCESS", "USER_ACCOUNT_AUTH_LOADING", "USER_ACCOUNT_AUTH_ERROR"];
 
 export default (s = initalState, action: IReduxAction): IInitialState => {
-  // if (jobs.includes(action.type)) return handleFetchReducer(s, action, "jobs");
   switch (action.type) {
     case "JOB_FETCH_LOADING":
       return handleLoadingReducer(s, "jobs", "fetch");

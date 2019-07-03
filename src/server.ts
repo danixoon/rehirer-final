@@ -1,8 +1,6 @@
 import * as express from "express";
 import * as mongoose from "mongoose";
 import * as path from "path";
-
-// import auth from "./routes/api/auth";
 import respond from "./routes/api/respond";
 import job from "./routes/api/job";
 import account from "./routes/api/account";
@@ -12,7 +10,7 @@ import images from "./routes/upload/images";
 
 import * as dotenv from "dotenv";
 
-import smpt from "./smpt";
+import smpt from "./middleware/smpt";
 
 import * as fs from "fs";
 
@@ -21,10 +19,8 @@ dotenv.config();
 const app = express();
 
 async function init() {
-  // app.on(express.json());
   app.use(smpt);
 
-  // app.use("/api/auth", auth);
   app.use("/api/respond", respond);
   app.use("/api/job", job);
   app.use("/api/account", account);
@@ -33,9 +29,6 @@ async function init() {
   app.use("/api/upload", upload);
   
   app.use("/upload/images", images);
-
-  // Static file declaration
-  // app.use(express.static(path.join(__dirname, "../client/build")));
 
   if (!process.env.MONGO_URI || !process.env.JWT_SECRET) throw "ENV VARIABLES INCORRECT";
 
@@ -49,17 +42,6 @@ async function init() {
       res.sendFile(path.join(__dirname, "../client/build/index.html"));
     });
   }
-  // fs.mkdirSync("../config");
-  // const configData = { MongoURI: process.env.MONGO_URI, jwtSecret: process.env.JWT_SECRET };
-  // fs.writeFileSync(path.join(__dirname, "../config/default.json"), JSON.stringify(configData));
-
-  //
-  // app.get("*", (req, res) => {
-  //   res.sendfile(path.join((__dirname = "../client/build/index.html")));
-  // });
-
-  // }
-  //build mod
 
   const db = process.env.MONGO_URI as string;
 
@@ -75,8 +57,6 @@ async function init() {
 
   app.listen(port, async () => {
     console.log(`Server listening at ${port} port`);
-    // console.log("yeah");
-    // await test();
   });
 }
 
