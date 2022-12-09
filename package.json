@@ -23,7 +23,7 @@
     "concurrently": "^4.1.0",
     "datauri": "^2.0.0",
     "dotenv": "^8.0.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "fstream": "1.0.12",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
